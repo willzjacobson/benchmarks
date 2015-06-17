@@ -67,16 +67,9 @@ park_ts_fit = ARIMA( park_ts, optimal_order_park ).fit()
 
 
 
-# best is (0,1,1) (or, equivalently, (1,0,1)
 
 
 
-# export to json
-# data.to_json( 'data/wemo_munged.json' )
 
-
-# ggplot(aes(x='timestamp', y='energy_used_kw_hrs'), data=data_ts) + \
-# geom_line() + \
-# stat_smooth(colour='blue', span=0.2)
 
 
