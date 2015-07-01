@@ -1,8 +1,12 @@
 import os
 import pandas as pd
-from scipy.optimize import brute
-from statsmodels.tsa.stattools import adfuller
-from statsmodels.tsa.arima_model import ARIMA
+import scipy as sp
+import scipy.optimize as optimize
+import statsmodels.api as sm
+
+# import all of tsa
+from statsmodels.tsa import stattools
+import statsmodels.tsa as tsa
 # load R forecast package
 # import rpy2.robjects as ro
 # import pandas.rpy.common as com
@@ -12,7 +16,7 @@ from statsmodels.tsa.arima_model import ARIMA
 
 # for wide terminal display of pandas dataframes
 pd.options.display.width = 120
-
+pd.options.display.max_rows = 10000
 # set project working directory
 os.chdir( '/users/davidkarapetyan/documents/workspace/data_analysis/' )
 
@@ -34,7 +38,6 @@ temp = pd.Series( list( park_data.VALUE ),
                     name = "steam values" )
 
 park_ts = temp.resample( '15Min ', fill_method = 'pad' )
-
 
 
 
@@ -63,7 +66,6 @@ optimal_order_park = tuple(
 
 
 park_ts_fit = ARIMA( park_ts, optimal_order_park ).fit()
-
 
 
 
