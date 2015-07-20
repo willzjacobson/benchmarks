@@ -30,8 +30,8 @@ park_data = park_data.sort('TIMESTAMP')
 park_ts = pd.Series(list(park_data.VALUE),
                     pd.DatetimeIndex(park_data.TIMESTAMP),
                     name="steam values")
-
-park_ts = park_ts.loc[park_ts != 0].resample('15Min ', fill_method='pad')
+# park_ts.drop_duplicates(inplace=True)
+park_ts = park_ts.loc[park_ts != 0].resample('15Min ').interpolate()
 print(park_ts)
 
 '''

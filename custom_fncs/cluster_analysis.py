@@ -34,7 +34,8 @@ park_ts = pd.Series(list(park_data.VALUE),
                     pd.DatetimeIndex(park_data.TIMESTAMP),
                     name="steam values")
 park_ts.drop_duplicates(inplace=True)
-park_ts = park_ts.loc[park_ts != 0].resample('15Min ', fill_method='pad')
+park_ts = park_ts.loc[park_ts != 0].resample('15Min ').interpolate()
+
 print(park_ts)
 
 pylab.scatter(park_ts['2013-03-21': '2013-05-27'].index.minute / 15,
