@@ -5,7 +5,6 @@ import pandas as pd
 # for wide terminal display of pandas dataframes
 pd.options.display.width = 120
 pd.options.display.max_rows = 10000
-import sklearn.cluster as cluster
 from sklearn.neighbors.kde import KernelDensity
 from scipy import stats
 import numpy as np
