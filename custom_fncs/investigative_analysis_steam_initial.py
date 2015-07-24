@@ -5,7 +5,6 @@ import pandas as pd
 pd.options.display.width = 120
 pd.options.display.max_rows = 10000
 import numpy as np
-import numpy.logical_and as land
 import statsmodels.tsa.arima_model as arima
 import statsmodels.tsa.statespace.sarimax as sarimax
 import seaborn
@@ -47,7 +46,7 @@ We see that ARIMA is not currently fitting the time series data. We look for an 
 
 ###Log Ratio Transformation
 
-To get a properly scaled plot, we filter out the outlier values occuring at
+To get a properly scaled plot, we filter out the outlier values occurring at
 the end of day (shift from some steam usage to none at all as systems
 restart, and spikes from ramp-up time at the beginning of the day).
 
@@ -148,7 +147,7 @@ def actual_vs_prediction(ts, seasonal_order):
     plt.plot(fit.data.dates, fit.data.endog.flatten(), label='Actual')
     plt.plot(fit.data.dates, fit.predict().flatten(), label='Prediction')
     plt.legend(loc='best')
-    plt.title('Insample Prediction vs Actuals')
+    plt.title('In-sample Prediction vs Actual')
     plt.xlabel('')
     plt.ylabel('Steam Log Ratios')
     plt.show()
