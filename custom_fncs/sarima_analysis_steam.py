@@ -11,6 +11,8 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 # from IPython import get_ipython
 import statsmodels.graphics.tsaplots as tsp
+from custom_fncs.misc import stationarity_test
+# %load_ext autoreload #reload modules automatically when functions within are called
 
 # plot inline
 # get_ipython().magic('pylab inline')
@@ -42,9 +44,6 @@ park_ts = park_ts.loc[park_ts != 0].resample('15Min ').interpolate()
 
 park_ts_logr = (np.log(park_ts / park_ts.shift(1)))[1:]
 
-
-
-
 '''
 ##SARIMAX on Data for Individual Days
 
@@ -63,35 +62,40 @@ or to a bad DiBoss summertime prediction.
  '''
 
 
-#TODO Check 06-07 non-steady ramp up/down with Gene. Maybe bad DiBoss summertime predictions
+# TODO Check 06-07 non-steady ramp up/down with Gene. Maybe bad DiBoss summertime predictions
 
 
 
 
 
-def actual_vs_prediction(ts, seasonal_order, tuple=(0, 1, 2, 3, 4, 5, 6), columns=2):
-    ncols = 1
-    nrows = 1
+def actual_vs_prediction(ts, order=(2, 1, 0), seasonal_order=(2, 2, 0, 96),
+                         days=(0, 1, 2, 3, 4, 5, 6)):
+    if len(days) > 2:
+        ncols = int(np.ceil(len(days) / 2))
+        nrows = 2
+
+    else:
+        ncols = len(days)
+        nrows = 1
+
     fig, ax = plt.subplots(nrows, ncols, squeeze=False)
-    # fig.delaxes(ax[3, 1]) #one more plot axes than is needed
-    fig.suptitle('Insample Prediction vs Actuals')
-    days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
-    k = 0
+
+    if ncols > len(days) / 2:
+        fig.delaxes(ax[nrows - 1, ncols - 1])  # one more plot axes than is needed
+
+    fig.suptitle('In-sample Prediction vs Actual')
+    weekdays = {0: 'Monday', 1: 'Tuesday', 2: 'Wednesday', 3: 'Thursday', 4: 'Friday', 5: 'Saturday', 6: 'Sunday'}
+
     for axentry in ax:
-        for i in range(ncols):
-            if k < 1:
-                ts_within_day = ts[ts.index.weekday == k]
-                # stats = ts_within_day.describe(percentiles=[0.05, 0.95])
-                # fit = sarimax.SARIMAX(ts_within_day[ts_within_day > stats['5%']],
-                # seasonal_order=seasonal_order).fit()
-                fit = sarimax.SARIMAX(ts_within_day, order=(2, 1, 0), seasonal_order=seasonal_order).fit()
-                # axentry[i].set_title(days[tuple[k]])
-                axentry[i].plot(fit.data.dates, fit.data.endog.flatten(), label='Actual')
-                axentry[i].plot(fit.data.dates, fit.predict().flatten(), label='Prediction')
-                axentry[i].legend(loc='best')
-                axentry[i].set_xlabel('')
-                axentry[i].set_ylabel('Steam Log Ratios')
-                k = k + 1
+        for i, j in zip(range(ncols), days):
+            ts_within_day = ts[ts.index.weekday == j]
+            fit = sarimax.SARIMAX(ts_within_day, order=order, seasonal_order=seasonal_order).fit()
+            axentry[i].set_title(weekdays[j])
+            axentry[i].plot(fit.data.dates, fit.data.endog.flatten(), label='Actual')
+            axentry[i].plot(fit.data.dates, fit.predict().flatten(), label='Prediction')
+            axentry[i].legend(loc='best')
+            axentry[i].set_xlabel('Weekly Readings')
+            axentry[i].set_ylabel('Accumulated Steam Usage ')
     plt.show()
 
 
@@ -100,9 +104,10 @@ tsp.plot_pacf(park_ts['06-04-2013'])
 
 tsp.plot_acf(park_ts.at_time('10:30:00'))
 tsp.plot_pacf(park_ts.at_time('10:30:00'))
-
-actual_vs_prediction(park_ts, (2, 1, 0, 96))
-actual_vs_prediction(park_ts['06-01-2013':'07-01-2013'], (2, 1, 0, 96))
+#
+# actual_vs_prediction(park_ts)
+stationarity_test(park_ts['06-01-2013':'07-01-2013'])
+actual_vs_prediction(park_ts['06-01-2013':'07-01-2013'])
 actual_vs_prediction(park_ts['06-01-2013':'06-06-2013'], (0, 1, 0, 96))
 
 print(sarimax.SARIMAX(park_ts_logr[np.logical_and(park_ts_logr.index.weekday == 1,
