@@ -49,7 +49,7 @@ print(arima.ARIMA(park_ts, (0, 1, 0)).fit().summary())
 # 
 # ###Log Ratio Transformation
 
-# To get a properly scaled plot, we filter out the outlier values occuring at
+# To get a properly scaled plot, we filter out the outlier values occurring at
 # the end of day (shift from some steam usage to none at all as systems
 # restart, and spikes from ramp-up time at the beginning of the day).
 
