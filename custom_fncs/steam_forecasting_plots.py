@@ -54,8 +54,8 @@ print(arima.ARIMA(park_ts_filter_15[park_ts_filter_15.between(
 
 '''
 This suggests that the spikes in our data are indeed very random, and are not easily modeled
-via a white noise parameter (and so, there may be a more appropriate model than Arima).
-For now, we use Arima to forecast these values, and compare them with
+via a white noise parameter (and so, there may be a more appropriate model than ARIMA).
+For now, we use ARIMA to forecast these values, and compare them with
 the actual values.
 '''
 
