@@ -4,7 +4,7 @@ import pandas as pd
 # for wide terminal display of pandas dataframes
 pd.options.display.width = 120
 pd.options.display.max_rows = 10000
-import numpy as np
+import scipy as sp
 import statsmodels.tsa.arima_model as arima
 import statsmodels.tsa.statespace.sarimax as sarimax
 import seaborn
@@ -42,7 +42,8 @@ print(park_ts)
 print(arima.ARIMA(park_ts, (0, 1, 0)).fit().summary())
 
 '''
-We see that ARIMA is not currently fitting the time series data. We look for an appropriate transformation of the time series to improve our ARIMA fitting.
+We see that ARIMA is not currently fitting the time series data. We look for an
+appropriate transformation of the time series to improve our ARIMA fitting.
 
 ###Log Ratio Transformation
 
@@ -52,7 +53,7 @@ restart, and spikes from ramp-up time at the beginning of the day).
 
 '''
 
-park_ts_logr = (np.log(park_ts / park_ts.shift(1)))[1:]
+park_ts_logr = (park_ts / park_ts.shift(1)).apply(sp.log)[1:]
 basic_stats = park_ts_logr.describe(percentiles=[0.05, 0.95])
 
 print(basic_stats)
@@ -96,7 +97,8 @@ print(sarimax.SARIMAX(
     seasonal_order=(0, 1, 0, 95)).fit().summary())
 
 '''
-The positives of smoothing the data via filtration have been outweighed by the loss of data points to fit.
+The positives of smoothing the data via filtration have been outweighed by the
+loss of data points to fit.
 
 Now, let's use a larger input
 (beginning on a Monday, and ending on a Friday), and fit another
@@ -109,14 +111,15 @@ print(sarimax.SARIMAX(
     seasonal_order=(0, 1, 0, 95)).fit().summary())
 
 '''
-As expected, this is an even better fit than the fit for the week's worth of data.
-Lastly, we input three # months worth of data, beginning on a Monday,
+As expected, this is an even better fit than the fit for the week's worth of
+data. Lastly, we input three # months worth of data, beginning on a Monday,
 and ending on a Friday.
 
 '''
 
-print(sarimax.SARIMAX(park_ts_logr[park_ts_logr > 0]['2013-05-06': '2013-08-08'],
-                      seasonal_order=(0, 1, 0, 95)).fit().summary())
+print(
+    sarimax.SARIMAX(park_ts_logr[park_ts_logr > 0]['2013-05-06': '2013-08-08'],
+                    seasonal_order=(0, 1, 0, 95)).fit().summary())
 
 '''
 Let's contrast this with our fit when we include the end-of-day spikes:
@@ -128,7 +131,8 @@ print(sarimax.SARIMAX(park_ts_logr['2013-05-06': '2013-08-08'],
 
 '''
 Hence, it makes sense to keep the analysis of
-15-minute ramp-up and ramp-down times separate from the analysis of the remaining data.
+15-minute ramp-up and ramp-down times separate from the analysis of the
+remaining data.
 
 ##SARIMAX on Data for Individual Days
 
@@ -141,9 +145,9 @@ each chunk separately.
 
 def actual_vs_prediction(ts, seasonal_order):
     stats = ts.describe(percentiles=[0.05, 0.95])
-    fit = sarimax.SARIMAX(ts[land(
-        ts.index.weekday == 0, ts > stats['5%'])], seasonal_order=seasonal_order).fit()
-
+    fit = sarimax.SARIMAX(ts[sp.logical_and(
+        ts.index.weekday == 0,
+        ts > stats['5%'])], seasonal_order=seasonal_order).fit()
     plt.plot(fit.data.dates, fit.data.endog.flatten(), label='Actual')
     plt.plot(fit.data.dates, fit.predict().flatten(), label='Prediction')
     plt.legend(loc='best')
@@ -156,52 +160,67 @@ def actual_vs_prediction(ts, seasonal_order):
 print(park_ts_logr['06-01-2013':'07-01-2013'])
 
 '''
-From June to July, there is an interesting discrepancy. It seems the operators are powering up
-the system at 8:00am, after a gradual ramp down before. We suspect this is due to operator error,
-or to a bad DiBoss summertime prediction.
+From June to July, there is an interesting discrepancy. It seems the operators
+are powering up the system at 8:00am, after a gradual ramp down before. We
+suspect this is due to operator error, or to a bad DiBoss summertime prediction.
  '''
 
-# TODO Check 06-07 non-steady ramp up/down with Gene. Maybe bad DiBoss summertime predictions
+# TODO Check 06-07 non-steady ramp up/down with Gene.
+# Maybe bad DiBoss summertime predictions
 
-fit_tue = sarimax.SARIMAX(park_ts_logr[land(park_ts_logr.index.weekday == 1,
+fit_tue = sarimax.SARIMAX(
+    park_ts_logr[sp.logical_and(park_ts_logr.index.weekday == 1,
+                                park_ts_logr > basic_stats['5%'])],
+    seasonal_order=(0, 1, 0, 95)).fit()
+
+fit_wed = sarimax.SARIMAX(
+    park_ts_logr[sp.logical_and(park_ts_logr.index.weekday == 2,
+                                park_ts_logr > basic_stats['5%'])],
+    seasonal_order=(0, 1, 0, 95)).fit()
+
+fit_thu = sarimax.SARIMAX(
+    park_ts_logr[sp.logical_and(park_ts_logr.index.weekday == 3,
+                                park_ts_logr > basic_stats['5%'])],
+    seasonal_order=(0, 1, 0, 95)).fit()
+
+fit_fri = sarimax.SARIMAX(
+    park_ts_logr[sp.logical_and(park_ts_logr.index.weekday == 4,
+                                park_ts_logr > basic_stats['5%'])],
+    seasonal_order=(0, 1, 0, 95)).fit()
+
+sarimax.SARIMAX(park_ts_logr[sp.logical_and(park_ts_logr.index.weekday == 0,
                                             park_ts_logr > basic_stats['5%'])],
-                          seasonal_order=(0, 1, 0, 95)).fit()
-
-fit_wed = sarimax.SARIMAX(park_ts_logr[land(park_ts_logr.index.weekday == 2,
-                                            park_ts_logr > basic_stats['5%'])],
-                          seasonal_order=(0, 1, 0, 95)).fit()
-
-fit_thu = sarimax.SARIMAX(park_ts_logr[land(park_ts_logr.index.weekday == 3,
-                                            park_ts_logr > basic_stats['5%'])],
-                          seasonal_order=(0, 1, 0, 95)).fit()
-
-fit_fri = sarimax.SARIMAX(park_ts_logr[land(park_ts_logr.index.weekday == 4,
-                                            park_ts_logr > basic_stats['5%'])],
-                          seasonal_order=(0, 1, 0, 95)).fit()
-
-sarimax.SARIMAX(park_ts_logr[land(park_ts_logr.index.weekday == 0,
-                                  park_ts_logr > basic_stats['5%'])],
                 seasonal_order=(0, 1, 0, 95)).fit().predict()
 
-print(sarimax.SARIMAX(park_ts_logr[land(park_ts_logr.index.weekday == 1,
-                                        park_ts_logr > basic_stats['5%'])],
-                      seasonal_order=(0, 1, 0, 95)).fit().summary())
+print(
+    sarimax.SARIMAX(park_ts_logr[sp.logical_and(park_ts_logr.index.weekday == 1,
+                                                park_ts_logr > basic_stats[
+                                                    '5%'])],
+                    seasonal_order=(0, 1, 0, 95)).fit().summary())
 
-print(sarimax.SARIMAX(park_ts_logr[land(park_ts_logr.index.weekday == 2,
-                                        park_ts_logr > basic_stats['5%'])],
-                      seasonal_order=(0, 1, 0, 95)).fit().summary())
+print(
+    sarimax.SARIMAX(park_ts_logr[sp.logical_and(park_ts_logr.index.weekday == 2,
+                                                park_ts_logr > basic_stats[
+                                                    '5%'])],
+                    seasonal_order=(0, 1, 0, 95)).fit().summary())
 
-print(sarimax.SARIMAX(park_ts_logr[land(park_ts_logr.index.weekday == 3,
-                                        park_ts_logr > basic_stats['5%'])],
-                      seasonal_order=(0, 1, 0, 95)).fit().summary())
+print(
+    sarimax.SARIMAX(park_ts_logr[sp.logical_and(park_ts_logr.index.weekday == 3,
+                                                park_ts_logr > basic_stats[
+                                                    '5%'])],
+                    seasonal_order=(0, 1, 0, 95)).fit().summary())
 
-print(sarimax.SARIMAX(park_ts_logr[land(park_ts_logr.index.weekday == 4,
-                                        park_ts_logr > basic_stats['5%'])],
-                      seasonal_order=(0, 1, 0, 95)).fit().summary())
+print(
+    sarimax.SARIMAX(park_ts_logr[sp.logical_and(park_ts_logr.index.weekday == 4,
+                                                park_ts_logr > basic_stats[
+                                                    '5%'])],
+                    seasonal_order=(0, 1, 0, 95)).fit().summary())
 
-print(sarimax.SARIMAX(park_ts_logr[land(park_ts_logr.index.weekday == 5,
-                                        park_ts_logr > basic_stats['5%'])],
-                      seasonal_order=(0, 1, 0, 95)).fit().summary())
+print(
+    sarimax.SARIMAX(park_ts_logr[sp.logical_and(park_ts_logr.index.weekday == 5,
+                                                park_ts_logr > basic_stats[
+                                                    '5%'])],
+                    seasonal_order=(0, 1, 0, 95)).fit().summary())
 
 print(sarimax.SARIMAX(park_ts_logr[park_ts_logr.index.weekday == 0],
                       seasonal_order=(0, 1, 0, 95)).fit().summary())
@@ -226,8 +245,8 @@ due to difference between system-idling over weekends and weekdays.
 
 '''
 
-print(arima.ARIMA(park_ts_logr[land(park_ts_logr.index.weekday == 0,
-                                    park_ts_logr < 0)],
+print(arima.ARIMA(park_ts_logr[sp.logical_and(park_ts_logr.index.weekday == 0,
+                                              park_ts_logr < 0)],
                   order=(0, 1, 0)).fit().summary())
 
 '''
@@ -242,9 +261,10 @@ model, from a least-squares standpoint. Consequently, we exponentiate our
 time series data, and re-fit:
 '''
 
-print(arima.ARIMA(np.exp(park_ts_logr[land(park_ts_logr.index.weekday == 0,
-                                           park_ts_logr < 0)]),
-                  order=(0, 1, 0)).fit().summary())
+print(arima.ARIMA(
+    (park_ts_logr[sp.logical_and(park_ts_logr.index.weekday == 0,
+                                 park_ts_logr < 0)]).apply(sp.exp),
+    order=(0, 1, 0)).fit().summary())
 
 '''
 Observe that the fit has improved.

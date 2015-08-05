@@ -1,7 +1,6 @@
 # coding: utf-8
 
 
-from IPython import get_ipython
 import pandas as pd
 # for wide terminal display of pandas dataframes
 pd.options.display.width = 120
@@ -9,9 +8,10 @@ pd.options.display.max_rows = 10000
 import numpy as np
 import statsmodels.tsa.arima_model as arima
 import statsmodels.tsa.statespace.sarimax as sarimax
+import scipy as sp
 
 # plot inline
-get_ipython().magic('pylab inline')
+# get_ipython().magic('pylab inline')
 # IPython.get_ipython().magic('matplotlib inline')
 import matplotlib.pylab as pylab
 
@@ -19,8 +19,6 @@ pylab.rcParams['figure.figsize'] = 14, 6
 
 directory = '/Users/davidkarapetyan/Documents/workspace/data_analysis/'
 csv_file = 'data/park345_CHLR1.csv'
-
-
 
 # load dataframe, and subset out relevant columns
 park_data = pd.read_csv(directory + csv_file, error_bad_lines=False)
@@ -55,11 +53,12 @@ print(arima.ARIMA(park_ts, (0, 1, 0)).fit().summary())
 
 '''
 
-park_ts_logr = (np.log(park_ts / park_ts.shift(1)))[1:]
+park_ts_logr = (park_ts / park_ts.shift(1)).apply(sp.log)[1:]
 print(park_ts_logr.describe(percentiles=[0.05, 0.95]))
 
-park_ts_logr[(park_ts_logr > 0.001) & (park_ts_logr < 0.23)][
-'2013-05-01': '2013-05-15'].plot()
+park_ts_logr[
+    (park_ts_logr > 0.001) &
+    (park_ts_logr < 0.23)]['2013-05-01': '2013-05-15'].plot()
 
 '''
 The seasonality is clear. We now plot a single day, filtering out
@@ -95,7 +94,10 @@ print(sarimax.SARIMAX(
     seasonal_order=(0, 1, 0, 95)).fit().summary())
 
 '''
-Our data is clustered very close to the mean--i.e, the spikes are very small spikes. Consequently, the positive of filtering them out (i.e. smoothing the data) outweighs the drawback of reducing the number of points to fit.
+Our data is clustered very close to the mean--i.e,
+the spikes are very small spikes. Consequently, the
+positive of filtering them out (i.e. smoothing the data)
+outweighs the drawback of reducing the number of points to fit.
 
 Now, let's use a larger input
 (beginning on a Monday, and ending on a Friday), and fit another
@@ -108,14 +110,15 @@ print(sarimax.SARIMAX(
     seasonal_order=(0, 1, 0, 95)).fit().summary())
 
 '''
-As expected, this is an even better fit than the fit for the week's worth of data.
-Lastly, we input three # months worth of data, beginning on a Monday,
-and ending on a Friday.
+As expected, this is an even better fit than the fit for the week's
+worth of data. Lastly, we input three # months worth of data,
+beginning on a Monday, and ending on a Friday.
 
 '''
 
-print(sarimax.SARIMAX(park_ts_logr[park_ts_logr > 0]['2013-05-06': '2013-08-08'],
-                      seasonal_order=(0, 1, 0, 95)).fit().summary())
+print(
+    sarimax.SARIMAX(park_ts_logr[park_ts_logr > 0]['2013-05-06': '2013-08-08'],
+                    seasonal_order=(0, 1, 0, 95)).fit().summary())
 
 '''
 Let's contrast this with our fit when we include the end-of-day spikes:
@@ -127,7 +130,8 @@ print(sarimax.SARIMAX(park_ts_logr['2013-05-06': '2013-08-08'],
 '''
 
 Hence, it makes sense to keep the analysis of
-15-minute ramp-up and ramp-down times together with the analysis of the remaining data.
+15-minute ramp-up and ramp-down times together with the analysis of the
+remaining data.
 
 We next investigate seasonality on a weekly basis. That is, we
 isolate the 5-day workweek into 5 chunks, and run SARIMAX on
@@ -135,25 +139,30 @@ each chunk separately.
 
 '''
 
-print(sarimax.SARIMAX(park_ts_logr[np.logical_and(park_ts_logr.index.weekday == 0,
-                                                  park_ts_logr > 0)],
-                      seasonal_order=(0, 1, 0, 95)).fit().summary())
+print(
+    sarimax.SARIMAX(park_ts_logr[np.logical_and(park_ts_logr.index.weekday == 0,
+                                                park_ts_logr > 0)],
+                    seasonal_order=(0, 1, 0, 95)).fit().summary())
 
-print(sarimax.SARIMAX(park_ts_logr[np.logical_and(park_ts_logr.index.weekday == 1,
-                                                  park_ts_logr > 0)],
-                      seasonal_order=(0, 1, 0, 95)).fit().summary())
+print(
+    sarimax.SARIMAX(park_ts_logr[np.logical_and(park_ts_logr.index.weekday == 1,
+                                                park_ts_logr > 0)],
+                    seasonal_order=(0, 1, 0, 95)).fit().summary())
 
-print(sarimax.SARIMAX(park_ts_logr[np.logical_and(park_ts_logr.index.weekday == 2,
-                                                  park_ts_logr > 0)],
-                      seasonal_order=(0, 1, 0, 95)).fit().summary())
+print(
+    sarimax.SARIMAX(park_ts_logr[np.logical_and(park_ts_logr.index.weekday == 2,
+                                                park_ts_logr > 0)],
+                    seasonal_order=(0, 1, 0, 95)).fit().summary())
 
-print(sarimax.SARIMAX(park_ts_logr[np.logical_and(park_ts_logr.index.weekday == 3,
-                                                  park_ts_logr > 0)],
-                      seasonal_order=(0, 1, 0, 95)).fit().summary())
+print(
+    sarimax.SARIMAX(park_ts_logr[np.logical_and(park_ts_logr.index.weekday == 3,
+                                                park_ts_logr > 0)],
+                    seasonal_order=(0, 1, 0, 95)).fit().summary())
 
-print(sarimax.SARIMAX(park_ts_logr[np.logical_and(park_ts_logr.index.weekday == 4,
-                                                  park_ts_logr > 0)],
-                      seasonal_order=(0, 1, 0, 95)).fit().summary())
+print(
+    sarimax.SARIMAX(park_ts_logr[np.logical_and(park_ts_logr.index.weekday == 4,
+                                                park_ts_logr > 0)],
+                    seasonal_order=(0, 1, 0, 95)).fit().summary())
 
 print(sarimax.SARIMAX(park_ts_logr[park_ts_logr.index.weekday == 0],
                       seasonal_order=(0, 1, 0, 95)).fit().summary())
@@ -195,6 +204,7 @@ time series data, and re-fit:
 
 '''
 
-print(arima.ARIMA(np.exp(park_ts_logr[np.logical_and(park_ts_logr.index.weekday == 0,
-                                                     park_ts_logr < 0)]),
-                  order=(0, 1, 0)).fit().summary())
+print(arima.ARIMA(
+    np.exp(park_ts_logr[np.logical_and(park_ts_logr.index.weekday == 0,
+                                       park_ts_logr < 0)]),
+    order=(0, 1, 0)).fit().summary())

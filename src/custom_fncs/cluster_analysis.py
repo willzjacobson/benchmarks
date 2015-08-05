@@ -6,10 +6,7 @@ import pandas as pd
 pd.options.display.width = 120
 pd.options.display.max_rows = 10000
 from sklearn.neighbors.kde import KernelDensity
-from scipy import stats
-import numpy as np
-import statsmodels.tsa.arima_model as arima
-import statsmodels.tsa.statespace.sarimax as sarimax
+from scipy.stats.kde import gaussian_kde
 
 # plot inline
 # %pylab inline
@@ -41,9 +38,10 @@ pylab.scatter(park_ts['2013-03-21': '2013-05-27'].index.minute / 15,
               park_ts['2013-03-21': '2013-05-27'].values
               )
 
-density = stats.kde.gaussian_kde(park_ts['2013-03-21': '2013-08-27'].values)
+density = gaussian_kde(park_ts['2013-03-21': '2013-08-27'].values)
 
 pylab.plot(park_ts['2013-03-21': '2013-08-27'].values,
            density(park_ts['2013-03-21': '2013-08-27'].values))
 
-kde = KernelDensity(kernel='gaussian', bandwidth=0.1).fit(park_ts['2013-03-21': '2013-08-27'].values)
+kde = KernelDensity(kernel='gaussian', bandwidth=0.1).fit(
+    park_ts['2013-03-21': '2013-08-27'].values)
