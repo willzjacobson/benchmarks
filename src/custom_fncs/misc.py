@@ -14,31 +14,6 @@ import seaborn as sns
 sns.set()
 
 
-# custom funcs
-
-
-# test for stationarity
-
-def stationarity_test(ts, upper=10):
-    """Stationarity test for a time series and its lags.
-
-    Identify minimum number of lags needed of an input time series to transform
-    it into a stationary time series. Default upper bound is 10 lags.
-
-    :param ts: pandas.core.series.Series
-    :param upper: int, default 10
-    :return: int
-    """
-    for i in range(upper):
-        if adfuller(ts)[1] < 0.05:
-            return "Is stationary only after taking at least {} lags".format(
-                str(i))
-
-    raise ValueError(
-        "May not be stationary even after {}-{} lags".format(str(lower),
-                                                             str(upper)))
-
-
 def optimal_order(ts):
     """Outputs optimal Arima order for an input time series.
 
@@ -172,7 +147,7 @@ def number_diff(ts, upper=10):
             return i
         else:
             ts = ts.diff()[1:]
-            pvalue = adfuller(ts, usedlag=ar_lags)[1]
+            pvalue = adfuller(ts, maxlag=ar_lags)[1]
 
     raise ValueError(
         "May not be stationary even after 0-{} lags".format(
