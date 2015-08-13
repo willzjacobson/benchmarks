@@ -1,9 +1,13 @@
 from statsmodels.tsa.arima_model import ARIMA
 from statsmodels.tsa.stattools import adfuller
 from scipy.optimize import brute
-import pandas as pd
 import numpy as np
+import pandas as pd
+import scipy as sp
+from scipy import amin
+from scipy import absolute
 import statsmodels.tsa.statespace.sarimax as sarimax
+import statsmodels.tsa.stattools as stattools
 import matplotlib.pyplot as plt
 import seaborn as sns
 
@@ -23,16 +27,16 @@ def stationarity_test(ts, upper=10):
 
     :param ts: pandas.core.series.Series
     :param upper: int, default 10
-    :return: None
+    :return: int
     """
-    lower = 0
-    for i in range(lower, upper):
+    for i in range(upper):
         if adfuller(ts)[1] < 0.05:
             return "Is stationary only after taking at least {} lags".format(
                 str(i))
 
-    print("May not be stationary even after {}-{} lags".format(str(lower),
-                                                               str(upper)))
+    raise ValueError(
+        "May not be stationary even after {}-{} lags".format(str(lower),
+                                                             str(upper)))
 
 
 def optimal_order(ts):
@@ -53,24 +57,30 @@ def optimal_order(ts):
     )
 
 
-def ts_day_pos(ts, day, start, end, freq):
-    """ Returns slice of input time series
+def ts_day_pos(ts, day, time, start, end, freq):
+    """Returns slice of input time series
 
     Time series subset consists of points beginning at start,
     terminating at end, and sampled with an input frequency
 
     :param ts: pandas.core.series.Series
-    :param day: int
+    :param day: int, day of week
+    :param time: datetime.datetime, time of day. Defaults to None
     :param start: datetime.datetime
     :param end: datetime.datetime
     :param freq: frequency alias
     :return: pandas.core.series.Series
     """
-    return ts[np.logical_and(
-        ts.index.weekday == day, pd.date_range(start, end, freq))]
+    temp = ts[pd.date_range(start=start, end=end, freq=freq)]
+    temp = temp[temp.index.weekday == day]
+
+    if time == None:
+        return temp
+    else:
+        return temp.at_time(time)
 
 
-def actual_vs_prediction(ts, order=(2, 1, 0), seasonal_order=(2, 2, 0, 96),
+def actual_vs_prediction(ts, order=(2, 1, 0), seasonal_order=(1, 0, 0, 96),
                          days=(0, 1, 2, 3, 4, 5, 6)):
     """Plots SARIMA predictions against real values for each weekday.
 
@@ -113,3 +123,59 @@ def actual_vs_prediction(ts, order=(2, 1, 0), seasonal_order=(2, 2, 0, 96),
             axentry[i].set_xlabel('Weekly Readings')
             axentry[i].set_ylabel('Accumulated Steam Usage ')
     plt.show()
+
+
+def number_ar_terms(ts):
+    """ Determine the optimal number of AR terms in a SARIMA time series
+
+    The optimal number of terms is computed via analyzing the partial
+    auto-correlations of the input time series.
+
+    :param ts: pandas.core.series.Series
+    :return: int
+    """
+
+    cap = 10  # once we have a larger cluster, can delete
+    array = stattools.pacf(ts)
+    for i in range(len(array)):
+        if array[i] < 0:
+            if i < cap:
+                return i - 1
+
+            # lines below can be deleted once we have a bigger cluster
+            #
+            else:
+                mag_array_ratios = absolute((sp.roll(array, -1) / array)[:-1])
+                for pos, entry in enumerate(mag_array_ratios):
+                    if entry == amin(mag_array_ratios):
+                        return pos + 1
+
+    raise ValueError("Time Series is invalid")
+
+
+def number_diff(ts, upper=10):
+    """Number of differencings needed to induce stationarity.
+
+    Identify minimum number of differencings needed of an input time
+    series to transform it into a stationary time series.
+    Default upper bound is 10 lags.
+
+    :param ts: pandas.core.series.Series
+    :param upper: int, default 10
+    :return: int
+    """
+    tuple = adfuller(ts)
+    pvalue, ar_lags = tuple[1:3]
+
+    for i in range(upper):
+        if pvalue < 0.1:
+            return i
+        else:
+            ts = ts.diff()[1:]
+            pvalue = adfuller(ts, usedlag=ar_lags)[1]
+
+    raise ValueError(
+        "May not be stationary even after 0-{} lags".format(
+            str(upper)))  # adfuller(park_ts_logr[
+
+# park_ts_logr.index.weekday == 7].at_time('11:00'), autolag='AIC')
