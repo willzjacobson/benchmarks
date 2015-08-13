@@ -54,11 +54,11 @@ print(arima.ARIMA(park_ts, (0, 1, 0)).fit().summary())
 '''
 
 park_ts_logr = (park_ts / park_ts.shift(1)).apply(sp.log)[1:]
-print(park_ts_logr.describe(percentiles=[0.05, 0.95]))
+stats = park_ts_logr.describe(percentiles=[0.05, 0.95])
 
 park_ts_logr[
-    (park_ts_logr > 0.001) &
-    (park_ts_logr < 0.23)]['2013-05-01': '2013-05-15'].plot()
+    (park_ts_logr > stats['5%']) &
+    (park_ts_logr < stats['95%'])]['2013-05-01': '2013-05-15'].plot()
 
 '''
 The seasonality is clear. We now plot a single day, filtering out
@@ -66,7 +66,7 @@ outliers to get a properly scaled figure.
 
 '''
 
-park_ts_logr[(park_ts_logr > 0.005) & (park_ts_logr < 0.18)][
+park_ts_logr[(park_ts_logr > stats['5%']) & (park_ts_logr < stats['95%'])][
     '2013-05-15'].plot()
 
 '''
