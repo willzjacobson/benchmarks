@@ -55,7 +55,7 @@ def ts_day_pos(ts, day, time, start, end, freq):
         return temp.at_time(time)
 
 
-def actual_vs_prediction(ts, order=(2, 1, 0), seasonal_order=(1, 0, 0, 96),
+def actual_vs_prediction(ts, order=(1, 1, 0), seasonal_order=(1, 1, 0, 96),
                          days=(0, 1, 2, 3, 4, 5, 6)):
     """Plots SARIMA predictions against real values for each weekday.
 
@@ -75,9 +75,8 @@ def actual_vs_prediction(ts, order=(2, 1, 0), seasonal_order=(1, 0, 0, 96),
 
     fig, ax = plt.subplots(nrows, ncols, squeeze=False)
 
-    if ncols > len(days) / 2:
-        fig.delaxes(
-            ax[nrows - 1, ncols - 1])  # one more plot axes than is needed
+    if nrows*ncols > len(days):
+        fig.delaxes( ax[nrows - 1, ncols - 1]) # one more plot than needed
 
     fig.suptitle('In-sample Prediction vs Actual')
     weekdays = {0: 'Monday', 1: 'Tuesday', 2: 'Wednesday', 3: 'Thursday',
@@ -154,3 +153,12 @@ def number_diff(ts, upper=10):
             str(upper)))  # adfuller(park_ts_logr[
 
 # park_ts_logr.index.weekday == 7].at_time('11:00'), autolag='AIC')
+
+
+# def predict_start_time(ts, crit_time = '7:00:00'):
+
+
+def filter_two_std(ts):
+    stats = ts.describe(percentiles=[.05, .95])
+    low, high = stats['5%'], stats['95%']
+    return ts[ts.between(low, high)]
