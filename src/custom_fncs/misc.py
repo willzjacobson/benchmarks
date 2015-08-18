@@ -73,8 +73,8 @@ def actual_vs_prediction(ts, order=(1, 1, 0), seasonal_order=(1, 1, 0, 96),
     """
     days_length = len(days)
     if days_length > 2:
-        ncols = int(np.ceil(days_length / 2))
-        nrows = 2
+        nrows = int(np.ceil(days_length / 2))
+        ncols = 2
 
     else:
         ncols = days_length
@@ -89,6 +89,7 @@ def actual_vs_prediction(ts, order=(1, 1, 0), seasonal_order=(1, 1, 0, 96),
     weekdays = {0: 'Monday', 1: 'Tuesday', 2: 'Wednesday', 3: 'Thursday',
                 4: 'Friday',
                 5: 'Saturday', 6: 'Sunday'}
+    title = ts.name
 
     days_iter = iter(days)
     day = next(days_iter, None)
@@ -107,10 +108,12 @@ def actual_vs_prediction(ts, order=(1, 1, 0), seasonal_order=(1, 1, 0, 96),
                 axrow[i].plot(ts_fit_filtered.index, ts_fit_filtered.values,
                               label='Prediction')
                 axrow[i].legend(loc='best')
-                axrow[i].set_xlabel('Weekly Readings')
-                axrow[i].set_ylabel('Accumulated Steam Usage ')
+                # axrow[i].set_xlabel('Weekly Readings')
+                axrow[i].set_ylabel(title)
                 day = next(days_iter, None)
     plt.show()
+    plt.draw()
+    plt.tight_layout()  #doesn't work without plt.draw coming before
 
 
 def number_ar_terms(ts):
