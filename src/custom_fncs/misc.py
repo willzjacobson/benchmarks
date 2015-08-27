@@ -242,7 +242,7 @@ def weather_day_pull(date, city, state):
     f = urlopen(url)
     parsed_json = json.load(reader(f))
     f.close()
-    data_dict = parsed_json['history']['dailysummary'][0]
+    data_dict = parsed_json['history']['observations'][0]
     # dict stored within singly entry list
 
     title = "New York, NY Daily Maximum Temperature (F)"
@@ -250,10 +250,26 @@ def weather_day_pull(date, city, state):
                                index=[date],
                                name=title)
     return (weather_series)
-    # location = parsed_json['location']['city']
-    # temp_f = parsed_json['current_observation']['temp_f']
-    # print
-    # "Current temperature in %s is: %s" % (location, temp_f)
+
+
+def weather_underground_list_dicts(date, city, state):
+    date_path = 'history_%s%s%s' % (date.strftime('%Y'),
+                                    date.strftime('%m'),
+                                    date.strftime('%d'))
+
+    city_path = '%s/%s' % (state, city)
+    url = 'http://api.wunderground.com/' \
+          'api/bab4ba5bcbc2dbec/%s/q/%s.json' % (date_path, city_path)
+    reader = codecs.getreader('utf-8')
+    f = urlopen(url)
+    parsed_json = json.load(reader(f))
+    f.close()
+    history = parsed_json['history']
+    dict_of_dicts = {
+        'dailysummary': history['dailysummary'][0],
+        'observations': history['observations'][0],
+        'date': history['date']}
+    return (dict_of_dicts)
 
 
 def weather_pull(city, state, years_back):
@@ -271,23 +287,10 @@ def weather_pull(city, state, years_back):
     date_start_string = date_start_datetime.strftime('%Y%m%d')
     interval = pd.date_range(date_start_string, today_string)
     city_path = '%s/%s' % (state, city)
-    weather_series = pd.Series()
+    title = "New York, NY Daily Maximum Temperature (F)"
+    weather_series = pd.Series(name=title)
 
     for date in interval:
-        date_path = 'history_%s' % date.strftime('%Y%m%d')
-        url = 'http://api.wunderground.com/' \
-              'api/bab4ba5bcbc2dbec/%s/q/%s.json' % (date_path, city_path)
-        reader = codecs.getreader('utf-8')
-        f = urlopen(url)
-        parsed_json = json.load(reader(f))
-        f.close()
-        data_dict = parsed_json['history']['dailysummary'][0]
-        # dict stored within singly entry list
-
-        title = "New York, NY Daily Maximum Temperature (F)"
-        max_temp_series = pd.Series(data=[data_dict['maxtempi']],
-                                    index=[date],
-                                    name=title)
-
+        max_temp_series = weather_day_pull(date, city, state)
         weather_series = weather_series.append(max_temp_series)
     return (weather_series)
