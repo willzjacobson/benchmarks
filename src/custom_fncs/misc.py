@@ -7,9 +7,8 @@ from statsmodels.tsa.stattools import adfuller
 from scipy.optimize import brute
 import numpy as np
 import pandas as pd
-import scipy as sp
-import statsmodels.tsa.statespace.sarimax as sarimax
-import statsmodels.tsa.stattools as stattools
+from statsmodels.tsa.statespace.sarimax import SARIMAX
+from statsmodels.tsa.stattools import pacf
 import matplotlib.pyplot as plt
 from dateutil.relativedelta import relativedelta
 import seaborn as sns
@@ -52,7 +51,7 @@ def ts_day_pos(ts, day, time, start, end, freq):
     temp = ts[pd.date_range(start=start, end=end, freq=freq)]
     temp = temp[temp.index.weekday == day]
 
-    if time == None:
+    if time is None:
         return temp
     else:
         return temp.at_time(time)
@@ -98,10 +97,10 @@ def actual_vs_prediction(ts, order=(1, 1, 0), seasonal_order=(1, 1, 0, 96),
     day = next(days_iter, None)
     for axrow in ax:
         for i in range(ncols):
-            if day != None:
+            if day is not None:
                 ts_within_day = ts[ts.index.weekday == day]
-                fit = sarimax.SARIMAX(ts_within_day, order=order,
-                                      seasonal_order=seasonal_order).fit()
+                fit = SARIMAX(ts_within_day, order=order,
+                              seasonal_order=seasonal_order).fit()
                 axrow[i].set_title(weekdays[day])
                 axrow[i].plot(ts.index, ts.values,
                               label='Actual')
@@ -130,7 +129,7 @@ def number_ar_terms(ts):
     """
 
     cap = 10  # once we have a larger cluster, can delete
-    array = stattools.pacf(ts)
+    array = pacf(ts)
     for i in range(len(array)):
         if array[i] < 0:
             if i < cap:
@@ -139,10 +138,10 @@ def number_ar_terms(ts):
             # lines below can be deleted once we have a bigger cluster
             #
             else:
-                mag_array_ratios = sp.absolute((sp.roll(array, -1)
+                mag_array_ratios = np.absolute((np.roll(array, -1)
                                                 / array)[:-1])
                 for pos, entry in enumerate(mag_array_ratios):
-                    if entry == sp.amin(mag_array_ratios):
+                    if entry == np.amin(mag_array_ratios):
                         return pos + 1
 
     raise ValueError("Time Series is invalid")
@@ -159,8 +158,8 @@ def number_diff(ts, upper=10):
     :param upper: int, default 10
     :return: int
     """
-    tuple = adfuller(ts)
-    pvalue, ar_lags = tuple[1:3]
+    my_tuple = adfuller(ts)
+    pvalue, ar_lags = my_tuple[1:3]
 
     for i in range(upper):
         if pvalue < 0.1:
@@ -201,10 +200,10 @@ def start_time(ts, day, end_time, desired_temp):
     d = number_diff(ts)
     q = 0
 
-    P = p
-    D = d
-    Q = q
-    S = periods
+    sp = p
+    sd = d
+    sq = q
+    ss = periods
 
     # weekdays = {0: 'Monday', 1: 'Tuesday', 2: 'Wednesday', 3: 'Thursday',
     #             4: 'Friday',
@@ -213,9 +212,9 @@ def start_time(ts, day, end_time, desired_temp):
     # reverse the time series
     ts_rev = ts[::-1]
 
-    fit = sarimax.SARIMAX(ts_rev[ts_rev.index.weekday == day],
-                          order=(p, d, q),
-                          seasonal_order=(P, D, Q, S)).fit()
+    fit = SARIMAX(ts_rev[ts_rev.index.weekday == day],
+                  order=(p, d, q),
+                  seasonal_order=(sp, sd, sq, ss)).fit()
 
     ts_rev_fit = pd.Series(data=fit.predict().flatten(),
                            index=fit.data.dates)
@@ -249,10 +248,10 @@ def weather_day_pull(date, city, state):
     weather_series = pd.Series(data=[data_dict['maxtempi']],
                                index=[date],
                                name=title)
-    return (weather_series)
+    return weather_series
 
 
-def weather_underground_list_dicts(date, city, state):
+def weather_day_df(date, city, state):
     date_path = 'history_%s%s%s' % (date.strftime('%Y'),
                                     date.strftime('%m'),
                                     date.strftime('%d'))
@@ -264,12 +263,21 @@ def weather_underground_list_dicts(date, city, state):
     f = urlopen(url)
     parsed_json = json.load(reader(f))
     f.close()
-    history = parsed_json['history']
-    dict_of_dicts = {
-        'dailysummary': history['dailysummary'][0],
-        'observations': history['observations'][0],
-        'date': history['date']}
-    return (dict_of_dicts)
+    observations = parsed_json['history']['observations']
+
+    # convert to dataframes for easy presentation and manipulation
+
+    observations = pd.DataFrame.from_dict(observations)
+
+    # convert date column to datetimeindex
+    dateindex = observations.date.apply(
+        lambda x: pd.datetime(int(x['year']), int(x['mon']), int(x['mday']),
+                              int(x['hour']), int(x['min'])))
+
+    # drop what we don't need anymore, and set df index
+    observations = observations.drop(['date', 'utcdate'], axis=1)
+    observations = observations.set_index(dateindex)
+    return observations
 
 
 def weather_pull(city, state, years_back):
@@ -278,19 +286,14 @@ def weather_pull(city, state, years_back):
     Weather information is pulled from weather underground at specified
     interval
 
-    :return: pandas.core.series.Series
+    :return: Dataframe
     """
 
-    today_datetime = pd.datetime.today()
-    today_string = today_datetime.strftime('%Y%m%d')
-    date_start_datetime = pd.datetime.today() - relativedelta(years=years_back)
-    date_start_string = date_start_datetime.strftime('%Y%m%d')
-    interval = pd.date_range(date_start_string, today_string)
-    city_path = '%s/%s' % (state, city)
-    title = "New York, NY Daily Maximum Temperature (F)"
-    weather_series = pd.Series(name=title)
-
-    for date in interval:
-        max_temp_series = weather_day_pull(date, city, state)
-        weather_series = weather_series.append(max_temp_series)
-    return (weather_series)
+    end = pd.datetime.today().strftime('%Y%m%d')
+    start = (pd.datetime.today()
+             - relativedelta(years=years_back)).strftime('%Y%m%d')
+    interval = pd.date_range(start, end)
+    frames = [weather_day_df(date, city, state) for date in interval]
+    store = pd.HDFStore('data/weather_history.h5')
+    store['df'] = pd.concat(frames)
+    return pd.concat(frames)
