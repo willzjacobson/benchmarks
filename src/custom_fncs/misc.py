@@ -12,7 +12,11 @@ from statsmodels.tsa.stattools import pacf
 import matplotlib.pyplot as plt
 from dateutil.relativedelta import relativedelta
 import seaborn as sns
+from IPython.parallel import Client
 
+rc = Client()
+dview = rc[:]
+dview.block = True
 sns.set()
 
 
@@ -293,7 +297,7 @@ def weather_pull(city, state, years_back):
     start = (pd.datetime.today()
              - relativedelta(years=years_back)).strftime('%Y%m%d')
     interval = pd.date_range(start, end)
-    frames = [weather_day_df(date, city, state) for date in interval]
-    store = pd.HDFStore('data/weather_history.h5')
-    store['df'] = pd.concat(frames)
+    frames = dview.map_sync(lambda x: weather_day_df(x, city, state), interval)
+    # store = pd.HDFStore('../data/weather_history_parallel.h5')
+    # store['df'] = pd.concat(frames)
     return pd.concat(frames)
