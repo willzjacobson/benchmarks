@@ -12,12 +12,13 @@ from statsmodels.tsa.stattools import pacf
 import matplotlib.pyplot as plt
 from dateutil.relativedelta import relativedelta
 import seaborn as sns
+
+sns.set()
 from IPython.parallel import Client
 
 rc = Client()
 dview = rc[:]
 dview.block = True
-sns.set()
 
 
 def optimal_order(ts):
@@ -97,14 +98,20 @@ def actual_vs_prediction(ts, order=(1, 1, 0), seasonal_order=(1, 1, 0, 96),
                 5: 'Saturday', 6: 'Sunday'}
     title = ts.name
 
+    fit_list = dview.map_sync(lambda x:
+                              SARIMAX(
+                                  ts[ts.index.weekday == x],
+                                  order=order,
+                                  seasonal_order=seasonal_order).fit(), days)
+
+    fit_dict = {day: fit_list[index] for (index, day) in enumerate(days)}
+
     days_iter = iter(days)
     day = next(days_iter, None)
     for axrow in ax:
         for i in range(ncols):
             if day is not None:
-                ts_within_day = ts[ts.index.weekday == day]
-                fit = SARIMAX(ts_within_day, order=order,
-                              seasonal_order=seasonal_order).fit()
+                fit = fit_dict[day]
                 axrow[i].set_title(weekdays[day])
                 axrow[i].plot(ts.index, ts.values,
                               label='Actual')
@@ -114,7 +121,6 @@ def actual_vs_prediction(ts, order=(1, 1, 0), seasonal_order=(1, 1, 0, 96),
                 axrow[i].plot(ts_fit_filtered.index, ts_fit_filtered.values,
                               label='Prediction')
                 axrow[i].legend(loc='best')
-                # axrow[i].set_xlabel('Weekly Readings')
                 axrow[i].set_ylabel(title)
                 day = next(days_iter, None)
     plt.show()
@@ -182,48 +188,7 @@ def number_diff(ts, upper=10):
 
 # def predict_start_time(ts, crit_time = '7:00:00'):
 
-def start_time(ts, day, end_time, desired_temp):
-    """ Identify optimal start-up time
 
-    Fits a SARIMA model to the input time series, then
-    backwards iterates from input end_time and desired_temp to
-    determine optimal start-up time.
-
-    :param ts: pandas.core.series.Series
-    :param day: int
-    Numbers 0-6, denoting "Monday"-"Sunday", respectively
-    :param end_time: string (am, pm, or military)
-    Specifies time by which building must be at desired_temp
-    :param desired_temp: Temperature, in Fahrenheit
-    :return: datetime.datetime
-    """
-    freq = ts.index.freqstr
-    periods = len(pd.date_range('1/1/2011', '1/2/2011', freq=freq)) - 1
-
-    p = number_ar_terms(ts)
-    d = number_diff(ts)
-    q = 0
-
-    sp = p
-    sd = d
-    sq = q
-    ss = periods
-
-    # weekdays = {0: 'Monday', 1: 'Tuesday', 2: 'Wednesday', 3: 'Thursday',
-    #             4: 'Friday',
-    #             5: 'Saturday', 6: 'Sunday'}
-
-    # reverse the time series
-    ts_rev = ts[::-1]
-
-    fit = SARIMAX(ts_rev[ts_rev.index.weekday == day],
-                  order=(p, d, q),
-                  seasonal_order=(sp, sd, sq, ss)).fit()
-
-    ts_rev_fit = pd.Series(data=fit.predict().flatten(),
-                           index=fit.data.dates)
-
-    ts_rev_fit_filtered = filter_two_std(ts_rev_fit)
 
 
 def weather_day_pull(date, city, state):
@@ -256,6 +221,18 @@ def weather_day_pull(date, city, state):
 
 
 def weather_day_df(date, city, state):
+    """ Pull weather information
+
+    Weather information is pulled from weather underground at specified
+    day
+
+    :param date: Datetime object
+    :param city: String
+    :param state: String
+
+    :return: Dataframe of weather parameters, indexed by day
+    """
+
     date_path = 'history_%s%s%s' % (date.strftime('%Y'),
                                     date.strftime('%m'),
                                     date.strftime('%d'))
@@ -290,14 +267,92 @@ def weather_pull(city, state, years_back):
     Weather information is pulled from weather underground at specified
     interval
 
-    :return: Dataframe
+    :param city: String
+    :param state: String
+    :param years_back: Int
+    Specifies number of years back to pull, from today
+
+    :return: Dataframe of weather parameters, indexed by day
     """
 
-    end = pd.datetime.today().strftime('%Y%m%d')
-    start = (pd.datetime.today()
-             - relativedelta(years=years_back)).strftime('%Y%m%d')
+    weather_data = pd.read_hdf("data/weather_history.h5", key='df')
+
+    end = pd.datetime.today().strftime('%Y%m%d') + relativedelta(days=1)
+    start = weather_data[-1].strftime('%Y%m%d') + relativedelta(days=1)
     interval = pd.date_range(start, end)
     frames = dview.map_sync(lambda x: weather_day_df(x, city, state), interval)
     # store = pd.HDFStore('../data/weather_history_parallel.h5')
     # store['df'] = pd.concat(frames)
     return pd.concat(frames)
+
+
+def weather_pull_to_tomorrow(city, state):
+    fore_end = pd.datetime.today().strftime('%Y%m%d') + relativedelta(days=1)
+    fore_start = fore_end
+
+    end = pd.datetime.today().strftime('%Y%m%d')
+    start = (pd.datetime.today()
+             - relativedelta(years=years_back)).strftime('%Y%m%d')
+    interval = pd.date_range(start, end)
+
+
+def start_time(ts, day, end_time, desired_temp):
+    """ Identify optimal start-up time
+
+    Fits a SARIMA model to the input time series, then
+    backwards iterates from input end_time and desired_temp to
+    determine optimal start-up time.
+
+    :param ts: pandas.core.series.Series
+    :param day: int
+    Numbers 0-6, denoting "Monday"-"Sunday", respectively
+    :param end_time: string (am, pm, or military)
+    Specifies time by which building must be at desired_temp
+    :param desired_temp: Temperature, in Fahrenheit
+    :return: datetime.datetime
+    """
+    freq = ts.index.freqstr
+    periods = len(pd.date_range('1/1/2011', '1/2/2011', freq=freq)) - 1
+
+    p = number_ar_terms(ts)
+    d = number_diff(ts)
+    q = 0
+
+    sp = p
+    sd = d
+    sq = q
+    ss = periods
+
+    # weekdays = {0: 'Monday', 1: 'Tuesday', 2: 'Wednesday', 3: 'Thursday',
+    #             4: 'Friday',
+    #             5: 'Saturday', 6: 'Sunday'}
+
+    # reverse the time series
+    ts_rev = ts[::-1]
+
+    start, end = ts.index[0], ts.index[-1]
+    weather_data = pd.read_hdf("data/weather_history.h5", key='df')
+    weather_data = weather_data.between(start, end)
+
+    endog = ts_rev[ts_rev.index == day]
+    mod = SARIMAX(endog,
+                  order=(p, d, q),
+                  seasonal_order=(sp, sd, sq, ss))
+    fit_res = mod.fit()
+
+    # new model with same parameters, but different endog and exog data
+    rng = pd.date_range(end.date(), freq='15Min')
+    endog_addition = pd.Series()
+
+    exog_new = weather_data.between[start, end - relativedelta(days=1)]
+
+    mod_new = SARIMAX(endog_new, exog_new, order=(p, d, q))
+    res = mod_new.filter(np.array(fit_res.params))
+
+
+
+    # construct time series with predictions
+    ts_rev_fit = pd.Series(data=res.predict().flatten(),
+                           index=res.data.dates)
+
+    # ts_rev_fit_filtered = filter_two_std(ts_rev_fit)
