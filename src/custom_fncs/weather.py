@@ -6,7 +6,7 @@ import pandas as pd
 from dateutil.relativedelta import relativedelta
 
 
-def weather_today(date=pd.datetime.today(), city="New_York", state="NY"):
+def weather_day(date=pd.datetime.today(), city="New_York", state="NY"):
     """Pull weather information
 
     Weather information is pulled from weather underground at specified
@@ -14,9 +14,9 @@ def weather_today(date=pd.datetime.today(), city="New_York", state="NY"):
 
     Parameters
     ----------
-    date: Datetime object
-    city: String
-    state: String
+    date: datetime object
+    city: string
+    state: string
 
     Returns
     -------
@@ -134,18 +134,19 @@ def weather_forecast(city="New_York", state="NY"):
     return forecast
 
 
-def weather_archive_pull(city="New_York", state="NY", years_back=10):
+def weather_archive_update(city="New_York", state="NY"):
     """Pull archived weather information
 
-    Weather information is pulled from weather underground from today
-    to the number of specified years back
+    Weather information is pulled from weather underground from end of
+    prescriptive weather database date to today, then added to
+    weather database
 
     Parameters
     ----------
     city: string
     state: string
-    years_back: int
-    Specifies number of years back to pull, from today
+    start: datetime object
+    end: datetime object
 
     Returns
     -------
@@ -157,15 +158,22 @@ def weather_archive_pull(city="New_York", state="NY", years_back=10):
     rc = Client()
     dview = rc[:]
     dview.block = True
+    with dview.sync_imports():
+        import pandas as pd
 
-    end = pd.datetime.today()
-    start = end - relativedelta(years=years_back)
-    interval = pd.date_range(start, end)
-    frames = dview.map_sync(lambda x: weather_today(x, city, state), interval)
-    archive = dview.map_sync(pd.concat, frames)
-    dview.close()
-    rc.close()
+    date = pd.datetime.today()
+    store_string = "df_munged_resampled"
     store = pd.HDFStore('data/weather_history.h5')
-    store['df'] = pd.concat(frames)
+    weather_data = store['df_munged_resampled']
+    start = weather_data.index[-1] + relativedelta(hours=1)
+    end = pd.datetime.today()
+    interval = pd.date_range(start, end)
+
+    frames = dview.map_sync(lambda x: weather_day(x, city, state), interval)
+    # archive = dview.map_sync(pd.concat, frames)
+    archive = pd.concat(frames, verify_integrity=True)
+    rc.close()
+    # store = pd.HDFStore('data/weather_history.h5')
+    # store['df'] = pd.concat(frames)
     store.close()
     return archive
