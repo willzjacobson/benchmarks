@@ -2,78 +2,25 @@ from urllib.request import urlopen
 import json
 import codecs
 
-from statsmodels.tsa.arima_model import ARIMA
-from scipy.optimize import brute
 import pandas as pd
 from dateutil.relativedelta import relativedelta
-import seaborn as sns
-
-sns.set()
-from IPython.parallel import Client
-
-rc = Client()
-dview = rc[:]
-dview.block = True
 
 
-def optimal_order(ts):
-    """Outputs optimal Arima order for an input time series.
-
-    :param ts: pandas.core.series.Series
-    :return: tuple
-    """
-
-    return tuple(
-        map(int,
-            brute(lambda x: ARIMA(ts, x).fit().aic,
-                  ranges=(slice(0, 2, 1),
-                          slice(0, 2, 1),
-                          slice(0, 2, 1)),
-                  finish=None)
-            )
-    )
-
-
-def weather_day_pull(date, city, state):
-    """ Pull weather information
-
-    Weather information is pulled from weather underground at specified
-    interval
-
-    :return: pandas.core.series.Series
-    """
-    date_path = 'history_%s%s%s' % (date.strftime('%Y'),
-                                    date.strftime('%m'),
-                                    date.strftime('%d'))
-
-    city_path = '%s/%s' % (state, city)
-    url = 'http://api.wunderground.com/' \
-          'api/bab4ba5bcbc2dbec/%s/q/%s.json' % (date_path, city_path)
-    reader = codecs.getreader('utf-8')
-    f = urlopen(url)
-    parsed_json = json.load(reader(f))
-    f.close()
-    data_dict = parsed_json['history']['observations'][0]
-    # dict stored within singly entry list
-
-    title = "New York, NY Daily Maximum Temperature (F)"
-    weather_series = pd.Series(data=[data_dict['maxtempi']],
-                               index=[date],
-                               name=title)
-    return weather_series
-
-
-def weather_day_df(date, city, state):
-    """ Pull weather information
+def weather_today(date=pd.datetime.today(), city="New_York", state="NY"):
+    """Pull weather information
 
     Weather information is pulled from weather underground at specified
     day
 
-    :param date: Datetime object
-    :param city: String
-    :param state: String
+    Parameters
+    ----------
+    date: Datetime object
+    city: String
+    state: String
 
-    :return: Dataframe of weather parameters, indexed by day
+    Returns
+    -------
+    w: Dataframe of weather parameters, indexed by hour
     """
 
     date_path = 'history_%s%s%s' % (date.strftime('%Y'),
@@ -113,38 +60,30 @@ def weather_day_df(date, city, state):
                          'windchilli': 'windchill', 'wspdi': 'wspd'}
     observations = observations.rename(columns=column_trans_dict)
     observations = observations.set_index(dateindex)
+    observations = observations.resample("60Min", how="last", closed="right",
+                                         loffset="60Min")
+    observations = observations.fillna(method="pad")
     return observations
 
 
-def weather_pull(city, state, years_back):
-    """ Pull weather information
+def weather_forecast(city="New_York", state="NY"):
+    """Returns forecasts from now until end of day
 
-    Weather information is pulled from weather underground at specified
-    interval
+     Parameters
+     ----------
 
-    :param city: String
-    :param state: String
-    :param years_back: Int
-    Specifies number of years back to pull, from today
+     city: string
+     state: string
 
-    :return: Dataframe of weather parameters, indexed by day
+     Returns
+     -------
+
+     w: dataframe of weather parameters, indexed by hour
     """
 
-    weather_data = pd.read_hdf("data/weather_history.h5", key='df')
-
-    end = pd.datetime.today().strftime('%Y%m%d') + relativedelta(days=1)
-    start = weather_data[-1].strftime('%Y%m%d') + relativedelta(days=1)
-    interval = pd.date_range(start, end)
-    frames = dview.map_sync(lambda x: weather_day_df(x, city, state), interval)
-    # store = pd.HDFStore('../data/weather_history_parallel.h5')
-    # store['df'] = pd.concat(frames)
-    return pd.concat(frames)
-
-
-def weather_pull_forecast(city, state):
     city_path = '%s/%s' % (state, city)
     url = 'http://api.wunderground.com/' \
-          'api/bab4ba5bcbc2dbec/hourly/q/%s.json' % (city_path)
+          'api/bab4ba5bcbc2dbec/hourly/q/%s.json' % city_path
     reader = codecs.getreader('utf-8')
     f = urlopen(url)
     parsed_json = json.load(reader(f))
@@ -189,4 +128,44 @@ def weather_pull_forecast(city, state):
 
     # just need 1 day of forecasts
     forecast = forecast[pd.datetime.today().strftime('%Y%m%d')]
+    forecast = forecast.resample("60Min", how="last", closed="right",
+                                 loffset="60Min")
+    forecast = forecast.fillna(method="pad")
     return forecast
+
+
+def weather_archive_pull(city="New_York", state="NY", years_back=10):
+    """Pull archived weather information
+
+    Weather information is pulled from weather underground from today
+    to the number of specified years back
+
+    Parameters
+    ----------
+    city: string
+    state: string
+    years_back: int
+    Specifies number of years back to pull, from today
+
+    Returns
+    -------
+    w: dataframe of weather parameters, indexed by hour
+    """
+
+    from IPython.parallel import Client
+
+    rc = Client()
+    dview = rc[:]
+    dview.block = True
+
+    end = pd.datetime.today()
+    start = end - relativedelta(years=years_back)
+    interval = pd.date_range(start, end)
+    frames = dview.map_sync(lambda x: weather_today(x, city, state), interval)
+    archive = dview.map_sync(pd.concat, frames)
+    dview.close()
+    rc.close()
+    store = pd.HDFStore('data/weather_history.h5')
+    store['df'] = pd.concat(frames)
+    store.close()
+    return archive
