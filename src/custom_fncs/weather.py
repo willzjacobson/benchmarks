@@ -63,6 +63,22 @@ def weather_day(date=pd.datetime.today(), city="New_York", state="NY"):
     observations = observations.resample("60Min", how="last", closed="right",
                                          loffset="60Min")
     observations = observations.fillna(method="pad")
+
+    # convert column datatypes from generic object to appropriate type
+    floats = ['fog', 'hail', 'heatindex', 'hum', 'precip',
+              'pressure', 'rain', 'snow', 'temp', 'thunder', 'tornado',
+              'wdird', 'wgust', 'windchill', 'wspd']
+    strings = ['conds', 'wdire']
+
+    # convert each column label to appropriate dtype
+    for stringcol in strings:
+        observations[stringcol] = observations[stringcol].apply(
+            lambda x: str(x) if x != 'N/A' else 'nan')
+
+    for floatcol in floats:
+        observations[floatcol] = observations[floatcol].apply(
+            lambda x: float(x) if x != 'N/A' else 'nan')
+
     return observations
 
 
@@ -130,6 +146,20 @@ def weather_forecast(city="New_York", state="NY"):
     forecast = forecast[pd.datetime.today().strftime('%Y%m%d')]
     forecast = forecast.resample("60Min", how="last", closed="right",
                                  loffset="60Min")
+
+    # convert column datatypes from generic object to appropriate type
+    floats = ['hum', 'snow', 'temp', 'windchill', 'wspd', 'wdird']
+    strings = ['conds', 'wdire']
+
+    # convert each column label to appropriate dtype
+    for stringcol in strings:
+        forecast[stringcol] = forecast[stringcol].apply(
+            lambda x: str(x) if x != 'N/A' else 'nan')
+
+    for floatcol in floats:
+        forecast[floatcol] = forecast[floatcol].apply(
+            lambda x: float(x) if x != 'N/A' else 'nan')
+
     forecast = forecast.fillna(method="pad")
     return forecast
 
@@ -161,10 +191,8 @@ def weather_archive_update(city="New_York", state="NY"):
     with dview.sync_imports():
         import pandas as pd
 
-    date = pd.datetime.today()
-    store_string = "df_munged_resampled"
     store = pd.HDFStore('data/weather_history.h5')
-    weather_data = store['df_munged_resampled']
+    weather_data = store["df_munged_resampled"]
     start = weather_data.index[-1] + relativedelta(hours=1)
     end = pd.datetime.today()
     interval = pd.date_range(start, end)
