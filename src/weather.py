@@ -1,12 +1,42 @@
-from urllib.request import urlopen
-import json
-import codecs
+from IPython.parallel import Client
 
-import pandas as pd
-from dateutil.relativedelta import relativedelta
+rc = Client()
+dview = rc[:]
+dview.block = True
+with dview.sync_imports():
+    from urllib.request import urlopen
+    import json
+    import codecs
+
+    import pandas as pd
+    from dateutil.relativedelta import relativedelta
 
 
-def weather_day(date=pd.datetime.today(), city="New_York", state="NY"):
+def dtype_conv(df, weather_type):
+    if weather_type == 'forecast':
+        floats = ['hum', 'snow', 'temp', 'windchill', 'wspd', 'wdird']
+        strings = ['conds', 'wdire']
+    elif weather_type == 'history':
+        floats = ['fog', 'hail', 'heatindex', 'hum', 'precip',
+                  'pressure', 'rain', 'snow', 'temp', 'thunder', 'tornado',
+                  'wdird', 'wgust', 'windchill', 'wspd']
+        strings = ['conds', 'wdire']
+
+    else:
+        raise ValueError("You must enter in an appropriate weather type")
+
+    # convert each column label to appropriate dtype
+    for stringcol in strings:
+        df[stringcol] = df[stringcol].apply(
+            lambda x: str(x) if x != 'N/A' else 'nan')
+    for floatcol in floats:
+        df[floatcol] = df[floatcol].apply(
+            lambda x: float(x) if x != 'N/A' else 'nan')
+
+    return df
+
+
+def pull(date=pd.datetime.today(), city="New_York", state="NY"):
     """Pull weather information
 
     Weather information is pulled from weather underground at specified
@@ -64,25 +94,10 @@ def weather_day(date=pd.datetime.today(), city="New_York", state="NY"):
                                          loffset="60Min")
     observations = observations.fillna(method="pad")
 
-    # convert column datatypes from generic object to appropriate type
-    floats = ['fog', 'hail', 'heatindex', 'hum', 'precip',
-              'pressure', 'rain', 'snow', 'temp', 'thunder', 'tornado',
-              'wdird', 'wgust', 'windchill', 'wspd']
-    strings = ['conds', 'wdire']
-
-    # convert each column label to appropriate dtype
-    for stringcol in strings:
-        observations[stringcol] = observations[stringcol].apply(
-            lambda x: str(x) if x != 'N/A' else 'nan')
-
-    for floatcol in floats:
-        observations[floatcol] = observations[floatcol].apply(
-            lambda x: float(x) if x != 'N/A' else 'nan')
-
-    return observations
+    return dtype_conv(observations, "history")
 
 
-def weather_forecast(city="New_York", state="NY"):
+def forecast(city="New_York", state="NY"):
     """Returns forecasts from now until end of day
 
      Parameters
@@ -104,67 +119,56 @@ def weather_forecast(city="New_York", state="NY"):
     f = urlopen(url)
     parsed_json = json.load(reader(f))
     f.close()
-    forecast = parsed_json['hourly_forecast']
+    df = parsed_json['hourly_forecast']
 
     # convert to dataframes for easy presentation and manipulation
 
-    forecast = pd.DataFrame.from_dict(forecast)
+    df = pd.DataFrame.from_dict(df)
 
     # toss out metric system in favor of english system
 
     for column in ['windchill', 'wspd', 'temp', 'qpf', 'snow', 'mslp',
                    'heatindex', 'dewpoint', 'feelslike']:
-        forecast[column] = forecast[column].apply(
+        df[column] = df[column].apply(
             lambda x: x['english']
         )
 
         # add columns from forecast data to match weather underground past
         # data pull
 
-        forecast['wdird'] = forecast['wdir'].apply(
+        df['wdird'] = df['wdir'].apply(
             lambda x: x['degrees'])
-        forecast['wdire'] = forecast['wdir'].apply(
+        df['wdire'] = df['wdir'].apply(
             lambda x: x['dir'])
 
-    dateindex = forecast.FCTTIME.apply(
+    dateindex = df.FCTTIME.apply(
         lambda x: pd.datetime(int(x['year']), int(x['mon']), int(x['mday']),
                               int(x['hour']), int(x['min'])))
     dateindex.name = None
 
     # drop what we don't need anymore, and set df index
-    forecast = forecast.drop(
+    df = df.drop(
         ['FCTTIME', 'fctcode', 'feelslike', 'dewpoint', 'pop',
          'icon', 'icon_url',
          'wx', 'wdir', 'uvi', 'mslp', 'qpf', 'sky',
          'heatindex'],
         axis=1)
     column_trans_dict = {'humidity': 'hum', 'condition': 'conds'}
-    forecast = forecast.rename(columns=column_trans_dict)
-    forecast = forecast.set_index(dateindex)
+    df = df.rename(columns=column_trans_dict)
+    df = df.set_index(dateindex)
 
     # just need 1 day of forecasts
-    forecast = forecast[pd.datetime.today().strftime('%Y%m%d')]
-    forecast = forecast.resample("60Min", how="last", closed="right",
-                                 loffset="60Min")
+    df = df[pd.datetime.today().strftime('%Y%m%d')]
+    df = df.resample("60Min", how="last", closed="right",
+                     loffset="60Min")
 
-    # convert column datatypes from generic object to appropriate type
-    floats = ['hum', 'snow', 'temp', 'windchill', 'wspd', 'wdird']
-    strings = ['conds', 'wdire']
+    df = dtype_conv(df, "forecast")
 
-    # convert each column label to appropriate dtype
-    for stringcol in strings:
-        forecast[stringcol] = forecast[stringcol].apply(
-            lambda x: str(x) if x != 'N/A' else 'nan')
-
-    for floatcol in floats:
-        forecast[floatcol] = forecast[floatcol].apply(
-            lambda x: float(x) if x != 'N/A' else 'nan')
-
-    forecast = forecast.fillna(method="pad")
-    return forecast
+    df = df.fillna(method="pad")
+    return df
 
 
-def weather_archive_update(city="New_York", state="NY"):
+def archive_update(city="New_York", state="NY"):
     """Pull archived weather information
 
     Weather information is pulled from weather underground from end of
@@ -183,25 +187,15 @@ def weather_archive_update(city="New_York", state="NY"):
     w: dataframe of weather parameters, indexed by hour
     """
 
-    from IPython.parallel import Client
-
-    rc = Client()
-    dview = rc[:]
-    dview.block = True
-    with dview.sync_imports():
-        import pandas as pd
-
-    store = pd.HDFStore('data/weather_history.h5')
-    weather_data = store["df_munged_resampled"]
+    weather_data = pd.read_hdf('data/weather_history.h5', 'df_munged_resampled')
     start = weather_data.index[-1] + relativedelta(hours=1)
     end = pd.datetime.today()
     interval = pd.date_range(start, end)
 
-    frames = dview.map_sync(lambda x: weather_day(x, city, state), interval)
-    # archive = dview.map_sync(pd.concat, frames)
+    frames = dview.map_sync(lambda x: pull(x, city, state), interval)
+
+    [dtype_conv(df, "history") for df in frames]
     archive = pd.concat(frames, verify_integrity=True)
-    rc.close()
     # store = pd.HDFStore('data/weather_history.h5')
     # store['df'] = pd.concat(frames)
-    store.close()
     return archive
