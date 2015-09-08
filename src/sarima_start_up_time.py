@@ -3,7 +3,9 @@
 # rc=Client()
 import pandas as pd
 
-from custom_fncs import misc
+import start_up
+
+
 
 # for wide terminal display of pandas dataframes
 # pd.options.display.width = 120
@@ -40,6 +42,7 @@ park_ts = pd.Series(list(park_data.VALUE),
 park_ts.drop_duplicates(inplace=True)
 park_ts = park_ts.loc[park_ts != 0].resample('15Min').interpolate()
 
-misc.start_time(park_ts)
+park_ts = park_ts['2013-04-01': '2013-07-01']
+start_up.start_time(park_ts)
 
 # park_ts_logr = (park_ts / park_ts.shift(1)).apply(sp.log)[1:]
