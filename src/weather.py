@@ -1,15 +1,10 @@
+from urllib.request import urlopen
+import json
+import codecs
+
 from IPython.parallel import Client
-
-rc = Client()
-dview = rc[:]
-dview.block = True
-with dview.sync_imports():
-    from urllib.request import urlopen
-    import json
-    import codecs
-
-    import pandas as pd
-    from dateutil.relativedelta import relativedelta
+import pandas as pd
+from dateutil.relativedelta import relativedelta
 
 
 def dtype_conv(df, weather_type):
@@ -192,10 +187,16 @@ def archive_update(city="New_York", state="NY"):
     end = pd.datetime.today()
     interval = pd.date_range(start, end)
 
+    rc = Client()
+    dview = rc[:]
+    dview.block = True
     frames = dview.map_sync(lambda x: pull(x, city, state), interval)
 
     [dtype_conv(df, "history") for df in frames]
-    archive = pd.concat(frames, verify_integrity=True)
+
+    weather_update = pd.concat(frames, verify_integrity=True)
+    archive = pd.concat([weather_data, weather_update])
     # store = pd.HDFStore('data/weather_history.h5')
     # store['df'] = pd.concat(frames)
     return archive
+
