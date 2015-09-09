@@ -67,6 +67,38 @@ def number_diff(ts, upper=10):
 
 # def predict_start_time(ts, crit_time = '7:00:00'):
 
+def benchmark_ts(ts, date, time, temp_range=(72, 74)):
+    seasons = {"spring": (3, 6), "summer": (6, 9), "fall": (9, 12),
+               "winter": (12, 3)}
+
+    month = date.month
+    month_range = (0, 0)
+
+    for value in seasons.values():
+        if value[0] < month <= value[1]:
+            month_range = value
+
+    selector = np.logical_and(
+        ts.index.weekday == date.weekday(),
+        ts.between(temp_range[0], temp_range[1]),
+        np.logical_and(ts.index.month > month_range[0],
+                       ts.index.month < month_range[1])
+    )
+    # filter by day and season
+    ts_filt = ts[selector]
+
+    # filter by benchmark day given by taking min over
+    #  all values at input time
+
+    benchmark_date = ts_filt.at_time(time).argmin().date()
+    ts_filt2 = ts_filt[benchmark_date:]
+
+    # get values between start of day and time
+
+    ts_filt3 = ts_filt2.between_time("0:0:0", time)
+
+    return ts_filt3
+
 
 def start_time(ts, city="New_York", state="NY",
                date="2013-06-06 7:00:00", desired_temp=72):
@@ -145,13 +177,12 @@ def start_time(ts, city="New_York", state="NY",
 
     # moment of truth: prediction
 
-    offset = endog_new[::-1][:date].shape[0]
-    prediction = res.predict(start=offset, full_results=True)
+    offset = endog_new[::-1][:date].shape[0] - 1
+    prediction = res.predict(start=offset, dynamic=0, full_results=True)
     predict = prediction.forecasts
 
     # # construct time series with predictions
     ts_fit = pd.Series(data=predict.flatten(),
                        index=res.data.dates)
 
-
-    return predict
+    return ts_fit
