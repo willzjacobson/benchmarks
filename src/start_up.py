@@ -1,10 +1,8 @@
-from dateutil.relativedelta import relativedelta
 import numpy as np
 import statsmodels.tsa.statespace.sarimax
 import statsmodels.tsa.stattools
 import pandas as pd
-
-import weather
+from dateutil.relativedelta import relativedelta
 
 
 def number_ar_terms(ts):
@@ -67,41 +65,66 @@ def number_diff(ts, upper=10):
 
 # def predict_start_time(ts, crit_time = '7:00:00'):
 
-def benchmark_ts(ts, date, time, temp_range=(72, 74)):
+def benchmark_ts(ts, datetime):
+    """ Identify benchmark time series to feet to start_up module
+
+    Parameters
+    ----------
+
+    ts: pandas.core.series.Series
+    datetime: string
+    temp_range: tuple
+
+    Returns
+    -------
+
+    w: pandas.core.series.Series
+    """
+
     seasons = {"spring": (3, 6), "summer": (6, 9), "fall": (9, 12),
                "winter": (12, 3)}
 
-    month = date.month
+    datetime = pd.to_datetime(datetime)
+    month = datetime.month
     month_range = (0, 0)
 
     for value in seasons.values():
         if value[0] < month <= value[1]:
             month_range = value
 
-    selector = np.logical_and(
-        ts.index.weekday == date.weekday(),
-        ts.between(temp_range[0], temp_range[1]),
-        np.logical_and(ts.index.month > month_range[0],
-                       ts.index.month < month_range[1])
-    )
     # filter by day and season
-    ts_filt = ts[selector]
+    ts_filt = []
+    for temp_range in [(70, 72), (68, 74), (66, 76)]:
+        ts_filt = ts[((ts.index.weekday == datetime.weekday) &
+                      (ts < temp_range[1]) &
+                      (ts > temp_range[0]) &
+                      (ts.index.month > month_range[0]) &
+                      (ts.index.month <= month_range[1])
+                      )]
+        if len(ts_filt) != 0:
+            break
+
+    if len(ts_filt) == 0:
+        raise ValueError("Benchmark Time Series could not be found for"
+                         "indicated temperature ranges")
+
+
 
     # filter by benchmark day given by taking min over
     #  all values at input time
 
-    benchmark_date = ts_filt.at_time(time).argmin().date()
+    benchmark_date = ts_filt.at_time(datetime.time()).argmin().date()
     ts_filt2 = ts_filt[benchmark_date:]
 
     # get values between start of day and time
 
-    ts_filt3 = ts_filt2.between_time("0:0:0", time)
+    ts_filt3 = ts_filt2.between_time("0:0:0", datetime.time())
 
     return ts_filt3
 
 
 def start_time(ts, city="New_York", state="NY",
-               date="2013-06-06 7:00:00", desired_temp=72):
+               date="2013-06-06 7:00:00"):
     """ Identify optimal start-up time
 
     Fits a SARIMA model to the input time series, then
@@ -111,7 +134,6 @@ def start_time(ts, city="New_York", state="NY",
     :param ts: pandas.core.series.Series
     Numbers 0-6, denoting "Monday"-"Sunday", respectively
     Specifies time by which building must be at desired_temp
-    :param desired_temp: Temperature, in Fahrenheit
     :return: datetime.datetime
     """
     date = pd.datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
@@ -138,11 +160,15 @@ def start_time(ts, city="New_York", state="NY",
     # weather.data = pd.read_hdf("data/weather.history.h5",
     #                            key='df_munged_resampled')
 
-    selector = np.logical_and(ts.index.weekday == date.weekday(),
-                              ts.index.date < date.date())
-    endog_temp = ts[selector]
-    weather_all = pd.concat([
-        weather.archive_update(city, state), weather.forecast(city, state)])
+    endog_temp = ts[(ts.index.weekday == date.weekday()) &
+                    (ts.index.date < date.date())]
+
+    weather_history = pd.read_hdf(
+        'data/weather_history.h5', 'df_munged_resampled')
+
+    forecast = pd.read_hdf('data/weather_history.h5', 'forecast')
+
+    weather_all = pd.concat([weather_history, forecast])
     intsec = weather_all.index.intersection(endog_temp.index)
 
     endog = endog_temp.loc[intsec]
@@ -152,15 +178,17 @@ def start_time(ts, city="New_York", state="NY",
                                                      exog=exog[::-1],
                                                      order=(p, d, q),
                                                      seasonal_order=(
-                                                         sp, sd, sq, ss))
+                                                         sp, sd, sq, ss),
+                                                     enforce_stationarity=False)
     fit_res = mod.fit()
 
     # new model with same parameters, but different endog and exog data
     start = (endog.index[-1] + relativedelta(weeks=1)).date()
-    end = start + relativedelta(days=1)
+    end = start + relativedelta(hours=7)
 
     rng = pd.date_range(start, end, freq='15Min')
-    endog_addition = pd.Series(index=rng).fillna(desired_temp)
+    benchmark_data = list(benchmark_ts(ts, datetime=date).values)
+    endog_addition = pd.Series(index=rng, data=benchmark_data)
 
     endog_new_temp = pd.concat([endog, endog_addition])
     intsec_new = weather_all.index.intersection(endog_new_temp.index)
@@ -168,11 +196,13 @@ def start_time(ts, city="New_York", state="NY",
     endog_new = endog_new_temp.loc[intsec_new]
     exog_new = weather_all.loc[intsec_new].temp
 
-    mod_new = statsmodels.tsa.statespace.sarimax.SARIMAX(endog_new[::-1],
-                                                         exog_new[::-1],
-                                                         order=(p, d, q),
-                                                         seasonal_order=(
-                                                             sp, sd, sq, ss))
+    mod_new = statsmodels.tsa.statespace.sarimax.SARIMAX(
+        endog_new[::-1],
+        exog_new[::-1],
+        order=(p, d, q),
+        seasonal_order=(
+            sp, sd, sq, ss),
+        enforce_stationarity=False)
     res = mod_new.filter(np.array(fit_res.params))
 
     # moment of truth: prediction
