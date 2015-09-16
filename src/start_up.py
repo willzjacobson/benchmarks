@@ -94,19 +94,21 @@ def benchmark_ts(ts, datetime):
 
     # filter by day and season
     ts_filt = []
-    for temp_range in [(70, 72), (68, 74), (66, 76)]:
-        ts_filt = ts[((ts.index.weekday == datetime.weekday) &
+    for temp_range in [(70, 72), (68, 74), (66, 76), (64, 78), (62, 80)]:
+        ts_filt = ts[((ts.index.weekday == datetime.weekday()) &
                       (ts < temp_range[1]) &
                       (ts > temp_range[0]) &
                       (ts.index.month > month_range[0]) &
                       (ts.index.month <= month_range[1])
                       )]
-        if len(ts_filt) != 0:
-            break
+
+        # check that we have a complete time series
+        if len(ts_filt.at_time('00:00:00')) == 0:
+            continue
 
     if len(ts_filt) == 0:
-        raise ValueError("Benchmark Time Series could not be found for"
-                         "indicated temperature ranges")
+        raise ValueError("Complete benchmark Time Series could not be found for"
+                         " indicated temperature ranges")
 
 
 
@@ -114,13 +116,7 @@ def benchmark_ts(ts, datetime):
     #  all values at input time
 
     benchmark_date = ts_filt.at_time(datetime.time()).argmin().date()
-    ts_filt2 = ts_filt[benchmark_date:]
-
-    # get values between start of day and time
-
-    ts_filt3 = ts_filt2.between_time("0:0:0", datetime.time())
-
-    return ts_filt3
+    return ts_filt[benchmark_date:]
 
 
 def start_time(ts, city="New_York", state="NY",
@@ -164,9 +160,9 @@ def start_time(ts, city="New_York", state="NY",
                     (ts.index.date < date.date())]
 
     weather_history = pd.read_hdf(
-        'data/weather_history.h5', 'df_munged_resampled')
+        '../data/weather_history.h5', 'df_munged_resampled')
 
-    forecast = pd.read_hdf('data/weather_history.h5', 'forecast')
+    forecast = pd.read_hdf('../data/weather_history.h5', 'forecast')
 
     weather_all = pd.concat([weather_history, forecast])
     intsec = weather_all.index.intersection(endog_temp.index)
@@ -184,17 +180,24 @@ def start_time(ts, city="New_York", state="NY",
 
     # new model with same parameters, but different endog and exog data
     start = (endog.index[-1] + relativedelta(weeks=1)).date()
-    end = start + relativedelta(hours=7)
+    end = start + relativedelta(days=1)
 
-    rng = pd.date_range(start, end, freq='15Min')
+    # rng should not include 00:00:00 time in next day
+    rng = pd.date_range(start, end, freq='15Min')[:-1]
     benchmark_data = list(benchmark_ts(ts, datetime=date).values)
     endog_addition = pd.Series(index=rng, data=benchmark_data)
+
+    # create new endog variable by filling day for prediction
+    # post 7:00am values with benchmark ts values
 
     endog_new_temp = pd.concat([endog, endog_addition])
     intsec_new = weather_all.index.intersection(endog_new_temp.index)
 
     endog_new = endog_new_temp.loc[intsec_new]
     exog_new = weather_all.loc[intsec_new].temp
+
+    # create model object, and replace ar/ma coefficients
+    # with those from previous fitted model on larger sample of data
 
     mod_new = statsmodels.tsa.statespace.sarimax.SARIMAX(
         endog_new[::-1],
@@ -206,13 +209,16 @@ def start_time(ts, city="New_York", state="NY",
     res = mod_new.filter(np.array(fit_res.params))
 
     # moment of truth: prediction
+    # find offset by counting backwards from end of day to system cutoff
+    # time we wish to forecast backwards from
 
-    offset = endog_new[::-1][:date].shape[0] - 1
-    prediction = res.predict(start=offset, dynamic=0, full_results=True)
+    offset = endog_new[date:].shape[0] - 1
+    prediction = res.predict(dynamic=offset, full_results=True)
     predict = prediction.forecasts
 
-    # # construct time series with predictions
-    ts_fit = pd.Series(data=predict.flatten(),
-                       index=res.data.dates)
+    # # construct time series with predictions. Have to drop first p terms,
+    # as first p terms are needed to forecast forward
+    ts_fit = pd.Series(data=predict.flatten()[p:],
+                       index=res.data.dates[p:])
 
     return ts_fit
