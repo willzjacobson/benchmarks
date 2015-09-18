@@ -7,7 +7,7 @@ import pandas as pd
 from dateutil.relativedelta import relativedelta
 
 
-def dtype_conv(df, weather_type):
+def _dtype_conv(df, weather_type):
     if weather_type == 'forecast':
         floats = ['hum', 'snow', 'temp', 'windchill', 'wspd', 'wdird']
         strings = ['conds', 'wdire']
@@ -89,7 +89,7 @@ def pull(date=pd.datetime.today(), city="New_York", state="NY"):
                                          loffset="60Min")
     observations = observations.fillna(method="pad")
 
-    return dtype_conv(observations, "history")
+    return _dtype_conv(observations, "history")
 
 
 def forecast(city="New_York", state="NY"):
@@ -157,7 +157,7 @@ def forecast(city="New_York", state="NY"):
     df = df.resample("60Min", how="last", closed="right",
                      loffset="60Min")
 
-    df = dtype_conv(df, "forecast")
+    df = _dtype_conv(df, "forecast")
 
     df = df.fillna(method="pad")
     return df
@@ -192,7 +192,7 @@ def archive_update(city="New_York", state="NY"):
     dview.block = True
     frames = dview.map_sync(lambda x: pull(x, city, state), interval)
 
-    [dtype_conv(df, "history") for df in frames]
+    [_dtype_conv(df, "history") for df in frames]
 
     weather_update = pd.concat(frames, verify_integrity=True)
     archive = pd.concat([weather_data, weather_update])

@@ -116,7 +116,7 @@ def benchmark_ts(ts, datetime):
     #  all values at input time
 
     benchmark_date = ts_filt.at_time(datetime.time()).argmin().date()
-    return ts_filt[benchmark_date:]
+    return ts_filt[ts_filt.index.date == benchmark_date]
 
 
 def start_time(ts, city="New_York", state="NY",
@@ -134,6 +134,10 @@ def start_time(ts, city="New_York", state="NY",
     """
     date = pd.datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
     freq = ts.index.freqstr
+
+    if freq is None:
+        raise ValueError("Time Series is missing frequency attribute")
+
     periods = len(pd.date_range('1/1/2011', '1/2/2011', freq=freq)) - 1
 
     p = number_ar_terms(ts)
@@ -165,10 +169,14 @@ def start_time(ts, city="New_York", state="NY",
     forecast = pd.read_hdf('../data/weather_history.h5', 'forecast')
 
     weather_all = pd.concat([weather_history, forecast])
-    intsec = weather_all.index.intersection(endog_temp.index)
+
+    wtemp = weather_all.temp.resample(freq).interpolate()
+    intsec = wtemp.index.intersection(endog_temp.index)
 
     endog = endog_temp.loc[intsec]
-    exog = weather_all.loc[intsec].temp
+    exog = wtemp.loc[intsec]
+
+    # resample exog
 
     mod = statsmodels.tsa.statespace.sarimax.SARIMAX(endog=endog[::-1],
                                                      exog=exog[::-1],
@@ -191,10 +199,10 @@ def start_time(ts, city="New_York", state="NY",
     # post 7:00am values with benchmark ts values
 
     endog_new_temp = pd.concat([endog, endog_addition])
-    intsec_new = weather_all.index.intersection(endog_new_temp.index)
+    intsec_new = wtemp.index.intersection(endog_new_temp.index)
 
     endog_new = endog_new_temp.loc[intsec_new]
-    exog_new = weather_all.loc[intsec_new].temp
+    exog_new = wtemp.loc[intsec_new]
 
     # create model object, and replace ar/ma coefficients
     # with those from previous fitted model on larger sample of data

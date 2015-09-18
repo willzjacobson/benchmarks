@@ -20,7 +20,7 @@ import start_up
 # plt.rcParams['figure.figsize'] = 14, 6
 
 directory = '~/Documents/workspace/data_analysis/'
-csv_file = 'data/park345_CHLR1.csv'
+csv_file = 'data/park345_oa_temp.csv'
 title = 'Accumulated Steam Usage'
 
 # load dataframe, and subset out relevant columns
