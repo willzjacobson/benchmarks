@@ -41,8 +41,8 @@ park_ts = park_ts.loc[park_ts != 0].resample('15Min').interpolate()
 
 park_ts_logr = (park_ts / park_ts.shift(1)).apply(sp.log)[1:]
 
-# d = number_diff(park_ts)
-#p = number_ar_terms(park_ts)
+# d = _number_diff(park_ts)
+# p = _number_ar_terms(park_ts)
 
 park_ts.plot()
 tsp.plot_acf(park_ts['06-04-2013'])

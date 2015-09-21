@@ -1,11 +1,12 @@
 import numpy as np
 import statsmodels.tsa.statespace.sarimax
+import statsmodels.tsa.ar_model
 import statsmodels.tsa.stattools
 import pandas as pd
 from dateutil.relativedelta import relativedelta
 
 
-def number_ar_terms(ts):
+def _number_ar_terms(ts):
     """ Determine the optimal number of AR terms in a SARIMA time series
 
     The optimal number of terms is computed via analyzing the partial
@@ -14,27 +15,13 @@ def number_ar_terms(ts):
     :param ts: pandas.core.series.Series
     :return: int
     """
+    mod = statsmodels.tsa.ar_model.AR(ts)
+    cap = 10
 
-    cap = 10  # once we have a larger cluster, can delete
-    array = statsmodels.tsa.stattools.pacf(ts)
-    for i in range(len(array)):
-        if array[i] < 0:
-            if i < cap:
-                return i - 1
-
-            # lines below can be deleted once we have a bigger cluster
-            #
-            else:
-                mag_array_ratios = np.absolute(
-                    (np.roll(array, -1) / array)[:-1])
-                for pos, entry in enumerate(mag_array_ratios):
-                    if entry == np.amin(mag_array_ratios):
-                        return pos + 1
-
-    raise ValueError("Time Series is invalid")
+    return mod.select_order(maxlag=cap)
 
 
-def number_diff(ts, upper=10):
+def _number_diff(ts, upper=10):
     """Number of differencings needed to induce stationarity.
 
     Identify minimum number of differencings needed of an input time
@@ -55,17 +42,11 @@ def number_diff(ts, upper=10):
             ts = ts.diff()[1:]
             pvalue = statsmodels.tsa.stattools.adfuller(ts, maxlag=ar_lags)[1]
 
-    raise ValueError(
-        "May not be stationary even after 0-{} lags".format(
-            str(upper)))  # statsmodels.tsa.stattools.adfuller(park_ts_logr[
+    raise ValueError("May not be stationary even after 0-{} lags".format(
+        str(upper)))
 
 
-# park_ts_logr.index.weekday == 7].at_time('11:00'), autolag='AIC')
-
-
-# def predict_start_time(ts, crit_time = '7:00:00'):
-
-def benchmark_ts(ts, datetime):
+def _benchmark_ts(ts, datetime):
     """ Identify benchmark time series to feet to start_up module
 
     Parameters
@@ -110,8 +91,6 @@ def benchmark_ts(ts, datetime):
         raise ValueError("Complete benchmark Time Series could not be found for"
                          " indicated temperature ranges")
 
-
-
     # filter by benchmark day given by taking min over
     #  all values at input time
 
@@ -140,8 +119,11 @@ def start_time(ts, city="New_York", state="NY",
 
     periods = len(pd.date_range('1/1/2011', '1/2/2011', freq=freq)) - 1
 
-    p = number_ar_terms(ts)
-    d = number_diff(ts)
+    # p = _number_ar_terms(ts)
+    # d = _number_diff(ts)
+
+    p = 1
+    d = 1
     q = 0
 
     sp = p
@@ -160,8 +142,7 @@ def start_time(ts, city="New_York", state="NY",
     # weather.data = pd.read_hdf("data/weather.history.h5",
     #                            key='df_munged_resampled')
 
-    endog_temp = ts[(ts.index.weekday == date.weekday()) &
-                    (ts.index.date < date.date())]
+    endog_temp = ts[ts.index.date < date.date()]
 
     weather_history = pd.read_hdf(
         '../data/weather_history.h5', 'df_munged_resampled')
@@ -178,8 +159,8 @@ def start_time(ts, city="New_York", state="NY",
 
     # resample exog
 
-    mod = statsmodels.tsa.statespace.sarimax.SARIMAX(endog=endog[::-1],
-                                                     exog=exog[::-1],
+    mod = statsmodels.tsa.statespace.sarimax.SARIMAX(endog=endog,
+                                                     exog=exog,
                                                      order=(p, d, q),
                                                      seasonal_order=(
                                                          sp, sd, sq, ss),
@@ -187,19 +168,21 @@ def start_time(ts, city="New_York", state="NY",
     fit_res = mod.fit()
 
     # new model with same parameters, but different endog and exog data
-    start = (endog.index[-1] + relativedelta(weeks=1)).date()
+    start = (endog.index[-1]).date()
     end = start + relativedelta(days=1)
 
     # rng should not include 00:00:00 time in next day
-    rng = pd.date_range(start, end, freq='15Min')[:-1]
-    benchmark_data = list(benchmark_ts(ts, datetime=date).values)
-    endog_addition = pd.Series(index=rng, data=benchmark_data)
+    rng = pd.date_range(start, end, freq='15Min')
+    endog_addition = pd.Series(index=rng)
 
     # create new endog variable by filling day for prediction
     # post 7:00am values with benchmark ts values
 
     endog_new_temp = pd.concat([endog, endog_addition])
     intsec_new = wtemp.index.intersection(endog_new_temp.index)
+
+    # align indices of endog_new and exog_new, otherwise
+    # model will break, thanks Chad Fulton
 
     endog_new = endog_new_temp.loc[intsec_new]
     exog_new = wtemp.loc[intsec_new]
@@ -208,8 +191,8 @@ def start_time(ts, city="New_York", state="NY",
     # with those from previous fitted model on larger sample of data
 
     mod_new = statsmodels.tsa.statespace.sarimax.SARIMAX(
-        endog_new[::-1],
-        exog_new[::-1],
+        endog_new,
+        exog_new,
         order=(p, d, q),
         seasonal_order=(
             sp, sd, sq, ss),
@@ -220,7 +203,7 @@ def start_time(ts, city="New_York", state="NY",
     # find offset by counting backwards from end of day to system cutoff
     # time we wish to forecast backwards from
 
-    offset = endog_new[date:].shape[0] - 1
+    offset = endog.shape[0] - 1
     prediction = res.predict(dynamic=offset, full_results=True)
     predict = prediction.forecasts
 

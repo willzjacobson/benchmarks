@@ -20,7 +20,7 @@ import start_up
 # plt.rcParams['figure.figsize'] = 14, 6
 
 directory = '~/Documents/workspace/data_analysis/'
-csv_file = 'data/park345_oa_temp.csv'
+csv_file = 'data/park345_CHLR1.csv'
 title = 'Accumulated Steam Usage'
 
 # load dataframe, and subset out relevant columns
@@ -40,11 +40,15 @@ park_ts = pd.Series(list(park_data.VALUE),
                     pd.DatetimeIndex(park_data.TIMESTAMP),
                     name=title)
 
-park_ts.drop_duplicates(inplace=True)
-park_ts = park_ts.loc[park_ts != 0].resample('15Min').interpolate()
 
+# bottom creates massive data errors; bms must output
+# flag for when values are the same, but valid
+# park_ts.drop_duplicates(inplace=True)
+# park_ts = park_ts.loc[park_ts != 0].resample('15Min').interpolate()
+
+park_ts = park_ts.resample('15Min')
 # park_ts = park_ts['2013-04-01': '2013-07-01']
-# start_up.benchmark_ts(park_ts, datetime="2013-06-06 7:00:00")
+# start_up._benchmark_ts(park_ts, datetime="2013-06-06 7:00:00")
 start_up.start_time(park_ts, city="New_York", state="NY",
                     date="2013-06-06 7:00:00")
 
