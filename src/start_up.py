@@ -127,10 +127,10 @@ def start_time(ts, city="New_York", state="NY",
     d = 1
     q = 0
 
-    sp = p
-    sd = d
-    sq = q
-    ss = 4
+    # sp = p
+    # sd = d
+    # sq = q
+    # ss = 4
 
     # weekdays = {0: 'Monday', 1: 'Tuesday', 2: 'Wednesday', 3: 'Thursday',
     #             4: 'Friday',
