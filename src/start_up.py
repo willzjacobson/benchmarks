@@ -4,7 +4,8 @@ import statsmodels.tsa.ar_model
 import statsmodels.tsa.stattools
 import pandas as pd
 from dateutil.relativedelta import relativedelta
-
+# from rpy2.robjects.packages import importr
+# import rpy2.robjects as robjects
 
 def _number_ar_terms(ts):
     """ Determine the optimal number of AR terms in a SARIMA time series
@@ -129,7 +130,7 @@ def start_time(ts, city="New_York", state="NY",
     sp = p
     sd = d
     sq = q
-    ss = periods
+    ss = 4
 
     # weekdays = {0: 'Monday', 1: 'Tuesday', 2: 'Wednesday', 3: 'Thursday',
     #             4: 'Friday',
@@ -154,25 +155,23 @@ def start_time(ts, city="New_York", state="NY",
     wtemp = weather_all.temp.resample(freq).interpolate()
     intsec = wtemp.index.intersection(endog_temp.index)
 
-    endog = endog_temp.loc[intsec]
-    exog = wtemp.loc[intsec]
+    endog = endog_temp[intsec]
+    exog = wtemp[intsec]
 
     # resample exog
 
     mod = statsmodels.tsa.statespace.sarimax.SARIMAX(endog=endog,
                                                      exog=exog,
                                                      order=(p, d, q),
-                                                     seasonal_order=(
-                                                         sp, sd, sq, ss),
                                                      enforce_stationarity=False)
     fit_res = mod.fit()
 
     # new model with same parameters, but different endog and exog data
-    start = (endog.index[-1]).date()
+    start = (endog.index[-1]).date() + relativedelta(days=1)
     end = start + relativedelta(days=1)
 
     # rng should not include 00:00:00 time in next day
-    rng = pd.date_range(start, end, freq='15Min')
+    rng = pd.date_range(start, end, freq='15Min')[:-1]
     endog_addition = pd.Series(index=rng)
 
     # create new endog variable by filling day for prediction
@@ -184,8 +183,8 @@ def start_time(ts, city="New_York", state="NY",
     # align indices of endog_new and exog_new, otherwise
     # model will break, thanks Chad Fulton
 
-    endog_new = endog_new_temp.loc[intsec_new]
-    exog_new = wtemp.loc[intsec_new]
+    endog_new = endog_new_temp[intsec_new]
+    exog_new = wtemp[intsec_new]
 
     # create model object, and replace ar/ma coefficients
     # with those from previous fitted model on larger sample of data
@@ -194,8 +193,6 @@ def start_time(ts, city="New_York", state="NY",
         endog_new,
         exog_new,
         order=(p, d, q),
-        seasonal_order=(
-            sp, sd, sq, ss),
         enforce_stationarity=False)
     res = mod_new.filter(np.array(fit_res.params))
 
