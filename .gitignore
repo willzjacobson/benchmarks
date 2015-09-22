@@ -2,7 +2,7 @@
 .pydevproject
 **.DS_Store
 **/.idea/**
-**.iml
 **.dat
+**.iml
 **__pycache__
 **/.ipynb_checkpoints
