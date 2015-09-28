@@ -2,7 +2,7 @@ from urllib.request import urlopen
 import json
 import codecs
 
-from IPython.parallel import Client
+from joblib import Parallel, delayed
 import pandas as pd
 from dateutil.relativedelta import relativedelta
 
@@ -181,21 +181,18 @@ def archive_update(city="New_York", state="NY"):
     -------
     w: dataframe of weather parameters, indexed by hour
     """
-    weather_data = pd.read_hdf('../data/weather_history.h5',
+    weather_data = pd.read_hdf('data/weather_history.h5',
                                'df_munged_resampled')
     start = weather_data.index[-1] + relativedelta(hours=1)
     end = pd.datetime.today()
     interval = pd.date_range(start, end)
 
-    rc = Client()
-    dview = rc[:]
-    dview.block = True
-    frames = dview.map_sync(lambda x: pull(x, city, state), interval)
+    frames = (Parallel(n_jobs=-1)(delayed(pull)(x, city, state)
+                                  for x in interval))
 
-    [_dtype_conv(df, "history") for df in frames]
+    frames = [_dtype_conv(df, "history") for df in frames]
 
     weather_update = pd.concat(frames, verify_integrity=True)
-    archive = pd.concat([weather_data, weather_update])
-    # store = pd.HDFStore('../data/weather_history.h5')
-    # store['df'] = pd.concat(frames)
+    archive = pd.concat([weather_data, weather_update], verify_integrity=True)
+
     return archive
