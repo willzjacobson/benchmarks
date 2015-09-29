@@ -1,9 +1,4 @@
-.project
-.pydevproject
 **.DS_Store
-**/.idea/**
 **.dat
-**.iml
 **__pycache__
 **/.ipynb_checkpoints
-**data**

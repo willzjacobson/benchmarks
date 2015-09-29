@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PublishConfigData" autoUpload="Always" serverName="datascience" uploadOnCheckin="49b8fce1-cc3b-4c17-8f68-7203353b7a50">
+    <serverData>
+      <paths name="datascience">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/home/davidkarapetyan/Documents/workspace/data_analysis" local="$PROJECT_DIR$/" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+    </serverData>
+    <option name="myUploadOnCheckinName" value="datascience" />
+    <option name="myAutoUpload" value="ALWAYS" />
+  </component>
+</project>
