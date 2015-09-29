@@ -181,8 +181,8 @@ def archive_update(city="New_York", state="NY"):
     -------
     w: dataframe of weather parameters, indexed by hour
     """
-    weather_data = pd.read_hdf('data/weather_history.h5',
-                               'df_munged_resampled')
+    weather_data = pd.read_hdf('data/weather.h5',
+                               'history')
     start = weather_data.index[-1] + relativedelta(hours=1)
     end = pd.datetime.today()
     interval = pd.date_range(start, end)

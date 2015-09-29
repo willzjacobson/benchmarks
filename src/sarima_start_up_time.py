@@ -2,6 +2,7 @@
 # from IPython.parallel import Client
 # rc=Client()
 import pandas as pd
+import weather
 
 import start_up
 
@@ -20,7 +21,7 @@ import start_up
 # plt.rcParams['figure.figsize'] = 14, 6
 
 directory = '/home/davidkarapetyan/Documents/workspace/data_analysis/'
-csv_file = 'data/park345_oa_temp.csv'
+csv_file = 'data/oa_temp.csv'
 title = 'Accumulated Steam Usage'
 
 # load dataframe, and subset out relevant columns
@@ -49,7 +50,8 @@ park_ts = pd.Series(list(park_data.VALUE),
 park_ts = park_ts.resample('15Min')
 # park_ts = park_ts['2013-04-01': '2013-07-01']
 # start_up._benchmark_ts(park_ts, datetime="2013-06-06 7:00:00")
-bobo = start_up.start_time(park_ts, city="New_York", state="NY",
-                    date="2013-06-06 7:00:00")
+weather_all = weather.archive_update()
+# bobo = start_up.start_time(park_ts, city="New_York", state="NY",
+#                     date="2013-06-06 7:00:00")
 
 # park_ts_logr = (park_ts / park_ts.shift(1)).apply(sp.log)[1:]

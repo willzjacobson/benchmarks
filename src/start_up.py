@@ -141,16 +141,16 @@ def start_time(ts, city="New_York", state="NY",
 
     # start, end = ts.index[0], ts.index[-1]
     # weather.data = pd.read_hdf("data/weather.history.h5",
-    #                            key='df_munged_resampled')
+    #                            key='history')
 
     endog_temp = ts[ts.index.date < date.date()]
 
-    weather_history = pd.read_hdf(
-        '../data/weather_history.h5', 'df_munged_resampled')
+    weather = pd.read_hdf(
+        'data/weather.h5', 'history')
 
-    forecast = pd.read_hdf('../data/weather_history.h5', 'forecast')
+    forecast = pd.read_hdf('data/weather.h5', 'forecast')
 
-    weather_all = pd.concat([weather_history, forecast])
+    weather_all = pd.concat([weather, forecast])
 
     wtemp = weather_all.temp.resample(freq).interpolate()
     intsec = wtemp.index.intersection(endog_temp.index)
@@ -202,11 +202,11 @@ def start_time(ts, city="New_York", state="NY",
 
     offset = endog.shape[0] - 1
     prediction = res.predict(dynamic=offset, full_results=True)
-    predict = prediction.forecasts
+    # predict = prediction.forecasts
 
     # # construct time series with predictions. Have to drop first p terms,
     # as first p terms are needed to forecast forward
-    ts_fit = pd.Series(data=predict.flatten()[p:],
-                       index=res.data.dates[p:])
+    # ts_fit = pd.Series(data=predict.flatten()[p:],
+    #                    index=res.data.dates[p:])
 
-    return ts_fit
+    return prediction

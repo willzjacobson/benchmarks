@@ -16,7 +16,7 @@ import matplotlib.pylab as pylab
 pylab.rcParams['figure.figsize'] = 14, 6
 
 directory = '/Users/davidkarapetyan/Documents/workspace/data_analysis/'
-csv_file = 'data/park345_steam.csv'
+csv_file = 'data/steam.csv'
 
 
 # load dataframe, and subset out relevant columns

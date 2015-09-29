@@ -1,5 +1,5 @@
 directory = '/Users/davidkarapetyan/Documents/workspace/data_analysis/'
-csv_file = 'data/park345_oa_temp.csv'
+csv_file = 'data/oa_temp.csv'
 
 import pandas as pd
 # for wide terminal display of pandas dataframes

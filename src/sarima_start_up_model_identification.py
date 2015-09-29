@@ -16,7 +16,7 @@ from custom_fncs.misc import *
 # plt.rcParams['figure.figsize'] = 14, 6
 
 directory = '~/Documents/workspace/data_analysis/'
-csv_file = 'data/park345_CHLR1.csv'
+csv_file = 'data/chiller1.csv'
 title = 'Accumulated Steam Usage'
 
 # load dataframe, and subset out relevant columns
