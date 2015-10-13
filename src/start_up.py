@@ -17,9 +17,7 @@ def _number_ar_terms(ts):
     :return: int
     """
     mod = statsmodels.tsa.ar_model.AR(ts)
-    cap = 10
-
-    return mod.select_order(maxlag=cap)
+    return mod.select_order(maxlag=10, ic="aic")
 
 
 def _number_diff(ts, upper=10):
@@ -61,7 +59,7 @@ def _benchmark_ts(ts, datetime):
     -------
 
     w: pandas.core.series.Series
-    """
+    # """
 
     seasons = {"spring": (3, 6), "summer": (6, 9), "fall": (9, 12),
                "winter": (12, 3)}
@@ -75,7 +73,7 @@ def _benchmark_ts(ts, datetime):
             month_range = value
 
     # filter by day and season
-    ts_filt = []
+    ts_filt = pd.Series()
     for temp_range in [(70, 72), (68, 74), (66, 76), (64, 78), (62, 80)]:
         ts_filt = ts[((ts.index.weekday == datetime.weekday()) &
                       (ts < temp_range[1]) &
@@ -99,8 +97,7 @@ def _benchmark_ts(ts, datetime):
     return ts_filt[ts_filt.index.date == benchmark_date]
 
 
-def start_time(ts, city="New_York", state="NY",
-               date="2013-06-06 7:00:00"):
+def start_time(ts, date="2013-06-06 7:00:00"):
     """ Identify optimal start-up time
 
     Fits a SARIMA model to the input time series, then
@@ -118,7 +115,7 @@ def start_time(ts, city="New_York", state="NY",
     if freq is None:
         raise ValueError("Time Series is missing frequency attribute")
 
-    periods = len(pd.date_range('1/1/2011', '1/2/2011', freq=freq)) - 1
+    # periods = len(pd.date_range('1/1/2011', '1/2/2011', freq=freq)) - 1
 
     # p = _number_ar_terms(ts)
     # d = _number_diff(ts)
