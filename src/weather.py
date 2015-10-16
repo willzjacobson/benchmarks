@@ -1,20 +1,21 @@
+import pandas as pd
+
 from urllib.request import urlopen
 import json
 import codecs
-
+import random
 from joblib import Parallel, delayed
-import pandas as pd
 from dateutil.relativedelta import relativedelta
 
 
 def _dtype_conv(df, weather_type):
     if weather_type == 'forecast':
-        floats = ['hum', 'snow', 'temp', 'windchill', 'wspd', 'wdird']
+        floats = ['hum', 'snow', 'temp', 'windchill', 'wspd', 'wdird', 'id']
         strings = ['conds', 'wdire']
     elif weather_type == 'history':
         floats = ['fog', 'hail', 'heatindex', 'hum', 'precip',
                   'pressure', 'rain', 'snow', 'temp', 'thunder', 'tornado',
-                  'wdird', 'wgust', 'windchill', 'wspd']
+                  'wdird', 'wgust', 'windchill', 'wspd', 'id']
         strings = ['conds', 'wdire']
 
     else:
@@ -53,8 +54,12 @@ def pull(date=pd.datetime.today(), city="New_York", state="NY"):
                                     date.strftime('%d'))
 
     city_path = '%s/%s' % (state, city)
+    # url = 'http://api.wunderground.com/' \
+    #       'api/bab4ba5bcbc2dbec/%s/q/%s.json' % (date_path, city_path)
+
     url = 'http://api.wunderground.com/' \
-          'api/bab4ba5bcbc2dbec/%s/q/%s.json' % (date_path, city_path)
+          'api/08d25f404214f50b/%s/q/%s.json' % (date_path, city_path)
+
     reader = codecs.getreader('utf-8')
     f = urlopen(url)
     parsed_json = json.load(reader(f))
@@ -88,6 +93,8 @@ def pull(date=pd.datetime.today(), city="New_York", state="NY"):
     observations = observations.resample("60Min", how="last", closed="right",
                                          loffset="60Min")
     observations = observations.fillna(method="pad")
+    observations['id'] = observations['temp'].apply(
+        lambda x: random.uniform(0, 1))
 
     return _dtype_conv(observations, "history")
 
@@ -110,6 +117,8 @@ def forecast(city="New_York", state="NY"):
     city_path = '%s/%s' % (state, city)
     url = 'http://api.wunderground.com/' \
           'api/bab4ba5bcbc2dbec/hourly/q/%s.json' % city_path
+    # url = 'http://api.wunderground.com/' \
+    #       'api/08d25f404214f50b/hourly/q/%s.json' % city_path
     reader = codecs.getreader('utf-8')
     f = urlopen(url)
     parsed_json = json.load(reader(f))
@@ -157,13 +166,18 @@ def forecast(city="New_York", state="NY"):
     df = df.resample("60Min", how="last", closed="right",
                      loffset="60Min")
 
+    df['id'] = df['temp'].apply(lambda x: random.uniform(0, 1))
+
     df = _dtype_conv(df, "forecast")
 
     df = df.fillna(method="pad")
+
     return df
 
 
-def archive_update(city="New_York", state="NY"):
+def archive_update(city="New_York", state="NY",
+                   archive_location='../data/weather.h5', df='history',
+                   cap=9):
     """Pull archived weather information
 
     Weather information is pulled from weather underground from end of
@@ -174,25 +188,41 @@ def archive_update(city="New_York", state="NY"):
     ----------
     city: string
     state: string
-    start: datetime object
-    end: datetime object
+    archive_location: string. Location of HDFS archive on disk
+    df: string. Name of weather dataframe in archive_location HDFS store
+    cap: int. Cap for number of WUnderground pulls, due to membership
+    restrictions
+
 
     Returns
     -------
     w: dataframe of weather parameters, indexed by hour
     """
-    weather_data = pd.read_hdf('data/weather.h5',
-                               'history')
-    start = weather_data.index[-1] + relativedelta(hours=1)
+    weather_data = pd.read_hdf(archive_location, df)
+    # start is beginning of day for last entry in weather_data
+    # we toss out any times already existing between start and end of
+    # day in archive weather_data, in order for concat below to run without
+    # indices clashing
+
+    if len(weather_data.index) == 0:
+        start = pd.datetime.today().date() - relativedelta(years=10)
+    else:
+        start = weather_data.index[-1].date()
+
     end = pd.datetime.today()
     interval = pd.date_range(start, end)
+    wdata_days_comp = weather_data[:start]
 
     frames = (Parallel(n_jobs=-1)(delayed(pull)(x, city, state)
-                                  for x in interval))
+                                  for x in interval[:cap]))
 
     frames = [_dtype_conv(df, "history") for df in frames]
 
-    weather_update = pd.concat(frames, verify_integrity=True)
-    archive = pd.concat([weather_data, weather_update], verify_integrity=True)
+    weather_update = pd.concat(frames)
+    archive = pd.concat([wdata_days_comp, weather_update],
+                        )
+
+    if archive["id"].duplicated().any() == True:
+        raise ValueError("Rows have duplicate entries.")
 
     return archive
