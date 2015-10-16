@@ -3,19 +3,18 @@ import pandas as pd
 from urllib.request import urlopen
 import json
 import codecs
-import random
 from joblib import Parallel, delayed
 from dateutil.relativedelta import relativedelta
 
 
 def _dtype_conv(df, weather_type):
     if weather_type == 'forecast':
-        floats = ['hum', 'snow', 'temp', 'windchill', 'wspd', 'wdird', 'id']
+        floats = ['hum', 'snow', 'temp', 'windchill', 'wspd', 'wdird']
         strings = ['conds', 'wdire']
     elif weather_type == 'history':
         floats = ['fog', 'hail', 'heatindex', 'hum', 'precip',
                   'pressure', 'rain', 'snow', 'temp', 'thunder', 'tornado',
-                  'wdird', 'wgust', 'windchill', 'wspd', 'id']
+                  'wdird', 'wgust', 'windchill', 'wspd']
         strings = ['conds', 'wdire']
 
     else:
@@ -93,9 +92,6 @@ def pull(date=pd.datetime.today(), city="New_York", state="NY"):
     observations = observations.resample("60Min", how="last", closed="right",
                                          loffset="60Min")
     observations = observations.fillna(method="pad")
-    observations['id'] = observations['temp'].apply(
-        lambda x: random.uniform(0, 1))
-
     return _dtype_conv(observations, "history")
 
 
@@ -166,8 +162,6 @@ def forecast(city="New_York", state="NY"):
     df = df.resample("60Min", how="last", closed="right",
                      loffset="60Min")
 
-    df['id'] = df['temp'].apply(lambda x: random.uniform(0, 1))
-
     df = _dtype_conv(df, "forecast")
 
     df = df.fillna(method="pad")
@@ -177,7 +171,7 @@ def forecast(city="New_York", state="NY"):
 
 def archive_update(city="New_York", state="NY",
                    archive_location='../data/weather.h5', df='history',
-                   cap=9):
+                   cap=100000000):
     """Pull archived weather information
 
     Weather information is pulled from weather underground from end of
@@ -219,10 +213,11 @@ def archive_update(city="New_York", state="NY",
     frames = [_dtype_conv(df, "history") for df in frames]
 
     weather_update = pd.concat(frames)
-    archive = pd.concat([wdata_days_comp, weather_update],
-                        )
+    archive = pd.concat([wdata_days_comp, weather_update])
 
-    if archive["id"].duplicated().any() == True:
-        raise ValueError("Rows have duplicate entries.")
+    # check for duplicate entries from weather underground, and delete
+    # all except one. Unfortunately, drop_duplicates works only for column
+    # entries, not timestamp row indices, so...
 
-    return archive
+    return archive.reset_index().drop_duplicates('date').set_index(
+        'date')
