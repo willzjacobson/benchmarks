@@ -6,17 +6,15 @@ giving you the information you need to manage your building portfolio. .
 
 
 ## Download
-* [Version 0.0](https://github.com/PrescriptiveData/Adirondack.git)
+* [Version 0.0 (Alpha)](https://github.com/PrescriptiveData/Adirondack.git)
 * Other Versions
 
 ## Usage
 ```$ git clone https://github.com/PrescriptiveData/Adirondack.git
 ...```
 
-## Contributors
-
 ### Contributors on GitHub
-* [Contributors](https://github.com/username/sw-name/graphs/contributors)
+* [Contributors](https://github.com/PrescriptiveData/Adirondack/graphs/contributors)
 
 
 
@@ -27,13 +25,11 @@ giving you the information you need to manage your building portfolio. .
 * see [LICENSE](https://github.com/username/sw-name/blob/master/LICENSE.md) file
 
 ## Version 
-* Version 0.0
+* Version 0.0 (Alpha)
 
-## How-to use this code
-* see [INSTRUCTIONS](https://github.com/username/sw-name/blob/master/INSTRUCTIONS.md) file
 
 ## Contact
-#### Developer/Company
+#### Prescriptive Data
 * Homepage: prescriptivedata.io
 * e-mail: info@prescriptivedata.io
 * Twitter: [@prescriptivedata](https://twitter.com/twitterhandle "twitterhandle on twitter")
