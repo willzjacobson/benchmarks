@@ -11,7 +11,7 @@ giving you the information you need to manage your building portfolio.
 
 ## Usage
 ```$ git clone https://github.com/PrescriptiveData/Adirondack.git
-```
+
 
 ### Contributors on GitHub
 * [Contributors](https://github.com/PrescriptiveData/Adirondack/graphs/contributors)
