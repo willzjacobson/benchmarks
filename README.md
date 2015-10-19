@@ -1,6 +1,6 @@
 Project Nonantum
 ======
-**DiBoss** The Digital Building Operating System Solution uses cloud processing to provide accessible data in real-time,
+**Project Nonantum** Software that uses cloud processing to provide accessible data in real-time,
 giving you the information you need to manage your building portfolio.
 
 
@@ -11,7 +11,7 @@ giving you the information you need to manage your building portfolio.
 
 ## Usage
 ```$ git clone https://github.com/PrescriptiveData/Adirondack.git
-...```
+```
 
 ### Contributors on GitHub
 * [Contributors](https://github.com/PrescriptiveData/Adirondack/graphs/contributors)
