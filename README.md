@@ -10,7 +10,9 @@ giving you the information you need to manage your building portfolio.
 * Other Versions
 
 ## Usage
-```$ git clone https://github.com/PrescriptiveData/Adirondack.git
+```
+$ git clone https://github.com/PrescriptiveData/Adirondack.git
+```
 
 
 ### Contributors on GitHub
