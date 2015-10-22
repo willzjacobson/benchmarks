@@ -1,0 +1,177 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="cfgparse.css" type='text/css' />
+<link rel="first" href="cfgparse.html" title='cfgparse -- python configuration file parser module' />
+<link rel='last' href='about.html' title='About this document...' />
+<link rel='help' href='about.html' title='About this document...' />
+<link rel="prev" href="cfgparse-coop-keys.html" />
+<link rel="parent" href="cfgparse-cmd-line-coop.html" />
+<link rel="next" href="node18.html" />
+<meta name='aesop' content='information' />
+<title>3.4 Files switch</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<div id='top-navigation-panel' xml:id='top-navigation-panel'>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="3.3 Keys switch"
+  href="cfgparse-coop-keys.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="3 Command line cooperation"
+  href="cfgparse-cmd-line-coop.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="4 Round Trip"
+  href="node18.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">cfgparse -- python configuration file parser module</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="cfgparse-coop-keys.html">3.3 Keys switch</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="cfgparse-cmd-line-coop.html">3 Command line cooperation</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="node18.html">4 Round Trip</A>
+</div>
+<hr /></div>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION000340000000000000000"></A><A NAME="cfgparse-coop-files"></A>
+<BR>
+3.4 Files switch
+</H2>
+
+<P>
+The <code>add_optparse_files_option()</code>
+method is used to set up cooperation between the command line and 
+configuration file parsers to automatically add configuration files
+to the configuration file parser that were specified using a command
+line switch (the files are added when the <code>parse()</code> method is called).
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><tt id='l2h-11' xml:id='l2h-11' class="function">add_optparse_files_option</tt></b>(</nobr></td>
+  <td><var>
+          option_group
+          </var><big>[</big><var>, switches</var><big>]</big><var>
+          </var><big>[</big><var>, dest</var><big>]</big><var>
+          </var><big>[</big><var>, help</var><big>]</big><var>
+          </var>)</td></tr></table></dt>
+<dd>
+
+<P>
+<var>option_group</var> is a required positional argument and must be set to 
+        an instance of the <tt class="module">optparse</tt> module's <code>OptionParser</code> 
+        class or an option group of that class.  The <code>OptionParser</code> 
+        instance must also be passed into the <code>parse()</code> method.
+
+<P>
+<var>switches</var> is an optional keyword argument and is used to set
+        the command line switches the user can use to specify configuration 
+        files to be added to the parser.  <var>switches</var> must be a tuple and 
+        defaults to <code>('-&#45;cfgfiles',)</code> when <var>switches</var> is omitted.
+
+<P>
+<var>dest</var> is an optional string keyword argument and is used set the 
+        name of the destination attribute of the options object returned
+        by the command line option parser.  When omitted, <var>dest</var> defaults
+        to <code>'cfgparse_files'</code>.
+
+<P>
+<var>help</var> is an optional string keyword argument and is used to set
+        the command line switch help string.  When omitted a reasonable 
+        default help string is utilized.
+
+<P>
+</dl>
+
+<P>
+For example:
+
+<P>
+<div class="verbatim"><pre>
+# file: coop_files.ini
+path = 192.168.0.0
+</pre></div>
+
+<P>
+And script:
+
+<P>
+<div class="verbatim"><pre>
+# file: coop_files.py
+import optparse
+import cfgparse
+o = optparse.OptionParser()
+c = cfgparse.ConfigParser()
+c.add_optparse_files_option(o)
+c.add_option('path')
+(opts,args) = c.parse(o)
+print "Path:",opts.path
+</pre></div>
+
+<P>
+Results in:
+
+<P>
+<div class="verbatim"><pre>
+$ python coop_files.py
+ERROR: Configuration File Parser
+
+Option: path
+No valid default found.
+keys=DEFAULT
+
+$ python coop_files.py --cfgfiles=coop_files.ini
+Path: 192.168.0.0
+</pre></div>
+
+<P>
+
+<DIV CLASS="navigation">
+<div class='online-navigation'>
+<p></p><hr />
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="3.3 Keys switch"
+  href="cfgparse-coop-keys.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="3 Command line cooperation"
+  href="cfgparse-cmd-line-coop.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="4 Round Trip"
+  href="node18.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">cfgparse -- python configuration file parser module</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="cfgparse-coop-keys.html">3.3 Keys switch</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="cfgparse-cmd-line-coop.html">3 Command line cooperation</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="node18.html">4 Round Trip</A>
+</div>
+</div>
+<hr />
+
+</DIV>
+<!--End of Navigation Panel-->
+
+</BODY>
+</HTML>

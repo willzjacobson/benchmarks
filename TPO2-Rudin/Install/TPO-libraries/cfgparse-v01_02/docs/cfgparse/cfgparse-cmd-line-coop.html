@@ -1,0 +1,120 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="cfgparse.css" type='text/css' />
+<link rel="first" href="cfgparse.html" title='cfgparse -- python configuration file parser module' />
+<link rel='last' href='about.html' title='About this document...' />
+<link rel='help' href='about.html' title='About this document...' />
+<link rel="next" href="node18.html" />
+<link rel="prev" href="node2.html" />
+<link rel="parent" href="cfgparse.html" />
+<link rel="next" href="cfgparse-coop-help.html" />
+<meta name='aesop' content='information' />
+<title>3 Command line cooperation</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<div id='top-navigation-panel' xml:id='top-navigation-panel'>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="2.5 Parsing and Obtaining"
+  href="cfgparse-parsing.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="cfgparse   python"
+  href="cfgparse.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="3.1 Help switch"
+  href="cfgparse-coop-help.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">cfgparse -- python configuration file parser module</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="cfgparse-parsing.html">2.5 Parsing and Obtaining</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="cfgparse.html">cfgparse   python</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="cfgparse-coop-help.html">3.1 Help switch</A>
+</div>
+<hr /></div>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION000300000000000000000"></A><A NAME="cfgparse-cmd-line-coop"></A>
+<BR>
+3 Command line cooperation
+</H1>
+
+<P>
+The <var>optparser</var> and <var>args</var> arguments of the <code>parse()</code> method are
+utilized to enable cooperation between the configuation option parser and an
+instance of the <tt class="module">optparse</tt>.<code>OptionParser</code> class.
+
+<P>
+When cooperation is enabled the options object created by the <code>parse()</code>
+method contains attributes for options from both the command line option 
+parser and the configuration file parser.  If the destination attribute
+name is the same for an option in both the command line and configuration
+file option parsers, the parsers will cooperate with one another as 
+documented in "Option cooperation" (section <A href="cfgparse-coop-option.html#cfgparse-coop-option">3.2</A>). 
+
+<P>
+
+<p><br /></p><hr class='online-navigation' />
+<div class='online-navigation'>
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></a>
+
+<UL CLASS="ChildLinks">
+<LI><A href="cfgparse-coop-help.html">3.1 Help switch</a>
+<LI><A href="cfgparse-coop-option.html">3.2 Option cooperation</a>
+<LI><A href="cfgparse-coop-keys.html">3.3 Keys switch</a>
+<LI><A href="cfgparse-coop-files.html">3.4 Files switch</a>
+</ul>
+<!--End of Table of Child-Links-->
+</div>
+
+<DIV CLASS="navigation">
+<div class='online-navigation'>
+<p></p><hr />
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="2.5 Parsing and Obtaining"
+  href="cfgparse-parsing.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="cfgparse   python"
+  href="cfgparse.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="3.1 Help switch"
+  href="cfgparse-coop-help.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">cfgparse -- python configuration file parser module</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="cfgparse-parsing.html">2.5 Parsing and Obtaining</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="cfgparse.html">cfgparse   python</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="cfgparse-coop-help.html">3.1 Help switch</A>
+</div>
+</div>
+<hr />
+
+</DIV>
+<!--End of Navigation Panel-->
+
+</BODY>
+</HTML>

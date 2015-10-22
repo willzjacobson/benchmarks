@@ -1,0 +1,5 @@
+#ignore pickled objects
+*.pickle
+#ignore compiled and swap files
+*.swp
+*.pyc

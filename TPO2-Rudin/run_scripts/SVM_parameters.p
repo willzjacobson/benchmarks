@@ -1,0 +1,11 @@
+(dp1
+S'kernel'
+p2
+S'rbf'
+p3
+sS'C'
+I10
+sS'gamma'
+p4
+F0.001
+s.

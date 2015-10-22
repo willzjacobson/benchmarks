@@ -1,0 +1,158 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="cfgparse.css" type='text/css' />
+<link rel="first" href="cfgparse.html" title='cfgparse -- python configuration file parser module' />
+<link rel='last' href='about.html' title='About this document...' />
+<link rel='help' href='about.html' title='About this document...' />
+<link rel="next" href="cfgparse-parsing.html" />
+<link rel="prev" href="cfgparse-adding-options.html" />
+<link rel="parent" href="node2.html" />
+<link rel="next" href="cfgparse-parsing.html" />
+<meta name='aesop' content='information' />
+<title>2.4 Groups</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<div id='top-navigation-panel' xml:id='top-navigation-panel'>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="2.3.5 Sections"
+  href="node10.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="2 Basics"
+  href="node2.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="2.5 Parsing and Obtaining"
+  href="cfgparse-parsing.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">cfgparse -- python configuration file parser module</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="node10.html">2.3.5 Sections</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="node2.html">2 Basics</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="cfgparse-parsing.html">2.5 Parsing and Obtaining</A>
+</div>
+<hr /></div>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION000240000000000000000"></A><A NAME="cfgparse-groups"></A>
+<BR>
+2.4 Groups
+</H2>
+
+<P>
+The <code>add_option_group()</code> method can be used to create groups of options.  
+The purpose of grouping options is strictly for organizing the help text
+to make it more presentable to the user.
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><tt id='l2h-6' xml:id='l2h-6' class="function">add_option_group</tt></b>(</nobr></td>
+  <td><var>title</var><big>[</big><var> ,description</var><big>]</big><var></var>)</td></tr></table></dt>
+<dd>
+
+<P>
+<var>title</var> is a required positional string argument and generally is
+        a few words used to label the configuration option group.
+
+<P>
+<var>description</var> is an optional keyword argument and can be used to
+       provide a more lengthy description of the configuration option group.
+
+<P>
+</dl>
+
+<P>
+<code>add_option_group()</code> returns an instance of the <code>OptionGroup</code> class
+which has the same <code>add_option()</code> method as the parser.
+
+<P>
+For example:
+
+<P>
+<div class="verbatim"><pre>
+import cfgparse
+c = cfgparse.ConfigParser()
+c.add_option('opt0', help='Help for opt0')
+
+group = c.add_option_group('Group 1')
+group.add_option('opt1', help='Help for opt1')
+
+group = c.add_option_group('Group 2','Some long winded discussion about '
+    'group 2 that will not fit all on a single line if that single line '
+    'is not extremely wide.')
+group.add_option('opt2', help='Help for opt2')
+
+c.print_help()
+</pre></div>
+
+<P>
+Results in:
+
+<P>
+<div class="verbatim"><pre>
+$ python groups.py
+Configuration file options:
+  opt0=OPT0    Help for opt0
+
+  Group 1:
+    opt1=OPT1  Help for opt1
+
+  Group 2:
+    Some long winded discussion about group 2 that will not fit all on a
+    single line if that single line is not extremely wide.
+
+    opt2=OPT2  Help for opt2
+</pre></div>
+
+<P>
+
+<DIV CLASS="navigation">
+<div class='online-navigation'>
+<p></p><hr />
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="2.3.5 Sections"
+  href="node10.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="2 Basics"
+  href="node2.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="2.5 Parsing and Obtaining"
+  href="cfgparse-parsing.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">cfgparse -- python configuration file parser module</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="node10.html">2.3.5 Sections</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="node2.html">2 Basics</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="cfgparse-parsing.html">2.5 Parsing and Obtaining</A>
+</div>
+</div>
+<hr />
+
+</DIV>
+<!--End of Navigation Panel-->
+
+</BODY>
+</HTML>

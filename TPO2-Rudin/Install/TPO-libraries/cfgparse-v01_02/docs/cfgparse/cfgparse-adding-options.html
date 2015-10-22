@@ -1,0 +1,230 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="cfgparse.css" type='text/css' />
+<link rel="first" href="cfgparse.html" title='cfgparse -- python configuration file parser module' />
+<link rel='last' href='about.html' title='About this document...' />
+<link rel='help' href='about.html' title='About this document...' />
+<link rel="next" href="cfgparse-groups.html" />
+<link rel="prev" href="cfgparse-adding-files.html" />
+<link rel="parent" href="node2.html" />
+<link rel="next" href="cfgparse-option-name.html" />
+<meta name='aesop' content='information' />
+<title>2.3 Adding Options</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<div id='top-navigation-panel' xml:id='top-navigation-panel'>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="2.2 Adding Files"
+  href="cfgparse-adding-files.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="2 Basics"
+  href="node2.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="2.3.1 Name and Destination"
+  href="cfgparse-option-name.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">cfgparse -- python configuration file parser module</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="cfgparse-adding-files.html">2.2 Adding Files</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="node2.html">2 Basics</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="cfgparse-option-name.html">2.3.1 Name and Destination</A>
+</div>
+<hr /></div>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION000230000000000000000"></A><A NAME="cfgparse-adding-options"></A>
+<BR>
+2.3 Adding Options
+</H2>
+
+<P>
+The <code>add_option()</code> method of <tt class="class">ConfigParser</tt> is used to add configuration 
+options to the parser.  This is the same concept as adding options with the
+<tt class="module">optparse</tt> module and shares many of the same arguments (please bring any
+inconsistencies to the attention of the author).  Defining the 
+options in the configuration parser serves the following purposes:
+
+<P>
+
+<UL>
+<LI>automatic type and value checking 
+</LI>
+<LI>default values can be defined
+</LI>
+<LI>help can be automatically generated in a consistent format
+</LI>
+</UL>
+
+<P>
+Options must be added to the parser before the <code>parse()</code> method is called.
+Options may be added before or after files are added to the parser.  
+The following is the <code>add_option()</code> method prototype:
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><tt id='l2h-5' xml:id='l2h-5' class="function">add_option</tt></b>(</nobr></td>
+  <td><var>name
+      </var><big>[</big><var>, help</var><big>]</big><var>
+      </var><big>[</big><var>, type</var><big>]</big><var>
+      </var><big>[</big><var>, choices</var><big>]</big><var>
+      </var><big>[</big><var>, dest</var><big>]</big><var>
+      </var><big>[</big><var>, metavar</var><big>]</big><var>
+      </var><big>[</big><var>, default</var><big>]</big><var>
+      </var><big>[</big><var>, check</var><big>]</big><var>
+      </var><big>[</big><var>, keys</var><big>]</big><var>
+      </var>)</td></tr></table></dt>
+<dd>
+
+<P>
+<var>name</var> is a positional string argument and is the exact name of the 
+        configuration option as it is to appear in the configuration file.
+
+<P>
+<var>help</var> is an optional string keyword argument and controls the help
+        text associated with this option displayed when configuration help 
+        is written.  Defaults to <code>None</code> which displays no additional
+        help text beyond the option name and metavar.  This may be set to
+        <code>cfgparse.SUPPRESS_HELP</code> to completely eliminate the option 
+        from the help text.  See "Option help" (section 
+        <A href="cfgparse-option-help.html#cfgparse-option-help">2.3.4</A>) details.
+        If using <tt class="module">optparse</tt> and <tt class="module">cfgparse</tt> in cooperation, 
+        <var>help</var> may be omitted here and will automatically be picked 
+        up from the <tt class="module">optparse</tt> option.  See "Option cooperation" 
+        (section <A href="cfgparse-coop-option.html#cfgparse-coop-option">3.2</A>) for more details.
+
+<P>
+<var>type</var> is an optional string keyword argument and describes the type
+        which the configuration option is to be converted into.  See 
+        "Option type" (section <A href="cfgparse-option-type.html#cfgparse-option-type">2.3.2</A>) for details.
+        If using <tt class="module">optparse</tt> and <tt class="module">cfgparse</tt> in cooperation, 
+        <var>type</var> may be omitted here and will automatically be picked 
+        up from the <tt class="module">optparse</tt> option.  See "Option cooperation" 
+        (section <A href="cfgparse-coop-option.html#cfgparse-coop-option">3.2</A>) for more details.
+
+<P>
+<var>choices</var> is an optional list keyword argument and is used to pass in the
+        possible choices when <var>type</var> is set to <code>'choice'</code>.  See 
+        "Option type" (section <A href="cfgparse-option-type.html#cfgparse-option-type">2.3.2</A>) for details.
+        If using <tt class="module">optparse</tt> and <tt class="module">cfgparse</tt> in cooperation, 
+        <var>choices</var> may be omitted here and will automatically be picked 
+        up from the <tt class="module">optparse</tt> option.  See "Option cooperation" 
+        (section <A href="cfgparse-coop-option.html#cfgparse-coop-option">3.2</A>) for more details.
+
+<P>
+<var>dest</var> is an optional string keyword argument and controls the 
+        attribute name that the value of this option will be stored in
+        when the <code>parse()</code> method creates an options object.  This
+        must be a unique value for every added option.  Default is <code>None</code>
+        which will cause the <var>name</var> argument to be used as the
+        destination attribute.  See "Name and destination" (section 
+        <A href="cfgparse-option-name.html#cfgparse-option-name">2.3.1</A>) for more details.
+        If using <tt class="module">optparse</tt> and <tt class="module">cfgparse</tt> in cooperation, 
+        <var>dest</var> must exactly match between the two options.  
+        See "Option cooperation" (section <A href="cfgparse-coop-option.html#cfgparse-coop-option">3.2</A>) for more details.
+
+<P>
+<var>metavar</var> is an optional string keyword argument and is used control the
+        help text associated with this option.  Specifically, this text
+        string is used directly after the <code>(</code>'=') sign in the option=VALUE.
+        By default the <var>dest</var> argument in all upper case is used.
+        If using <tt class="module">optparse</tt> and <tt class="module">cfgparse</tt> in cooperation, 
+        <var>metavar</var> may be omitted here and will automatically be picked 
+        up from the <tt class="module">optparse</tt> option.  See "Option cooperation" (section 
+        <A href="cfgparse-coop-option.html#cfgparse-coop-option">3.2</A>) for more details.
+
+<P>
+<var>default</var> is an optional keyword argument and is used control the
+        configuration option default value when the configuration option cannot
+        be found.  Omitting this option will cause an exception to be raised
+        when the option cannot be found.
+        If using <tt class="module">optparse</tt> and <tt class="module">cfgparse</tt> in cooperation, 
+        <var>default</var> should NOT be set when adding the <tt class="module">optparse</tt> option.
+        See "Option cooperation" (section <A href="cfgparse-coop-option.html#cfgparse-coop-option">3.2</A>) for more details.
+
+<P>
+<var>check</var> is an optional keyword argument and is used to pass in a
+        function to validate (and possibly convert) the configuration option.
+        Function interface requirements are defined in "Option check" (section
+        <A href="cfgparse-option-check.html#cfgparse-option-check">2.3.3</A>).
+
+<P>
+<var>keys</var> is an optional argument and is used to pass in the section 
+        keys to obtain the option.  Typically this is set to the section
+        name where the setting is expected to be (the [DEFAULT] section 
+        will also be searched as a last resort).   Default is <code>None</code> 
+        which will cause the parser only obtain the option setting from the
+        [DEFAULT] section.  See "Keys" (section <A href="cfgparse-keys.html#cfgparse-keys">6</A>)
+        for more details.
+
+<P>
+</dl>
+
+<P>
+
+<p><br /></p><hr class='online-navigation' />
+<div class='online-navigation'>
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></a>
+
+<UL CLASS="ChildLinks">
+<LI><A href="cfgparse-option-name.html">2.3.1 Name and Destination</a>
+<LI><A href="cfgparse-option-type.html">2.3.2 Option type</a>
+<LI><A href="cfgparse-option-check.html">2.3.3 Option check</a>
+<LI><A href="cfgparse-option-help.html">2.3.4 Option Help</a>
+<LI><A href="node10.html">2.3.5 Sections</a>
+</ul>
+<!--End of Table of Child-Links-->
+</div>
+
+<DIV CLASS="navigation">
+<div class='online-navigation'>
+<p></p><hr />
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="2.2 Adding Files"
+  href="cfgparse-adding-files.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="2 Basics"
+  href="node2.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="2.3.1 Name and Destination"
+  href="cfgparse-option-name.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">cfgparse -- python configuration file parser module</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="cfgparse-adding-files.html">2.2 Adding Files</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="node2.html">2 Basics</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="cfgparse-option-name.html">2.3.1 Name and Destination</A>
+</div>
+</div>
+<hr />
+
+</DIV>
+<!--End of Navigation Panel-->
+
+</BODY>
+</HTML>

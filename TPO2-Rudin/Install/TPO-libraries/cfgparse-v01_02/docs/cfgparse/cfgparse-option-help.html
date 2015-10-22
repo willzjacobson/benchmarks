@@ -1,0 +1,131 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="cfgparse.css" type='text/css' />
+<link rel="first" href="cfgparse.html" title='cfgparse -- python configuration file parser module' />
+<link rel='last' href='about.html' title='About this document...' />
+<link rel='help' href='about.html' title='About this document...' />
+<link rel="next" href="node10.html" />
+<link rel="prev" href="cfgparse-option-check.html" />
+<link rel="parent" href="cfgparse-adding-options.html" />
+<link rel="next" href="node10.html" />
+<meta name='aesop' content='information' />
+<title>2.3.4 Option Help</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<div id='top-navigation-panel' xml:id='top-navigation-panel'>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="2.3.3 Option check"
+  href="cfgparse-option-check.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="2.3 Adding Options"
+  href="cfgparse-adding-options.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="2.3.5 Sections"
+  href="node10.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">cfgparse -- python configuration file parser module</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="cfgparse-option-check.html">2.3.3 Option check</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="cfgparse-adding-options.html">2.3 Adding Options</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="node10.html">2.3.5 Sections</A>
+</div>
+<hr /></div>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H3><A NAME="SECTION000234000000000000000"></A><A NAME="cfgparse-option-help"></A>
+<BR>
+2.3.4 Option Help
+</H3>
+
+<P>
+The <var>help</var> and <var>metavar</var> arguments of the <code>add_option()</code> method 
+are used to control the configuration option help text automatically generated 
+by the <code>print_help()</code> method.
+
+<P>
+For example:
+
+<P>
+<div class="verbatim"><pre>
+# file: help.py
+import cfgparse
+c = cfgparse.ConfigParser(description='Description of the option '
+    'configuration.')
+c.add_option('retries', type='int', help='Maximum number of retries.')
+c.add_option('timeout', type='int', metavar='#SEC', 
+             help='Seconds between retries.')
+c.print_help()
+</pre></div>
+
+<P>
+Results in:
+<div class="verbatim"><pre>
+$ python help.py
+Description of the option configuration.
+
+Configuration file options:
+  retries=RETRIES  Maximum number of retries.
+  timeout=#SEC     Seconds between retries.
+</pre></div>
+
+<P>
+<var>metavar</var> controls the setting representation on the right side of the 
+option/setting pair in the help text.  If <var>metavar</var> is not specified or
+set to <code>None</code> the destination attribute name (in upper case) is used.
+The destination attribute name is controlled by the <var>name</var> and 
+<var>dest</var> arguments.
+
+<P>
+
+<DIV CLASS="navigation">
+<div class='online-navigation'>
+<p></p><hr />
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="2.3.3 Option check"
+  href="cfgparse-option-check.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="2.3 Adding Options"
+  href="cfgparse-adding-options.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="2.3.5 Sections"
+  href="node10.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">cfgparse -- python configuration file parser module</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="cfgparse-option-check.html">2.3.3 Option check</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="cfgparse-adding-options.html">2.3 Adding Options</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="node10.html">2.3.5 Sections</A>
+</div>
+</div>
+<hr />
+
+</DIV>
+<!--End of Navigation Panel-->
+
+</BODY>
+</HTML>

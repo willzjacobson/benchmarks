@@ -1,0 +1,192 @@
+body
+{
+    color: #4D4D4D;
+    font-family: Verdana, Arial, Geneva, Helvetica;
+    font-size: 12px;
+    background-color: #FFFFFF;
+	margin: 0;
+	padding: 0;
+}
+.body
+{
+    margin: 0px;
+}
+html
+{
+    overflow-y: scroll;
+}
+p
+{
+    font-size: 9pt;
+    color: #4D4D4D;
+}
+p.dscr
+{
+    font-size: 11pt;
+    color: #4D4D4D;
+}
+td
+{
+    font-size: 9pt;
+    color: #4D4D4D;
+}
+td.label
+{
+    width: 168px;
+    text-align: right;
+    margin: 0px;
+    padding: 0px;
+}
+td.label48
+{
+    width: 48px;
+    text-align: right;
+    margin: 0px;
+    padding: 0px;
+}
+.tdwhite
+{
+    color: White;
+}
+input
+{
+    font-family: Verdana, Arial, Geneva, Helvetica;
+    font-size: 9pt;
+    color: #4D4D4D;
+}
+select
+{
+    font-family: Verdana, Arial, Geneva, Helvetica;
+    font-size: 9pt;
+    color: #4D4D4D;
+}
+.nav
+{
+    color: #FFFFFF;
+    font-family: Verdana, Arial, Geneva, Helvetica;
+    font-size: 12px;
+    font-weight: bold;
+}
+.buttontxt
+{
+    color: #4D4D4D;
+    font-family: Verdana, Arial, Geneva, Helvetica;
+    font-size: 16px;
+    font-weight: bold;
+}
+.syminfo
+{
+    font-size: 9pt;
+    color: #4D4D4D;
+}
+H1, .h1
+{
+    color: #4D4D4D;
+    font-size: 14pt;
+}
+H2, .h2
+{
+    color: #4D4D4D;
+    font-size: 13pt;
+}
+H3, .h3
+{
+    color: #4D4D4D;
+    font-size: 11pt;
+}
+H4, .h4
+{
+    color: #4D4D4D;
+    font-size: 10pt;
+}
+H6, .h6
+{
+    color: #4D4D4D;
+    font-weight: bold;
+}
+li
+{
+    font-family: Verdana, Arial, Geneva, Helvetica;
+    font-size: 8pt;
+    line-height: 12pt;
+    color: #4D4D4D;
+}
+div
+{
+    font-family: Verdana, Arial, Geneva, Helvetica;
+    font-size: 8pt;
+    color: #3BB9FF;
+}
+a:link {color: #4D4D4D; text-decoration: underline; }
+a:active {color: #4D4D4D; text-decoration: underline; }
+a:visited {color: #4D4D4D; text-decoration: underline; }
+a:hover {color: #4D4D4D; text-decoration: none; }
+a:hover.light, a:active.light, a:visited.light, a:link.light
+{
+    color: White;
+    text-decoration: none;
+}
+a:hover.black, a:active.black, a:visited.black, a:link.black, a:hover.black
+{
+    color: #4D4D4D;
+    text-decoration: none;
+}
+.header
+{
+    font-weight: normal;
+    font-size: 16pt;
+    color: #4D4D4D;
+}
+.inputs
+{
+    left: 168px;
+    position: relative;
+}
+.labels
+{
+    left: 0px;
+    position: relative;
+    text-align: right;
+}
+
+span.validator
+{
+    margin-left: 20px;
+}
+.spaceright
+{
+    position: relative;
+    left: 4px;
+}
+.cblist td
+{
+    position: relative;
+    left: 4px;
+    font-size: 8px;
+}
+
+.copy
+{
+    color: #4D4D4D;
+    font-family: Verdana, Arial, Geneva, Helvetica;
+    font-size: 9px;
+}
+.title
+{
+    color: #4D4D4D;
+    font-family: Verdana, Arial, Geneva, Helvetica;
+    font-size: 16px;
+}
+.button
+{
+    color: #4D4D4D;
+    font-family: Verdana, Arial, Geneva, Helvetica;
+    font-size: 12px;
+}
+hr {
+  border: 0;
+  width: 100%;
+  color: #CCCCCC;
+  background-color: #CCCCCC;
+  height : 2px;
+}
