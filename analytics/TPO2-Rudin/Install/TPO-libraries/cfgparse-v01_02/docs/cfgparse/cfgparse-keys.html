@@ -1,0 +1,151 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="cfgparse.css" type='text/css' />
+<link rel="first" href="cfgparse.html" title='cfgparse -- python configuration file parser module' />
+<link rel='last' href='about.html' title='About this document...' />
+<link rel='help' href='about.html' title='About this document...' />
+<link rel="next" href="cfgparse-python.html" />
+<link rel="prev" href="node22.html" />
+<link rel="parent" href="cfgparse.html" />
+<link rel="next" href="cfgparse-python.html" />
+<meta name='aesop' content='information' />
+<title>6 Keys</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<div id='top-navigation-panel' xml:id='top-navigation-panel'>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="5.8 Environment keys"
+  href="cfgparse-env-keys.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="cfgparse   python"
+  href="cfgparse.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="7 Python configuration files"
+  href="cfgparse-python.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">cfgparse -- python configuration file parser module</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="cfgparse-env-keys.html">5.8 Environment keys</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="cfgparse.html">cfgparse   python</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="cfgparse-python.html">7 Python configuration files</A>
+</div>
+<hr /></div>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION000600000000000000000"></A><A NAME="cfgparse-keys"></A>
+<BR>
+6 Keys
+</H1>
+
+<P>
+When configuration files are read, all option settings are merged together in
+a master dictionary that is heirarchically organized using the section keys
+as keys in the dictionary.  The "Sections" (section <A href="cfgparse-sections.html#cfgparse-sections">5.3</A>) 
+and "Section keys" (section&nbsp;<A href="cfgparse-section-keys.html#cfgparse-section-keys">5.4</A>) examples may help
+visualize this concept.  When duplicate options exist at the same level,
+either in the same file or different files, the last one in wins.
+
+<P>
+When the <code>parse()</code> method is called or when an option <code>get()</code> method
+is called a list of keys is constructed to walk through the dictionary
+of settings.  The key list is constructed in the following order with the
+keys with top priority listed first
+
+<P>
+
+<UL>
+<LI><code>get()</code> <var>keys</var> argument 
+      (see section <A href="cfgparse-parsing.html#cfgparse-parsing">2.5</A> "Parsing")
+</LI>
+<LI><code>add_option()</code> <var>keys</var> argument
+      (see section <A href="cfgparse-adding-options.html#cfgparse-adding-options">2.3</A> "Adding options")
+</LI>
+<LI>command line keys
+      (see section <A href="cfgparse-cmd-line-coop.html#cfgparse-cmd-line-coop">3</A> "Command line cooperation")
+</LI>
+<LI>environment keys
+      (see section <A href="cfgparse-env-keys.html#cfgparse-env-keys">5.8</A> "Environment keys")
+</LI>
+<LI>configuration file keys
+      (see section <A href="cfgparse-default-keys.html#cfgparse-default-keys">5.7</A> "Default keys")
+</LI>
+<LI><code>'DEFAULT'</code> key
+</LI>
+</UL>
+
+<P>
+The algorithm for obtaining a setting from the dictionary of heirarchically 
+organized settings is:
+
+<P>
+<div class="verbatim"><pre>
+    start at top of option dictionary
+    start at top of key list  &lt;-----------------------
+    get next key &lt;-------------------------------     |                               
+        no keys left) DONE - no setting found    |    |
+    is key in dictionary?                        |    |
+        no)  ------------------------------------     |
+        yes) is setting a dictionary?                 |
+            yes) proceed to next level  --------------
+            no) DONE - setting found
+</pre></div>
+
+<P>
+This implementation allows the user to store multiple settings 
+in the configuration file and provides great flexibility for 
+controlling which settings get used.
+
+<P>
+
+<DIV CLASS="navigation">
+<div class='online-navigation'>
+<p></p><hr />
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="5.8 Environment keys"
+  href="cfgparse-env-keys.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="cfgparse   python"
+  href="cfgparse.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="7 Python configuration files"
+  href="cfgparse-python.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">cfgparse -- python configuration file parser module</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="cfgparse-env-keys.html">5.8 Environment keys</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="cfgparse.html">cfgparse   python</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="cfgparse-python.html">7 Python configuration files</A>
+</div>
+</div>
+<hr />
+
+</DIV>
+<!--End of Navigation Panel-->
+
+</BODY>
+</HTML>

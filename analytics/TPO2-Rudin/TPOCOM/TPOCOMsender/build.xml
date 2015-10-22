@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="TPOCOMsender" default="build_dist">
+
+	<property name="libraries" value="../TpoWSSB2_Client/lib"/>
+	<property name="srcDir" value="src"/>
+	<property name="buildDir" value="build"/>
+	<property name="compDir" value="build/classes"/>
+	<property name="jarDir" value="build/jar"/>
+	<property name="xmlToolDir" value="../XmlTool"/>
+	<property name="TpoWSSB2_ClientDir" value="../TpoWSSB2_Client"/>
+
+	<path id="TPOCOMsender.classpath">
+		<pathelement location="${xmlToolDir}/${jarDir}/xmlTool.jar"/>
+		<pathelement location="${TpoWSSB2_ClientDir}/${jarDir}/tpoWSSB2_Client.jar"/>
+	</path>
+	
+	<target name="init">
+		<mkdir dir="${compDir}"/>
+		<mkdir dir="${jarDir}"/>
+        <copy  includeemptydirs="false" todir="${compDir}">
+                <fileset dir="${srcDir}" excludes="**/.svn/, **/*.java"/>
+        </copy>
+	</target>
+	
+	<target name="clean">
+		<delete dir="${compDir}"/>
+		<delete dir="${jarDir}"/>
+		<delete dir="${buildDir}"/>
+	</target>
+	
+	<target name="xmlTool-build_dev">
+		<ant target="build_dev" antfile="${xmlToolDir}/build.xml" inheritAll="false"/>
+	</target>
+	<target name="xmlTool-build_dist">
+		<ant antfile="${xmlToolDir}/build.xml" inheritAll="false"/>
+	</target>
+	
+	<target name="TpoWSSB2_ClientDir-build_dev" depends="xmlTool-build_dev">
+		<ant  target="build_dev" antfile="${TpoWSSB2_ClientDir}/build.xml" inheritAll="false"/>
+	</target>
+	<target name="TpoWSSB2_ClientDir-build_dist" depends="xmlTool-build_dist">
+		<ant antfile="${TpoWSSB2_ClientDir}/build.xml" inheritAll="false"/>
+	</target>
+
+	
+	<target name="build_dev" depends="clean,init,TpoWSSB2_ClientDir-build_dev,xmlTool-build_dev">
+		<javac srcdir="${srcDir}" destdir="${compDir}" debug="true">		 
+		     <include name="**/*.java" />
+			 <classpath refid="TPOCOMsender.classpath"/>
+		</javac>
+		<ant target="create_jar"/>
+	</target>
+	
+	<target name="build_dist" depends="clean,init,TpoWSSB2_ClientDir-build_dist,xmlTool-build_dist">
+		<javac srcdir="${srcDir}" destdir="${compDir}">		 
+		     <include name="**/*.java" />
+			 <classpath refid="TPOCOMsender.classpath"/>
+		</javac>
+		<ant target="create_jar"/>
+	</target>
+	
+	<target name="create_jar">
+		<jar destfile="${jarDir}/${ant.project.name}.jar">
+			<fileset dir="${compDir}" />
+			<zipgroupfileset dir="${xmlToolDir}/${jarDir}" includes="*.jar"/>
+			<zipgroupfileset dir="${TpoWSSB2_ClientDir}/${jarDir}" includes="*.jar"/>
+			<zipgroupfileset dir="${libraries}" includes="*.jar"/>
+		    <manifest>
+		        <attribute name="Main-Class" value="tpocom.sender.TPOCOMManager"/>
+		    </manifest>
+		</jar>
+		<delete dir="${compDir}"/>
+	</target>
+	
+</project>

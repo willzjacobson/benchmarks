@@ -1,0 +1,151 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="cfgparse.css" type='text/css' />
+<link rel="first" href="cfgparse.html" title='cfgparse -- python configuration file parser module' />
+<link rel='last' href='about.html' title='About this document...' />
+<link rel='help' href='about.html' title='About this document...' />
+<link rel="next" href="cfgparse-option-help.html" />
+<link rel="prev" href="cfgparse-option-type.html" />
+<link rel="parent" href="cfgparse-adding-options.html" />
+<link rel="next" href="cfgparse-option-help.html" />
+<meta name='aesop' content='information' />
+<title>2.3.3 Option check</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<div id='top-navigation-panel' xml:id='top-navigation-panel'>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="2.3.2 Option type"
+  href="cfgparse-option-type.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="2.3 Adding Options"
+  href="cfgparse-adding-options.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="2.3.4 Option Help"
+  href="cfgparse-option-help.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">cfgparse -- python configuration file parser module</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="cfgparse-option-type.html">2.3.2 Option type</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="cfgparse-adding-options.html">2.3 Adding Options</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="cfgparse-option-help.html">2.3.4 Option Help</A>
+</div>
+<hr /></div>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H3><A NAME="SECTION000233000000000000000"></A><A NAME="cfgparse-option-check"></A>
+<BR>
+2.3.3 Option check
+</H3>
+
+<P>
+The <var>check</var> argument of the <code>add_option()</code> method is used to provide
+a function to check the option setting.  In addition the function may also
+do any further conversions, but it is recommended that the <var>type</var>
+argument be used when possible.  The <var>check</var> function must accept a single
+argument, the option setting.  The function must return a tuple containing
+the option setting and an error message.  If no error, the error message 
+should be set to <code>None</code>.
+
+<P>
+For example:
+
+<P>
+<div class="verbatim"><pre>
+# file: check.ini
+timeout  = 10  # seconds
+timeout2 = 101 # invalid
+</pre></div>
+
+<P>
+And script:
+
+<P>
+<div class="verbatim"><pre>
+# file: check.py
+
+def in_range(value):
+    error = None
+    if (value &lt;= 0) or (value &gt;= 100):
+        error = "'%d' not valid.  Must be between 0 and 100 seconds." % value        
+    value = value * 1000 # convert to milliseconds
+    return value,error
+    
+import cfgparse
+c = cfgparse.ConfigParser()
+c.add_file('check.ini')
+c.add_option('timeout', type='int', check=in_range)
+opts = c.parse()
+print "Valid timeout:",opts.timeout
+
+c.add_option('timeout2', type='int', check=in_range)
+opts = c.parse()
+</pre></div>
+
+<P>
+Results in:
+<div class="verbatim"><pre>
+$ python check.py
+Valid timeout: 10000
+ERROR: Configuration File Parser
+
+Option: timeout2
+File: [CWD]/check.ini
+Section: [DEFAULT]
+Line: 3
+'101' not valid.  Must be between 0 and 100 seconds.
+</pre></div>
+
+<P>
+
+<DIV CLASS="navigation">
+<div class='online-navigation'>
+<p></p><hr />
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="2.3.2 Option type"
+  href="cfgparse-option-type.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="2.3 Adding Options"
+  href="cfgparse-adding-options.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="2.3.4 Option Help"
+  href="cfgparse-option-help.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">cfgparse -- python configuration file parser module</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="cfgparse-option-type.html">2.3.2 Option type</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="cfgparse-adding-options.html">2.3 Adding Options</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="cfgparse-option-help.html">2.3.4 Option Help</A>
+</div>
+</div>
+<hr />
+
+</DIV>
+<!--End of Navigation Panel-->
+
+</BODY>
+</HTML>

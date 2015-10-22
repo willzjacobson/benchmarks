@@ -1,0 +1,171 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="cfgparse.css" type='text/css' />
+<link rel="first" href="cfgparse.html" title='cfgparse -- python configuration file parser module' />
+<link rel='last' href='about.html' title='About this document...' />
+<link rel='help' href='about.html' title='About this document...' />
+<link rel="next" href="cfgparse-adding-files.html" />
+<link rel="prev" href="node2.html" />
+<link rel="parent" href="node2.html" />
+<link rel="next" href="cfgparse-adding-files.html" />
+<meta name='aesop' content='information' />
+<title>2.1 Creating the parser</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<div id='top-navigation-panel' xml:id='top-navigation-panel'>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="2 Basics"
+  href="node2.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="2 Basics"
+  href="node2.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="2.2 Adding Files"
+  href="cfgparse-adding-files.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">cfgparse -- python configuration file parser module</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="node2.html">2 Basics</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="node2.html">2 Basics</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="cfgparse-adding-files.html">2.2 Adding Files</A>
+</div>
+<hr /></div>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION000210000000000000000"></A><A NAME="cfgparse-create-parser"></A>
+<BR>
+2.1 Creating the parser
+</H2>
+
+<P>
+<dl><dt><b><span class="typelabel">class</span>&nbsp;<tt id='l2h-1' xml:id='l2h-1' class="class">ConfigParser</tt></b>
+<dd>
+  This class can be used to parse options from user configuration files.  
+  A single instance of this class is typically created.  This single instance
+  may be used to parse multiple configuration files and obtain multiple
+  configuration options.
+
+<P>
+The constructor for this class is:
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><tt id='l2h-2' xml:id='l2h-2' class="function">ConfigParser</tt></b>(</nobr></td>
+  <td><var></var><big>[</big><var>description</var><big>]</big><var></var><big>[</big><var>,
+    allow_py</var><big>]</big><var></var><big>[</big><var>, formatter</var><big>]</big><var></var><big>[</big><var>, exception</var><big>]</big><var></var>)</td></tr></table></dt>
+<dd>
+
+<P>
+<var>description</var> is an optional string keyword argument and controls
+        the introductory text placed above configuration option help text.
+        See "Option Help" (section <A href="cfgparse-option-help.html#cfgparse-option-help">2.3.4</A>).
+
+<P>
+<var>allow_py</var> is an optional boolean keyword argument and when set to
+        <code>True</code>, allows Python based configuraton files to be read
+        (executed).  The default is <code>False</code>.  Enabling this feature
+        poses a potential security hole for your application.
+
+<P>
+<var>formatter</var> is an optional keyword argument and controls 
+        the configuration option help text style.  Set to either the 
+        <tt class="class">IndentedHelpFormatter</tt> or <tt class="class">TitledHelpFormatter</tt> class
+        in the <tt class="module">cfgparse</tt> module (or a subclass of either).
+
+<P>
+<var>exception</var> is an optional keyword argument and controls 
+        the how user errors are handled by the parser.  If set to 
+        <code>False</code> or omitted, errors are written to <code>sys.stderr</code> and
+        <code>sys.exit()</code> is called.  If set to <code>True</code>, the
+        <code>ConfigParserUserError</code> exception is raised.  Otherwise set
+        this argument to the custom exception class that should be raised.
+  </dl>
+
+<P>
+</dl>
+
+<P>
+In many applications the defaults for constructing an instance of 
+<tt class="class">ConfigParser</tt> are sufficient.
+
+<P>
+For example:
+
+<P>
+<div class="verbatim"><pre>
+# file: construct.ini
+retries = 10
+</pre></div>
+
+<P>
+<div class="verbatim"><pre>
+# file: construct.py
+import cfgparse
+c = cfgparse.ConfigParser()
+c.add_option('retries', type='int')
+c.add_file('construct.ini')
+opts = c.parse()
+print 'Number of retries:',opts.retries
+</pre></div>
+
+<P>
+Results in:
+<div class="verbatim"><pre>
+$ python construct.py
+Number of retries: 10
+</pre></div>
+
+<P>
+
+<DIV CLASS="navigation">
+<div class='online-navigation'>
+<p></p><hr />
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="2 Basics"
+  href="node2.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="2 Basics"
+  href="node2.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="2.2 Adding Files"
+  href="cfgparse-adding-files.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">cfgparse -- python configuration file parser module</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="node2.html">2 Basics</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="node2.html">2 Basics</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="cfgparse-adding-files.html">2.2 Adding Files</A>
+</div>
+</div>
+<hr />
+
+</DIV>
+<!--End of Navigation Panel-->
+
+</BODY>
+</HTML>

@@ -1,0 +1,157 @@
+<?xml version='1.0' encoding='us-ascii'?>
+
+<!--  tenant-specific settings  -->
+<doc>
+<section 
+	title="default settings definition"
+	date="05/09/2014"
+	author="Ashish Gagneja (ag2818@columbia.edu)"
+>
+
+	<key name="running_at">
+		<optional>True</optional>
+	</key>
+
+	<key name="base_dir">
+	</key>
+
+	<key name="perl_prog">
+		<optional>True</optional>
+	</key>
+	<key name="python_prog">
+	</key>
+
+
+	<key name="temp_dir">
+		<default_value>%(base_dir)s/Temp</default_value>
+	</key>
+	<key name="data_dir">
+		<default_value>%(base_dir)s/data</default_value>
+	</key>
+	<key name="data_sources_dir">
+		<default_value>%(base_dir)s/Data-Sources</default_value>
+	</key>
+	<key name="control_dir">
+		<optional>True</optional>
+	</key>
+	<key name="log_dir">
+		<default_value>%(base_dir)s/log</default_value>
+	</key>
+
+	<key name="web_base_dir">
+		<optional>True</optional>
+	</key>
+	
+	
+	<key name="ml_dir">
+		<default_value>%(base_dir)s/ML</default_value>
+	</key>
+
+	<key name="svm_dir">
+		<default_value>%(ml_dir)s/libsvm-3.14</default_value>
+	</key>
+
+	<key name="svm_uci">
+		<optional>True</optional>
+	</key>
+
+	<key name="svm_scale">
+		<default_value>%(svm_dir)s/windows/svm-scale</default_value>
+	</key>
+
+	<key name="svm_predict">
+		<optional>True</optional>
+	</key>
+
+	<key name="svm_train">
+		<optional>True</optional>
+	</key>
+
+	<key name="svm_weight">
+		<optional>True</optional>
+	</key>
+
+	<key name="logger_configured">
+		<default_value>0</default_value>
+	</key>
+
+	<key name="log_fmt">
+		<default_value>$(levelname)5s $(module)7s $(asctime)s: $(message)s</default_value>
+	</key>
+
+	<key name="log_level">
+		<default_value>INFO</default_value>
+	</key>
+
+	<key name="log_console">
+		<default_value>1</default_value>
+	</key>
+
+	<key name="log_console_level">
+		<default_value>DEBUG</default_value>
+	</key>
+
+	<key name="log_console_msg_fmt">
+		<default_value>%(log_fmt)s</default_value>
+	</key>
+
+	<key name="log_file">
+		<default_value>1</default_value>
+	</key>
+
+	<key name="log_file_level">
+		<default_value>INFO</default_value>
+	</key>
+
+	<key name="log_file_msg_fmt">
+		<default_value>%(log_fmt)s</default_value>
+	</key>
+
+	<key name="log_file_dir">
+		<default_value>%(log_dir)s</default_value>
+	</key>
+
+	<key name="log_file_mode">
+		<default_value>a</default_value>
+	</key>
+
+	<key name="log_file_maxbytes">
+		<default_value>5000000</default_value>
+	</key>
+
+	<key name="log_file_backup_count">
+		<default_value>5</default_value>
+	</key>
+
+	<key name="test">
+		<default_value>0</default_value>
+	</key>
+
+	<key name="debug">
+		<default_value>0</default_value>
+	</key>
+
+	<key name="db_driver">
+	</key>
+
+	<key name="forecast_granularity">
+		<default_value>15</default_value>
+	</key>
+
+	<key name="forecast_length">
+		<default_value>24</default_value>
+	</key>
+
+	<key name="building_ids"><optional>True</optional></key>
+	<key name="tenant_ids"><optional>True</optional></key>
+
+	<key name="training_radius">
+		<default_value>35</default_value>
+	</key>
+
+	<key name="use_weather_forecast">
+		<default_value>1</default_value>
+	</key>
+
+</section>
+</doc>

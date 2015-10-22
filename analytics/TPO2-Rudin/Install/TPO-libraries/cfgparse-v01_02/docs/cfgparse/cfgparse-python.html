@@ -1,0 +1,239 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="cfgparse.css" type='text/css' />
+<link rel="first" href="cfgparse.html" title='cfgparse -- python configuration file parser module' />
+<link rel='last' href='about.html' title='About this document...' />
+<link rel='help' href='about.html' title='About this document...' />
+<link rel="next" href="node33.html" />
+<link rel="prev" href="cfgparse-keys.html" />
+<link rel="parent" href="cfgparse.html" />
+<link rel="next" href="node33.html" />
+<meta name='aesop' content='information' />
+<title>7 Python configuration files</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<div id='top-navigation-panel' xml:id='top-navigation-panel'>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="6 Keys"
+  href="cfgparse-keys.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="cfgparse   python"
+  href="cfgparse.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="8 misc"
+  href="node33.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">cfgparse -- python configuration file parser module</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="cfgparse-keys.html">6 Keys</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="cfgparse.html">cfgparse   python</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="node33.html">8 misc</A>
+</div>
+<hr /></div>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION000700000000000000000"></A><A NAME="cfgparse-python"></A>
+<BR>
+7 Python configuration files
+</H1>
+
+<P>
+Python based configuration files may be used in place of or in combination 
+with <code>ini</code> configuration files.  Since this may introduce a security
+hole in your application, this feature must be enabled using the <var>allow_py</var>
+argument when creating an instance of the <code>ConfigParser</code>.
+
+<P>
+Use of Python to construct option settings allows the greatest flexibility
+but also requires a bit more sophisticated user as the configuration file
+is truly a Python script and is executed.  One significant advantage of
+a Python based configuration file is that settings may be Python objects.
+For example in an application where files need to be located it may be 
+tempting to ask the user to provide a string which contains a list of paths to 
+scan.  What happens if the user wants a set of text files that contains lists 
+of files (such as Visual Studio project files) scanned instead?  It would be 
+better to provide a base class that is your best guess as to what most users 
+need.  Most users could then make the settting an instance of that class passing 
+in the string of paths into the constructor.  Advanced users can would be able 
+to subclass it, maintaining the interface, but changing the implementation to 
+their particular needs.
+
+<P>
+Another significant advantage is that users can construct settings on the fly
+with the full power and flexibility of Python.  There are no special text 
+substitution techniques like the <code>ini</code> syntax since the user can use
+Python to do it.
+
+<P>
+<b>Default Keys</b>
+
+<P>
+<code>KEYS</code> is used instead of <code>&lt;keys&gt;</code>.  For example:
+
+<P>
+<div class="verbatim"><pre>
+KEYS = 'RACK0,DEV0'
+</pre></div>
+Ie equivalent to:
+<div class="verbatim"><pre>
+[DEFAULT]
+&lt;keys&gt; = RACK0,DEV0
+</pre></div>
+
+<P>
+<b>Environment keys</b>
+
+<P>
+<code>KEYS_VARIABLE</code> is used instead of <code>&lt;keys_variable&gt;</code>.  For example:
+
+<P>
+<div class="verbatim"><pre>
+KEYS_VARIABLE = 'keys'
+</pre></div>
+Ie equivalent to:
+<div class="verbatim"><pre>
+[DEFAULT]
+&lt;keys_variable&gt; = keys
+</pre></div>
+
+<P>
+<b>Includes</b>
+
+<P>
+<code>CONFIG_FILES</code> is used instead of <code>&lt;include&gt;</code>.  For example:
+
+<P>
+<div class="verbatim"><pre>
+CONFIG_FILES = 'file1.ini'
+</pre></div>
+Is equivalent to:
+<div class="verbatim"><pre>
+[DEFAULT]
+&lt;include&gt; = file1.ini
+</pre></div>
+
+<P>
+And:
+
+<P>
+<div class="verbatim"><pre>
+CONFIG_FILES = ['file2.ini','file3.py']
+</pre></div>
+Is equivalent to:
+<div class="verbatim"><pre>
+[DEFAULT]
+&lt;include&gt; = file2.ini
+&lt;include&gt; = file3.ini
+</pre></div>
+
+<P>
+And:
+
+<P>
+<div class="verbatim"><pre>
+CONFIG_FILES = { 'DEFAULT' : 'rack0.ini',
+                 'RACK1' : 'rack1.ini', 
+                 'RACK2' : 'rack2.ini' }
+</pre></div>
+Is equivalent to:
+<div class="verbatim"><pre>
+[DEFAULT]
+&lt;include&gt; = rack0.ini
+[RACK1]
+&lt;include&gt; = rack1.ini
+[RACK2]
+&lt;include&gt; = rack2.ini
+</pre></div>
+
+<P>
+<b>Settings</b>
+
+<P>
+After execution of the configuration file all remaining options found that 
+do not begin with an underscore (_) are considered to be an option setting.  
+To avoid polluting the settings dictionary the configuration files should 
+either clean up after itself or name intermediate variables with an underscore.  
+For example:
+
+<P>
+<div class="verbatim"><pre>
+# import with leading underscore to avoid cleanup later
+import os as _os
+
+for x in range(10):
+    pass # do something
+del x # clean up so don't need leading _
+</pre></div>
+
+<P>
+<div class="verbatim"><pre>
+driver = 'ethernet'
+path = { 'DEFAULT' : '192.168.0.99',
+         'DEV0'    : '192.168.0.0',
+         'DEV1'    : '192.168.0.1' }
+</pre></div>
+Ie equivalent to:
+<div class="verbatim"><pre>
+[DEFAULT]
+driver = 'ethernet'
+path = 192.168.0.99
+[DEV0]
+path = 192.168.0.0
+[DEV1]
+path = 192.168.0.1
+</pre></div>
+
+<P>
+
+<DIV CLASS="navigation">
+<div class='online-navigation'>
+<p></p><hr />
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="6 Keys"
+  href="cfgparse-keys.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="cfgparse   python"
+  href="cfgparse.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="8 misc"
+  href="node33.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">cfgparse -- python configuration file parser module</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="cfgparse-keys.html">6 Keys</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="cfgparse.html">cfgparse   python</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="node33.html">8 misc</A>
+</div>
+</div>
+<hr />
+
+</DIV>
+<!--End of Navigation Panel-->
+
+</BODY>
+</HTML>

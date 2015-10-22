@@ -1,0 +1,235 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="cfgparse.css" type='text/css' />
+<link rel="first" href="cfgparse.html" title='cfgparse -- python configuration file parser module' />
+<link rel='last' href='about.html' title='About this document...' />
+<link rel='help' href='about.html' title='About this document...' />
+<link rel="next" href="cfgparse-round-trip-set-option.html" />
+<link rel="prev" href="node18.html" />
+<link rel="parent" href="node18.html" />
+<link rel="next" href="cfgparse-round-trip-set-option.html" />
+<meta name='aesop' content='information' />
+<title>4.1 set method</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<div id='top-navigation-panel' xml:id='top-navigation-panel'>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="4 Round Trip"
+  href="node18.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="4 Round Trip"
+  href="node18.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="4.2 set_option method"
+  href="cfgparse-round-trip-set-option.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">cfgparse -- python configuration file parser module</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="node18.html">4 Round Trip</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="node18.html">4 Round Trip</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="cfgparse-round-trip-set-option.html">4.2 set_option method</A>
+</div>
+<hr /></div>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION000410000000000000000"></A><A NAME="cfgparse-round-trip-set"></A>
+<BR>
+4.1 set method
+</H2>
+
+<P>
+The <code>set()</code> method of the object returned from the <code>add_option()</code> method
+of the <code>ConfigParser</code> class can be used to modify an option setting in
+a configuration file.
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><tt id='l2h-12' xml:id='l2h-12' class="function">set</tt></b>(</nobr></td>
+  <td><var>value,</var><big>[</big><var>, cfgfile</var><big>]</big><var></var><big>[</big><var>, keys</var><big>]</big><var></var>)</td></tr></table></dt>
+<dd>
+
+<P>
+<var>value</var> is a required positional argument and is the new option
+        value.
+
+<P>
+<var>cfgfile</var> is an optional keyword argument.  If omitted or set to
+        <code>None</code> the configuration file will be found.  Otherwise
+        the object returned by the <code>add_file()</code> method may be passed
+        in to modify or add a setting to a specific file.
+
+<P>
+<var>keys</var> is an optional string keyword argument.  Use of this
+        argument is dependent on the <var>cfgfile</var> argument and is
+        discussed further below.
+
+<P>
+</dl>
+
+<P>
+If <var>cfgfile</var> argument is omitted or set to <code>None</code> the <var>keys</var>
+argument will be used to first get the current option setting.  The
+<var>keys</var> are used in the same way as they are in the <code>get()</code> method.
+If a setting cannot be found in any of the configuration files added,
+<code>OptionNotFound</code> will be raised.  If the setting is found it will 
+be modified and the originating (modified) file object will be returned.  
+Note, if the option is defined in multiple locations, this method will
+only modify the one found.
+
+<P>
+If <var>cfgfile</var> argument is set, its <code>set_option()</code> method is called
+using <var>value</var>.  The <var>name</var>, <var>help</var>, and <var>keys</var> arguments
+of the <code>add_option()</code> method that created the object <code>set()</code> was 
+invoked on are passed on to <code>set_option()</code>.  If <var>keys</var> of the
+<code>set()</code> method was not omitted those keys are used instead.
+
+<P>
+For example:
+
+<P>
+<div class="verbatim"><pre>
+[DEFAULT]
+# this section applies to all devices
+timeout = 10 # in seconds
+retries = 3
+
+[DEV0]
+# this section if for settings specific to device #0
+retries = 5 # overrides default
+</pre></div>
+
+<P>
+And script:
+
+<P>
+<div class="verbatim"><pre>
+import cfgparse,sys
+c = cfgparse.ConfigParser()
+f = c.add_file('set.ini')
+r = c.add_option('retries',type='int',keys='DEV0')
+t = c.add_option('timeout',type='int',keys='DEV0',
+                 help='Time between retries in seconds.')
+r.set(7)
+t.set(20)
+f.write(sys.stdout)
+</pre></div>
+
+<P>
+Results in:
+<div class="verbatim"><pre>
+$ python set1.py
+[DEFAULT]
+# this section applies to all devices
+timeout = 20 # in seconds
+retries = 3
+
+[DEV0]
+# this section if for settings specific to device #0
+retries = 7 # overrides default
+</pre></div>
+
+<P>
+The <code>timeout</code> option in the <code>[DEFAULT]</code> section was modified.  
+This is due to <var>cfgfile</var> not being specified.  The option setting
+was located using the same methodology as the <code>get()</code> method and that
+option was modified.  If this behavior is not desired, use the 
+<var>cfgfile</var> argument.
+
+<P>
+For example:
+
+<P>
+<div class="verbatim"><pre>
+import cfgparse,sys
+c = cfgparse.ConfigParser()
+f = c.add_file('set.ini')
+r = c.add_option('retries',type='int',keys='DEV1',
+                 help='Number of times to try again.')
+t = c.add_option('timeout',type='int',keys='DEV0',
+                 help='Time between retries in seconds.')
+r.set(7,f)
+t.set(20,f)
+f.write(sys.stdout)
+</pre></div>
+
+<P>
+Results in:
+<div class="verbatim"><pre>
+$ python set2.py
+[DEFAULT]
+# this section applies to all devices
+timeout = 10 # in seconds
+retries = 3
+
+[DEV0]
+# this section if for settings specific to device #0
+retries = 5 # overrides default
+
+# Time between retries in seconds.
+timeout = 20
+
+[DEV1]
+
+# Number of times to try again.
+retries = 7
+</pre></div>
+
+<P>
+The above example also demonstrates the creation of new sections as 
+necessary by modifying the <code>retries</code> option with the <code>DEV1</code>
+key.
+
+<P>
+
+<DIV CLASS="navigation">
+<div class='online-navigation'>
+<p></p><hr />
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="4 Round Trip"
+  href="node18.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="4 Round Trip"
+  href="node18.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="4.2 set_option method"
+  href="cfgparse-round-trip-set-option.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">cfgparse -- python configuration file parser module</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="node18.html">4 Round Trip</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="node18.html">4 Round Trip</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="cfgparse-round-trip-set-option.html">4.2 set_option method</A>
+</div>
+</div>
+<hr />
+
+</DIV>
+<!--End of Navigation Panel-->
+
+</BODY>
+</HTML>

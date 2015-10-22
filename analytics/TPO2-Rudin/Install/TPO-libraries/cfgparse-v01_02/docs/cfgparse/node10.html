@@ -1,0 +1,150 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="cfgparse.css" type='text/css' />
+<link rel="first" href="cfgparse.html" title='cfgparse -- python configuration file parser module' />
+<link rel='last' href='about.html' title='About this document...' />
+<link rel='help' href='about.html' title='About this document...' />
+<link rel="prev" href="cfgparse-option-help.html" />
+<link rel="parent" href="cfgparse-adding-options.html" />
+<link rel="next" href="cfgparse-groups.html" />
+<meta name='aesop' content='information' />
+<title>2.3.5 Sections</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<div id='top-navigation-panel' xml:id='top-navigation-panel'>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="2.3.4 Option Help"
+  href="cfgparse-option-help.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="2.3 Adding Options"
+  href="cfgparse-adding-options.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="2.4 Groups"
+  href="cfgparse-groups.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">cfgparse -- python configuration file parser module</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="cfgparse-option-help.html">2.3.4 Option Help</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="cfgparse-adding-options.html">2.3 Adding Options</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="cfgparse-groups.html">2.4 Groups</A>
+</div>
+<hr /></div>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H3><A NAME="SECTION000235000000000000000">
+2.3.5 Sections</A>
+</H3>
+
+<P>
+Configuration files may be organized in sections with each section containing
+option/value pairs.  The <var>keys</var> argument of the <code>add_option()</code> method
+can be used to select which section to obtain the option setting from.
+
+<P>
+For example:
+
+<P>
+<div class="verbatim"><pre>
+# file: sections.ini
+[DEFAULT]
+# all devices use the same driver type
+driver = ethernet
+
+[DEV0]
+# path to device #0
+path = 192.168.0.0
+
+[DEV1]
+# path to device #1
+path = 192.168.0.1
+</pre></div>
+
+<P>
+And script:
+
+<P>
+<div class="verbatim"><pre>
+# file: sections.py
+import cfgparse
+c = cfgparse.ConfigParser()
+c.add_option('driver', dest='driver0', keys='DEV0')
+c.add_option('driver', dest='driver1', keys='DEV1')
+c.add_option('path', dest='path0', keys='DEV0')
+c.add_option('path', dest='path1', keys='DEV1')
+c.add_file('sections.ini')
+opts = c.parse()
+print "DEV0:",opts.driver0,opts.path0
+print "DEV1:",opts.driver1,opts.path1
+</pre></div>
+
+<P>
+Results in:
+<div class="verbatim"><pre>
+$ python sections.py
+DEV0: ethernet 192.168.0.0
+DEV1: ethernet 192.168.0.1
+</pre></div>
+
+<P>
+The <code>[DEFAULT]</code> section is special.  If an option setting cannot be found
+in a section specified by <var>keys</var>, the option is obtained from the 
+<code>[DEFAULT]</code> section.  This section is also utilized if <var>keys</var> is not
+specified.  Note, use of <code>[DEFAULT]</code> is optional.  If omitted, option/setting
+pairs specified before any section declarations are considered part of the
+<code>[DEFAULT]</code> section.  Although not advisable, multiple sections of the
+same name may exist and are treated as one section without error.
+
+<P>
+
+<DIV CLASS="navigation">
+<div class='online-navigation'>
+<p></p><hr />
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="2.3.4 Option Help"
+  href="cfgparse-option-help.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="2.3 Adding Options"
+  href="cfgparse-adding-options.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="2.4 Groups"
+  href="cfgparse-groups.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">cfgparse -- python configuration file parser module</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="cfgparse-option-help.html">2.3.4 Option Help</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="cfgparse-adding-options.html">2.3 Adding Options</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="cfgparse-groups.html">2.4 Groups</A>
+</div>
+</div>
+<hr />
+
+</DIV>
+<!--End of Navigation Panel-->
+
+</BODY>
+</HTML>

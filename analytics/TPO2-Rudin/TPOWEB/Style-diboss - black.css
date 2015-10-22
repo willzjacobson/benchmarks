@@ -1,0 +1,193 @@
+body
+{
+    color: #3BB9FF;
+    font-family: Verdana, Arial, Geneva, Helvetica;
+    font-size: 12px;
+    background-color: #000000;
+    background-image:url('images/diboss/honeycomb.jpg');
+	margin: 0;
+	padding: 0;
+}
+.body
+{
+    margin: 0px;
+}
+html
+{
+    overflow-y: scroll;
+}
+p
+{
+    font-size: 9pt;
+    color: #3BB9FF;
+}
+p.dscr
+{
+    font-size: 11pt;
+    color: #3BB9FF;
+}
+td
+{
+    font-size: 9pt;
+    color: #3BB9FF;
+}
+td.label
+{
+    width: 168px;
+    text-align: right;
+    margin: 0px;
+    padding: 0px;
+}
+td.label48
+{
+    width: 48px;
+    text-align: right;
+    margin: 0px;
+    padding: 0px;
+}
+.tdwhite
+{
+    color: White;
+}
+input
+{
+    font-family: Verdana, Arial, Geneva, Helvetica;
+    font-size: 9pt;
+    color: #3BB9FF;
+}
+select
+{
+    font-family: Verdana, Arial, Geneva, Helvetica;
+    font-size: 9pt;
+    color: #3BB9FF;
+}
+.nav
+{
+    color: #000000;
+    font-family: Verdana, Arial, Geneva, Helvetica;
+    font-size: 12px;
+    font-weight: bold;
+}
+.buttontxt
+{
+    color: #3BB9FF;
+    font-family: Verdana, Arial, Geneva, Helvetica;
+    font-size: 16px;
+    font-weight: bold;
+}
+.syminfo
+{
+    font-size: 9pt;
+    color: #3BB9FF;
+}
+H1, .h1
+{
+    color: #3BB9FF;
+    font-size: 14pt;
+}
+H2, .h2
+{
+    color: #3BB9FF;
+    font-size: 13pt;
+}
+H3, .h3
+{
+    color: #3BB9FF;
+    font-size: 11pt;
+}
+H4, .h4
+{
+    color: #3BB9FF;
+    font-size: 10pt;
+}
+H6, .h6
+{
+    color: #3BB9FF;
+    font-weight: bold;
+}
+li
+{
+    font-family: Verdana, Arial, Geneva, Helvetica;
+    font-size: 8pt;
+    line-height: 12pt;
+    color: #3BB9FF;
+}
+div
+{
+    font-family: Verdana, Arial, Geneva, Helvetica;
+    font-size: 8pt;
+    color: #3BB9FF;
+}
+a:link {color: #3BB9FF; text-decoration: underline; }
+a:active {color: #3BB9FF; text-decoration: underline; }
+a:visited {color: #3BB9FF; text-decoration: underline; }
+a:hover {color: #3BB9FF; text-decoration: none; }
+a:hover.light, a:active.light, a:visited.light, a:link.light
+{
+    color: White;
+    text-decoration: none;
+}
+a:hover.black, a:active.black, a:visited.black, a:link.black, a:hover.black
+{
+    color: #3BB9FF;
+    text-decoration: none;
+}
+.header
+{
+    font-weight: normal;
+    font-size: 16pt;
+    color: #3BB9FF;
+}
+.inputs
+{
+    left: 168px;
+    position: relative;
+}
+.labels
+{
+    left: 0px;
+    position: relative;
+    text-align: right;
+}
+
+span.validator
+{
+    margin-left: 20px;
+}
+.spaceright
+{
+    position: relative;
+    left: 4px;
+}
+.cblist td
+{
+    position: relative;
+    left: 4px;
+    font-size: 8px;
+}
+
+.copy
+{
+    color: #3BB9FF;
+    font-family: Verdana, Arial, Geneva, Helvetica;
+    font-size: 9px;
+}
+.title
+{
+    color: #3BB9FF;
+    font-family: Verdana, Arial, Geneva, Helvetica;
+    font-size: 16px;
+}
+.button
+{
+    color: #3BB9FF;
+    font-family: Verdana, Arial, Geneva, Helvetica;
+    font-size: 12px;
+}
+hr {
+  border: 0;
+  width: 100%;
+  color: #3BB9FF;
+  background-color: #3BB9FF;
+  height : 2px;
+}

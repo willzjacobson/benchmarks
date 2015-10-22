@@ -1,0 +1,193 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="cfgparse.css" type='text/css' />
+<link rel="first" href="cfgparse.html" title='cfgparse -- python configuration file parser module' />
+<link rel='last' href='about.html' title='About this document...' />
+<link rel='help' href='about.html' title='About this document...' />
+<link rel="prev" href="cfgparse-groups.html" />
+<link rel="parent" href="node2.html" />
+<link rel="next" href="cfgparse-cmd-line-coop.html" />
+<meta name='aesop' content='information' />
+<title>2.5 Parsing and Obtaining Options</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<div id='top-navigation-panel' xml:id='top-navigation-panel'>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="2.4 Groups"
+  href="cfgparse-groups.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="2 Basics"
+  href="node2.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="3 Command line cooperation"
+  href="cfgparse-cmd-line-coop.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">cfgparse -- python configuration file parser module</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="cfgparse-groups.html">2.4 Groups</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="node2.html">2 Basics</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="cfgparse-cmd-line-coop.html">3 Command line cooperation</A>
+</div>
+<hr /></div>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION000250000000000000000"></A><A NAME="cfgparse-parsing"></A>
+<BR>
+2.5 Parsing and Obtaining Options
+</H2>
+
+<P>
+Configuration file options settings may be obtained either all at once or one
+at a time.  The <code>parse()</code> method may be used for obtaining all the option
+settings all at once and returns the options bundled in a single object as
+attributes.  If errors are found, appropriate help text will be made available 
+(either an exception is raised or <code>sys.exit()</code> is called dependent on 
+<code>exception</code> argument when instantiating <code>ConfigParser</code>).  This allows 
+errors to be reported to the user up front.
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><tt id='l2h-7' xml:id='l2h-7' class="function">parse</tt></b>(</nobr></td>
+  <td><var></var><big>[</big><var>optparser</var><big>]</big><var></var><big>[</big><var>, args</var><big>]</big><var></var>)</td></tr></table></dt>
+<dd>
+
+<P>
+<var>optparse</var> is an optional keyword argument and is used to pass in an
+        instance of a command line option parser with which the configuration
+        option parser is to cooperate with.  Omitting this argument or 
+        setting to <code>None</code> avoids interfacing to a command line option parser.
+        When used, the <code>parse()</code> method will return a tuple of the bundled
+        options object and the command line arguments.  The bundled options
+        object will contain the options from both the command line parser and
+        the configuration files.  Presence of this option will also allow
+        enable the use of other cooperation features documented in 
+        "Command line cooperation" (section <A href="cfgparse-cmd-line-coop.html#cfgparse-cmd-line-coop">3</A>).
+
+<P>
+<var>args</var> is an optional keyword argument and are the arguments to be
+        parsed by the command line option parser.  Omitting this argument or
+        setting to <code>None</code> causes arguments in <code>sys.argv</code> (from the 
+        command line) to be utilized.
+
+<P>
+</dl>
+
+<P>
+An alternative method is to get the options as they are needed using the
+<code>get()</code> method of the object returned by the <code>add_option()</code> method.
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><tt id='l2h-8' xml:id='l2h-8' class="function">get</tt></b>(</nobr></td>
+  <td><var></var><big>[</big><var>keys</var><big>]</big><var></var><big>[</big><var>, errors</var><big>]</big><var></var>)</td></tr></table></dt>
+<dd>
+
+<P>
+<var>keys</var> is an optional keyword argument and is used to pass in 
+        additional keys to use obtain the option setting.  
+        See "Keys" (section <A href="cfgparse-keys.html#cfgparse-keys">6</A>) for more information.
+
+<P>
+<var>errors</var> is an optional keyword argument.  If omitted or set to
+        <code>None</code> any errors will cause appropriate help text will be 
+        made available (either an exception is raised or 
+        <code>sys.exit()</code> is called dependent on <code>exception</code> 
+        argument when instantiating <code>ConfigParser</code>).  Otherwise 
+        pass a list and help text describing the error will appended 
+        into the list.
+  </dl>
+
+<P>
+For example:
+
+<P>
+<div class="verbatim"><pre>
+# file: parsing.ini
+retries = 10
+</pre></div>
+
+<P>
+And script:
+
+<P>
+<div class="verbatim"><pre>
+# file: parsing.py
+import cfgparse
+c = cfgparse.ConfigParser()
+c.add_file('parsing.ini')
+
+retries = c.add_option('retries', type='int')
+print retries.get()
+
+timeout = c.add_option('timeout', type='int')
+print timeout.get()
+</pre></div>
+
+<P>
+Results in:
+
+<P>
+<div class="verbatim"><pre>
+$ python parsing.py
+10
+ERROR: Configuration File Parser
+
+Option: timeout
+No valid default found.
+keys=DEFAULT
+</pre></div>
+
+<P>
+
+<DIV CLASS="navigation">
+<div class='online-navigation'>
+<p></p><hr />
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="2.4 Groups"
+  href="cfgparse-groups.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="2 Basics"
+  href="node2.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="3 Command line cooperation"
+  href="cfgparse-cmd-line-coop.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">cfgparse -- python configuration file parser module</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="cfgparse-groups.html">2.4 Groups</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="node2.html">2 Basics</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="cfgparse-cmd-line-coop.html">3 Command line cooperation</A>
+</div>
+</div>
+<hr />
+
+</DIV>
+<!--End of Navigation Panel-->
+
+</BODY>
+</HTML>

@@ -1,0 +1,178 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="cfgparse.css" type='text/css' />
+<link rel="first" href="cfgparse.html" title='cfgparse -- python configuration file parser module' />
+<link rel='last' href='about.html' title='About this document...' />
+<link rel='help' href='about.html' title='About this document...' />
+<link rel="next" href="cfgparse-option-check.html" />
+<link rel="prev" href="cfgparse-option-name.html" />
+<link rel="parent" href="cfgparse-adding-options.html" />
+<link rel="next" href="cfgparse-option-check.html" />
+<meta name='aesop' content='information' />
+<title>2.3.2 Option type</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<div id='top-navigation-panel' xml:id='top-navigation-panel'>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="2.3.1 Name and Destination"
+  href="cfgparse-option-name.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="2.3 Adding Options"
+  href="cfgparse-adding-options.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="2.3.3 Option check"
+  href="cfgparse-option-check.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">cfgparse -- python configuration file parser module</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="cfgparse-option-name.html">2.3.1 Name and Destination</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="cfgparse-adding-options.html">2.3 Adding Options</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="cfgparse-option-check.html">2.3.3 Option check</A>
+</div>
+<hr /></div>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H3><A NAME="SECTION000232000000000000000"></A><A NAME="cfgparse-option-type"></A>
+<BR>
+2.3.2 Option type
+</H3>
+
+<P>
+The <var>type</var> string argument of the <code>add_option()</code> method is used to specify
+the convert the option setting obtained from a configuration file into the 
+desired type.  If the configuration option setting cannot be converted to the
+desired type appropriate help text will be made available (either an exception 
+is raised or <code>sys.exit()</code> is called dependent on <code>exception</code> argument
+when instantiating <code>ConfigParser</code>).  The following table shows the legal values:
+
+<P>
+<div class="center"><table class="realtable">
+  <thead>
+    <tr>
+      <th class="left"  >value</th>
+      <th class="left"  >result</th>
+      </tr>
+    </thead>
+  <tbody>
+    <tr><td class="left"   valign="baseline"><code>None</code></td>
+        <td class="left"  >no conversion (default)*</td></tr>
+    <tr><td class="left"   valign="baseline"><code>'choice'</code></td>
+        <td class="left"  >verifies option setting is a valid choice**</td></tr>
+    <tr><td class="left"   valign="baseline"><code>'complex'</code></td>
+        <td class="left"  >converts to complex number</td></tr>
+    <tr><td class="left"   valign="baseline"><code>'float'</code></td>
+        <td class="left"  >converts to floating point number</td></tr>
+    <tr><td class="left"   valign="baseline"><code>'int'</code></td>
+        <td class="left"  >converts to an integer</td></tr>
+    <tr><td class="left"   valign="baseline"><code>'long'</code></td>
+        <td class="left"  >converts to a long integer</td></tr>
+    <tr><td class="left"   valign="baseline"><code>'string'</code></td>
+        <td class="left"  >converts to a string</td></tr></tbody>
+</table></div>
+
+<P>
+Notes:
+
+<P>
+*   When parsed, <code>ini</code> style configuration files automatically return
+    strings as the option setting and no conversion is necessary.  Python
+    based configuration files return objects.  Omitting the <var>type</var>
+    argument (or setting <var>type</var> to <var>None</var>) allows the option setting 
+    object to remain as is.    
+
+<P>
+**  When <var>type</var> is set to <code>'choice'</code>, the <var>choices</var> argument
+    must also be present and must be a list of strings of valid choices.
+
+<P>
+For example:
+
+<P>
+<div class="verbatim"><pre>
+# file: type.ini
+int_option = 10
+float_option = 1.5
+choice_option = APPLE
+</pre></div>
+
+<P>
+And script:
+
+<P>
+<div class="verbatim"><pre>
+# file: type.py
+import cfgparse
+c = cfgparse.ConfigParser()
+c.add_file('type.ini')
+c.add_option('int_option', type='int')
+c.add_option('float_option', type='float')
+c.add_option('choice_option', type='choice', choices=['APPLE','ORANGE'])
+opts = c.parse()
+print opts.int_option*2
+print opts.float_option*3
+print opts.choice_option
+</pre></div>
+
+<P>
+Results in:
+<div class="verbatim"><pre>
+$ python type.py
+20
+4.5
+APPLE
+</pre></div>
+
+<P>
+
+<DIV CLASS="navigation">
+<div class='online-navigation'>
+<p></p><hr />
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="2.3.1 Name and Destination"
+  href="cfgparse-option-name.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="2.3 Adding Options"
+  href="cfgparse-adding-options.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="2.3.3 Option check"
+  href="cfgparse-option-check.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">cfgparse -- python configuration file parser module</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="cfgparse-option-name.html">2.3.1 Name and Destination</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="cfgparse-adding-options.html">2.3 Adding Options</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="cfgparse-option-check.html">2.3.3 Option check</A>
+</div>
+</div>
+<hr />
+
+</DIV>
+<!--End of Navigation Panel-->
+
+</BODY>
+</HTML>

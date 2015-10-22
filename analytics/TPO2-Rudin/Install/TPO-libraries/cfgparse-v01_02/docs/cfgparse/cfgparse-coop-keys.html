@@ -1,0 +1,187 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="cfgparse.css" type='text/css' />
+<link rel="first" href="cfgparse.html" title='cfgparse -- python configuration file parser module' />
+<link rel='last' href='about.html' title='About this document...' />
+<link rel='help' href='about.html' title='About this document...' />
+<link rel="next" href="cfgparse-coop-files.html" />
+<link rel="prev" href="cfgparse-coop-option.html" />
+<link rel="parent" href="cfgparse-cmd-line-coop.html" />
+<link rel="next" href="cfgparse-coop-files.html" />
+<meta name='aesop' content='information' />
+<title>3.3 Keys switch</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<div id='top-navigation-panel' xml:id='top-navigation-panel'>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="3.2 Option cooperation"
+  href="cfgparse-coop-option.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="3 Command line cooperation"
+  href="cfgparse-cmd-line-coop.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="3.4 Files switch"
+  href="cfgparse-coop-files.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">cfgparse -- python configuration file parser module</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="cfgparse-coop-option.html">3.2 Option cooperation</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="cfgparse-cmd-line-coop.html">3 Command line cooperation</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="cfgparse-coop-files.html">3.4 Files switch</A>
+</div>
+<hr /></div>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION000330000000000000000"></A><A NAME="cfgparse-coop-keys"></A>
+<BR>
+3.3 Keys switch
+</H2>
+
+<P>
+The <code>add_optparse_keys_option()</code> method 
+is used to set up the cooperation between the command line and configuration 
+file parsers to allow the user to specify a keys list from the command line
+to control the keys used to obtain option settings from the configuration file.
+For more information on how command line keys are used to obtain option settings
+see "Keys" (section <A href="cfgparse-keys.html#cfgparse-keys">6</A>).
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><tt id='l2h-10' xml:id='l2h-10' class="function">add_optparse_keys_option</tt></b>(</nobr></td>
+  <td><var>
+          option_group
+          </var><big>[</big><var>, switches</var><big>]</big><var>
+          </var><big>[</big><var>, dest</var><big>]</big><var>
+          </var><big>[</big><var>, help</var><big>]</big><var>
+          </var>)</td></tr></table></dt>
+<dd>
+
+<P>
+<var>option_group</var> is a required positional argument and must be set to 
+        an instance of the <tt class="module">optparse</tt> module's <code>OptionParser</code> 
+        class or an option group of that class.  The <code>OptionParser</code> 
+        instance must also be passed into the <code>parse()</code> method.
+
+<P>
+<var>switches</var> is an optional keyword argument and is used to set
+        the command line switches the user can use to specify section keys
+        to be used by the parser for finding option settings.
+        <var>switches</var> must be a tuple and defaults to
+        <code>('-k','-&#45;keys',)</code> when <var>switches</var> is omitted.
+
+<P>
+<var>dest</var> is an optional string keyword argument and is used set the 
+        name of the destination attribute of the options object returned
+        by the command line option parser.  When omitted, <var>dest</var> defaults
+        to <code>'cfgparse_keys'</code>.
+
+<P>
+<var>help</var> is an optional string keyword argument and is used to set
+        the command line switch help string.  When omitted a reasonable 
+        default help string is utilized.
+
+<P>
+</dl>
+
+<P>
+For example:
+
+<P>
+<div class="verbatim"><pre>
+# file: coop_keys.ini
+[DEV0]
+# path to device #0
+path = 192.168.0.0
+
+[DEV1]
+# path to device #1
+path = 192.168.0.1
+</pre></div>
+
+<P>
+And script:
+
+<P>
+<div class="verbatim"><pre>
+# file: coop_keys.py
+import optparse
+import cfgparse
+o = optparse.OptionParser()
+c = cfgparse.ConfigParser()
+c.add_optparse_keys_option(o)
+c.add_option('path')
+c.add_file('coop_keys.ini')
+(opts,args) = c.parse(o)
+print "Path:",opts.path
+</pre></div>
+
+<P>
+Results in:
+
+<P>
+<div class="verbatim"><pre>
+$ python coop_keys.py
+ERROR: Configuration File Parser
+
+Option: path
+No valid default found.
+keys=DEFAULT
+
+$ python coop_keys.py --keys=DEV0
+Path: 192.168.0.0
+</pre></div>
+
+<P>
+
+<DIV CLASS="navigation">
+<div class='online-navigation'>
+<p></p><hr />
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="3.2 Option cooperation"
+  href="cfgparse-coop-option.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="3 Command line cooperation"
+  href="cfgparse-cmd-line-coop.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="3.4 Files switch"
+  href="cfgparse-coop-files.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">cfgparse -- python configuration file parser module</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="cfgparse-coop-option.html">3.2 Option cooperation</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="cfgparse-cmd-line-coop.html">3 Command line cooperation</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="cfgparse-coop-files.html">3.4 Files switch</A>
+</div>
+</div>
+<hr />
+
+</DIV>
+<!--End of Navigation Panel-->
+
+</BODY>
+</HTML>
