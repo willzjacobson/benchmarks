@@ -1,0 +1,10 @@
+**.DS_Store
+**.dat
+**__pycache__
+**/.ipynb_checkpoints
+**.idea
+**.iml
+**.classpath
+**.project
+**.pydevproject
+
