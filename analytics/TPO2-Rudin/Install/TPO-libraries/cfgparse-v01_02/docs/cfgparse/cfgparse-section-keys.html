@@ -1,0 +1,154 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="cfgparse.css" type='text/css' />
+<link rel="first" href="cfgparse.html" title='cfgparse -- python configuration file parser module' />
+<link rel='last' href='about.html' title='About this document...' />
+<link rel='help' href='about.html' title='About this document...' />
+<link rel="next" href="cfgparse-text-sub.html" />
+<link rel="prev" href="cfgparse-sections.html" />
+<link rel="parent" href="node22.html" />
+<link rel="next" href="cfgparse-text-sub.html" />
+<meta name='aesop' content='information' />
+<title>5.4 Section keys</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<div id='top-navigation-panel' xml:id='top-navigation-panel'>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="5.3 Sections"
+  href="cfgparse-sections.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="5 INI Syntax Summary"
+  href="node22.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="5.5 Text substitution"
+  href="cfgparse-text-sub.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">cfgparse -- python configuration file parser module</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="cfgparse-sections.html">5.3 Sections</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="node22.html">5 INI Syntax Summary</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="cfgparse-text-sub.html">5.5 Text substitution</A>
+</div>
+<hr /></div>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION000540000000000000000"></A><A NAME="cfgparse-section-keys"></A>
+<BR>
+5.4 Section keys
+</H2>
+
+<P>
+Section names may consist of one or more keys.  Commas and periods in a
+section name are used to split the section name into its component keys.
+If a period or a comma is not to be treated as a key split point,
+encapsulate the section components with single
+or double quotes.  If one component is encapsulated, all must be
+encapsulated.  Keys within the section name can be considered as
+keys into a dictionary.
+
+<P>
+For example:
+
+<P>
+<div class="verbatim"><pre>
+path = 192.168.0.99
+
+[rack0.dev0]
+path = 192.168.0.0
+
+[rack0.dev1]
+path = 192.168.0.1
+
+['lab1.rack0','dev0']
+path = 192.168.0.2
+
+['lab1.rack0','dev1']
+path = 192.168.0.3
+</pre></div>
+
+<P>
+Can be thought of as:
+
+<P>
+<div class="verbatim"><pre>
+path = { 'DEFAULT' : '192.168.0.99',
+         'rack0' : {
+            'dev0' : '192.168.0.0',
+            'dev1' : '192.168.0.1' },
+         'lab1.rack0' : {
+             'dev0' : '192.168.0.2',
+             'dev1' : '192.168.0.3' } }
+</pre></div>
+
+<P>
+But syntax is available to extend the section keys with the section name
+notation immediately following the option name so that the above example
+could have been written as:
+
+<P>
+<div class="verbatim"><pre>
+path = 192.168.0.99
+
+[rack0]
+path[dev0] = 192.168.0.0
+path[dev1] = 192.168.0.1
+
+['lab1.rack0']
+path[dev0] = 192.168.0.2
+path[dev1] = 192.168.0.3
+</pre></div>
+
+<P>
+
+<DIV CLASS="navigation">
+<div class='online-navigation'>
+<p></p><hr />
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="5.3 Sections"
+  href="cfgparse-sections.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="5 INI Syntax Summary"
+  href="node22.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="5.5 Text substitution"
+  href="cfgparse-text-sub.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">cfgparse -- python configuration file parser module</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="cfgparse-sections.html">5.3 Sections</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="node22.html">5 INI Syntax Summary</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="cfgparse-text-sub.html">5.5 Text substitution</A>
+</div>
+</div>
+<hr />
+
+</DIV>
+<!--End of Navigation Panel-->
+
+</BODY>
+</HTML>

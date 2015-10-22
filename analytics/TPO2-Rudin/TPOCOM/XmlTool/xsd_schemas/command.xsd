@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://commons.fin-sif.com/types"
+            xmlns:tns="http://commons.fin-sif.com/types"
+        	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        	elementFormDefault="qualified">
+
+
+    <xsd:element name="command" type="tns:CommandType"/>
+
+
+	<xsd:complexType name="CommandType">
+        <xsd:sequence>
+			<xsd:element name="header" type="tns:CommandHeader"/>
+            <xsd:element name="id" type="tns:CommandIdentifier"/>
+			<xsd:element name="info" type="tns:CommandInfo"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+
+
+	<xsd:complexType name="CommandHeader">
+		<xsd:sequence>
+			<xsd:element name="ts" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation>State reporting time</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="sender" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation>System that sends the command</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="receiver" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation>System that is the command destination</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="cmd" type="tns:Command">
+				<xsd:annotation>
+					<xsd:documentation>Command code</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="rsp" type="tns:Response" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>
+						Present only in the responses and the attribute 
+						mode describes response delivery way
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="Command">
+	 	<xsd:attribute name="code" type="xsd:string" use="required"/>
+        <xsd:attribute name="prog" type="xsd:string" use="required"/>
+	</xsd:complexType>
+	<xsd:complexType name="Response">
+		<xsd:attribute name="mode" type="tns:ModeType" use="required"/>
+	</xsd:complexType>
+
+	<xsd:simpleType name="ModeType">
+        <xsd:restriction base="xsd:int">
+            <xsd:enumeration value="1">
+                <xsd:annotation>
+                    <xsd:documentation>ACK_WITH_DATA</xsd:documentation>
+                </xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="0">
+                <xsd:annotation>
+                    <xsd:documentation>ACK_ONLY</xsd:documentation>
+                </xsd:annotation>
+            </xsd:enumeration>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+
+
+    <xsd:complexType name="CommandIdentifier">
+        <xsd:sequence>
+            <xsd:element name="area" type="tns:Area"/>
+            <xsd:element name="prod" type="tns:Product"/>
+            <xsd:element name="equip" type="tns:Equipment"/>
+	     	<xsd:element name="mobile" type="tns:Mobile" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="Area">
+   		<xsd:annotation>
+			<xsd:documentation>Area for space localization of the event</xsd:documentation>
+		</xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="names" type="tns:LocalizedNameList" minOccurs="0"/>
+        </xsd:sequence>
+        <xsd:attribute name="gcode" type="xsd:string" use="required"/>
+    </xsd:complexType>
+    <xsd:complexType name="Product">
+    	<xsd:annotation>
+			<xsd:documentation>System (7,4,...) where state change happened</xsd:documentation>
+		</xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="names" type="tns:LocalizedNameList" minOccurs="0"/>
+        </xsd:sequence>
+        <xsd:attribute name="fqcode" type="xsd:string" use="required"/>
+    </xsd:complexType>
+    <xsd:complexType name="Equipment">
+		<xsd:annotation>
+			<xsd:documentation>Device that changed state. PBS string identify uniquely a device between all systems.</xsd:documentation>
+		</xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="names" type="tns:LocalizedNameList" minOccurs="0"/>
+        </xsd:sequence>
+        <xsd:attribute name="pbs" type="xsd:string" use="required"/>
+    </xsd:complexType>
+	<xsd:complexType name="Mobile">
+		<xsd:annotation>
+			<xsd:documentation>
+				Present only if the system that contains the equipment is movable.
+				Its attributes are: Train Logical ID (TID), Track Circuit (CB) and Destination ID (DID). 
+			</xsd:documentation>
+		</xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="names" type="tns:LocalizedNameList" minOccurs="0"/>
+        </xsd:sequence>
+		<xsd:attribute name="TID" type="xsd:string" use="required"/>
+        <xsd:attribute name="CB" type="xsd:string"/>
+        <xsd:attribute name="DID" type="xsd:string"/>
+	</xsd:complexType>
+
+    <xsd:complexType name="LocalizedNameList">
+        <xsd:sequence>
+            <xsd:element name="name" type="tns:LocalizedName" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="LocalizedName">
+        <xsd:attribute name="locale" type="tns:localeType" use="required"/>
+        <xsd:attribute name="value" type="xsd:string" use="required"/>
+    </xsd:complexType>
+
+	<!-- localeType definition (known languages) -->
+	<xsd:simpleType name="localeType">
+		<xsd:restriction base="xsd:byte">
+			<xsd:minInclusive value="0"/>
+			<xsd:maxInclusive value="1"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+
+
+    <xsd:complexType name="CommandInfo">
+    	<xsd:annotation>
+    		<xsd:documentation>
+    			Each command has different information, the following elements are omitted or 
+    			inserted more times depending on the specific command sent.
+    		</xsd:documentation>
+    	</xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="state" type="tns:State" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element name="time" type="tns:Time" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element name="measure" type="tns:Measure" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element name="label" type="tns:Label" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="bp" type="xsd:string" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>
+						Backpack (bp) is a string with no predefined content, 
+						used to append useful information about the event
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="State">
+    	<xsd:annotation>
+    		<xsd:documentation>State report with its name and number of possible states as attributes.</xsd:documentation>
+    	</xsd:annotation>
+  		<xsd:simpleContent>
+   			<xsd:extension base="xsd:string">
+		    	<xsd:attribute name="name" type="xsd:string" use="required"/>
+				<xsd:attribute name="card" type="xsd:int" use="required"/>
+   			</xsd:extension>
+  		</xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="Time">
+    	<xsd:annotation>
+    		<xsd:documentation>Time report with its name as attribute.</xsd:documentation>
+    	</xsd:annotation>
+    	<xsd:simpleContent>
+   			<xsd:extension base="xsd:string">
+    			<xsd:attribute name="name" type="xsd:string" use="required"/>
+    	   	</xsd:extension>
+  		</xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="Measure">
+    	<xsd:annotation>
+    		<xsd:documentation>Measure report with its name and unit as attributes.</xsd:documentation>
+    	</xsd:annotation>
+    	<xsd:simpleContent>
+   			<xsd:extension base="xsd:string">
+    			<xsd:attribute name="name" type="xsd:string" use="required"/>
+				<xsd:attribute name="unit" type="xsd:string" use="required"/>
+   			</xsd:extension>
+  		</xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="Label">
+    	<xsd:annotation>
+    		<xsd:documentation>Label report with its name as attribute.</xsd:documentation>
+    	</xsd:annotation>
+    	<xsd:simpleContent>
+   			<xsd:extension base="xsd:string">
+    			<xsd:attribute name="name" type="xsd:string" use="required"/>
+   			</xsd:extension>
+  		</xsd:simpleContent>
+    </xsd:complexType>
+
+</xsd:schema>

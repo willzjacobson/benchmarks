@@ -1,0 +1,142 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="cfgparse.css" type='text/css' />
+<link rel="first" href="cfgparse.html" title='cfgparse -- python configuration file parser module' />
+<link rel='last' href='about.html' title='About this document...' />
+<link rel='help' href='about.html' title='About this document...' />
+<link rel="next" href="cfgparse-option-type.html" />
+<link rel="prev" href="cfgparse-adding-options.html" />
+<link rel="parent" href="cfgparse-adding-options.html" />
+<link rel="next" href="cfgparse-option-type.html" />
+<meta name='aesop' content='information' />
+<title>2.3.1 Name and Destination</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<div id='top-navigation-panel' xml:id='top-navigation-panel'>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="2.3 Adding Options"
+  href="cfgparse-adding-options.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="2.3 Adding Options"
+  href="cfgparse-adding-options.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="2.3.2 Option type"
+  href="cfgparse-option-type.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">cfgparse -- python configuration file parser module</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="cfgparse-adding-options.html">2.3 Adding Options</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="cfgparse-adding-options.html">2.3 Adding Options</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="cfgparse-option-type.html">2.3.2 Option type</A>
+</div>
+<hr /></div>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H3><A NAME="SECTION000231000000000000000"></A><A NAME="cfgparse-option-name"></A>
+<BR>
+2.3.1 Name and Destination
+</H3>
+
+<P>
+The <var>name</var> string argument of the <code>add_option()</code> method is used to specify
+the name of the option setting to be obtained from the configuration file.
+<var>name</var> is required and is case sensitive, the option name in the configuration 
+file must exactly match the <var>name</var> argument.
+
+<P>
+The <code>parse()</code> method returns an object with attributes set to the option
+settings specified using the <code>add_option()</code> method.  The <var>dest</var> string
+argument is used to control the name of the attribute.  If <var>dest</var> argument
+is not present, the <var>name</var> is used as the attribute name.  Each option
+added must have a unique destination attribute name.
+
+<P>
+For example:
+
+<P>
+<div class="verbatim"><pre>
+# file: name_dest.ini
+mail_server =  192.168.0.0
+proxy_server = 192.168.0.100
+</pre></div>
+
+<P>
+And script:
+
+<P>
+<div class="verbatim"><pre>
+# file: name_dest.py
+import cfgparse
+c = cfgparse.ConfigParser()
+c.add_file('name_dest.ini')
+c.add_option('mail_server')
+c.add_option('proxy_server', dest='proxy')
+opts = c.parse()
+print 'Mail Server IP Address =',opts.mail_server
+print 'Proxy Server IP Address =',opts.proxy
+</pre></div>
+
+<P>
+Results in:
+
+<P>
+<div class="verbatim"><pre>
+$ python name_dest.py
+Mail Server IP Address = 192.168.0.0
+Proxy Server IP Address = 192.168.0.100
+</pre></div>
+
+<P>
+
+<DIV CLASS="navigation">
+<div class='online-navigation'>
+<p></p><hr />
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="2.3 Adding Options"
+  href="cfgparse-adding-options.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="2.3 Adding Options"
+  href="cfgparse-adding-options.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="2.3.2 Option type"
+  href="cfgparse-option-type.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">cfgparse -- python configuration file parser module</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="cfgparse-adding-options.html">2.3 Adding Options</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="cfgparse-adding-options.html">2.3 Adding Options</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="cfgparse-option-type.html">2.3.2 Option type</A>
+</div>
+</div>
+<hr />
+
+</DIV>
+<!--End of Navigation Panel-->
+
+</BODY>
+</HTML>

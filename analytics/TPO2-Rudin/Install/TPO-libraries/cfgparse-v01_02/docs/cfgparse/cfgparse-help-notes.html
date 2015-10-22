@@ -1,0 +1,113 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="cfgparse.css" type='text/css' />
+<link rel="first" href="cfgparse.html" title='cfgparse -- python configuration file parser module' />
+<link rel='last' href='about.html' title='About this document...' />
+<link rel='help' href='about.html' title='About this document...' />
+<link rel="next" href="node36.html" />
+<link rel="prev" href="cfgparse-printing-help.html" />
+<link rel="parent" href="node33.html" />
+<link rel="next" href="node36.html" />
+<meta name='aesop' content='information' />
+<title>8.2 Help Notes</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<div id='top-navigation-panel' xml:id='top-navigation-panel'>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="8.1 Printing help"
+  href="cfgparse-printing-help.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="8 misc"
+  href="node33.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="8.3 History"
+  href="node36.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">cfgparse -- python configuration file parser module</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="cfgparse-printing-help.html">8.1 Printing help</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="node33.html">8 misc</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="node36.html">8.3 History</A>
+</div>
+<hr /></div>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION000820000000000000000"></A><A NAME="cfgparse-help-notes"></A>
+<BR>
+8.2 Help Notes
+</H2>
+
+<P>
+The <code>add_note</code> method of the <code>ConfigParser</code> may be used to append
+preformatted text to the help text.
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><tt id='l2h-16' xml:id='l2h-16' class="function">add_note</tt></b>(</nobr></td>
+  <td><var>note</var>)</td></tr></table></dt>
+<dd>
+    <var>note</var> is a positional string argument and is the preformatted text
+        to be appended to the end of the generated help text.
+  </dl>
+
+<P>
+The <code>add_note</code> method of instances of an option object returned by the
+<code>add_option</code> method (same prototype) performs the same action but also
+causes the preformatted text to be printed if an error occurs when option is
+retrieved.  Also the preformatted text is inserted as a comment above option 
+settings added to configuration files.
+
+<P>
+
+<DIV CLASS="navigation">
+<div class='online-navigation'>
+<p></p><hr />
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="8.1 Printing help"
+  href="cfgparse-printing-help.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="8 misc"
+  href="node33.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="8.3 History"
+  href="node36.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">cfgparse -- python configuration file parser module</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="cfgparse-printing-help.html">8.1 Printing help</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="node33.html">8 misc</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="node36.html">8.3 History</A>
+</div>
+</div>
+<hr />
+
+</DIV>
+<!--End of Navigation Panel-->
+
+</BODY>
+</HTML>

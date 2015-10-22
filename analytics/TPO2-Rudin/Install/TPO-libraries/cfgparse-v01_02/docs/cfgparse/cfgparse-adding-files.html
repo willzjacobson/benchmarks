@@ -1,0 +1,204 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="cfgparse.css" type='text/css' />
+<link rel="first" href="cfgparse.html" title='cfgparse -- python configuration file parser module' />
+<link rel='last' href='about.html' title='About this document...' />
+<link rel='help' href='about.html' title='About this document...' />
+<link rel="next" href="cfgparse-adding-options.html" />
+<link rel="prev" href="cfgparse-create-parser.html" />
+<link rel="parent" href="node2.html" />
+<link rel="next" href="cfgparse-adding-options.html" />
+<meta name='aesop' content='information' />
+<title>2.2 Adding Files</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<div id='top-navigation-panel' xml:id='top-navigation-panel'>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="2.1 Creating the parser"
+  href="cfgparse-create-parser.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="2 Basics"
+  href="node2.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="2.3 Adding Options"
+  href="cfgparse-adding-options.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">cfgparse -- python configuration file parser module</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="cfgparse-create-parser.html">2.1 Creating the parser</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="node2.html">2 Basics</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="cfgparse-adding-options.html">2.3 Adding Options</A>
+</div>
+<hr /></div>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION000220000000000000000"></A><A NAME="cfgparse-adding-files"></A>
+<BR>
+2.2 Adding Files
+</H2>
+
+<P>
+The <code>add_file()</code> method of <tt class="class">ConfigParser</tt> is used to add configuration 
+files to the parser.  It returns an object which may be used for modifying
+option settings in the file and writing the changed file contents.
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><tt id='l2h-3' xml:id='l2h-3' class="function">add_file</tt></b>(</nobr></td>
+  <td><var></var><big>[</big><var>cfgfile</var><big>]</big><var></var><big>[</big><var>,content</var><big>]</big><var></var><big>[</big><var>,
+    type</var><big>]</big><var></var><big>[</big><var>, underkeys</var><big>]</big><var></var>)</td></tr></table></dt>
+<dd>
+
+<P>
+<var>cfgfile</var> is an optional keyword argument and is used to pass a file
+        name string or a file stream.  This argument defaults to <code>None</code>.
+        See table below for details.
+
+<P>
+<var>content</var> is an optional keyword argument and is used to pass a file
+        contents string or a file stream.  This argument defaults to 
+        <code>None</code>.  See table below for details.
+
+<P>
+<var>type</var> is an optional keyword argument used to control the parser
+        used to read the configuration file.  Argument may be set to either
+        <code>'ini'</code>, <code>'py'</code>, or <code>None</code> (default).  When set to 
+        <code>None</code>, file name extension is used to determine type.  
+        <code>'py'</code> causes the file to be read (executed) as Python code 
+        otherwise the <code>'ini'</code> syntax is assumed.
+
+<P>
+<var>keys</var> is an optional keyword argument.  When omitted, <code>None</code> 
+        or an empty list, options read from this file will be
+        read and stored using the sections as specified in the configuration
+        file.  Any keys passed in are used to extend the section names in the
+        configuration file when the file is read and stored.  Note, file is
+        only read and parsed if keys used to obtain option settings contain 
+        all the keys in this list.  See "Keys" (section 
+        <A href="cfgparse-keys.html#cfgparse-keys">6</A>) for more details.
+  </dl>
+
+<P>
+The following table summarizes the legal combinations <var>cfgfile</var> and
+<var>content</var> arguments and the resulting <strong>file name</strong> and 
+<strong>file contents</strong> utilized.
+
+<P>
+<div class="center"><table class="realtable">
+  <thead>
+    <tr>
+      <th class="left"  ><var>cfgfile</var></th>
+      <th class="left"  ><var>content</var></th>
+      <th class="left"  >file name</th>
+      <th class="left"  >file contents</th>
+      </tr>
+    </thead>
+  <tbody>
+    <tr><td class="left"   valign="baseline">filename</td>
+        <td class="left"  ><code>None</code></td>
+        <td class="left"  ><var>cfgfile</var></td>
+        <td class="left"  >file is opened and read</td></tr>
+    <tr><td class="left"   valign="baseline">stream</td>
+        <td class="left"  ><code>None</code></td>
+        <td class="left"  >stream.name</td>
+        <td class="left"  >stream is read</td></tr>
+    <tr><td class="left"   valign="baseline">filename</td>
+        <td class="left"  >stream</td>
+        <td class="left"  ><var>cfgfile</var></td>
+        <td class="left"  >stream is read</td></tr>
+    <tr><td class="left"   valign="baseline"><code>None</code></td>
+        <td class="left"  >stream</td>
+        <td class="left"  >'stream'</td>
+        <td class="left"  >stream is read</td></tr>
+    <tr><td class="left"   valign="baseline">filename</td>
+        <td class="left"  >string</td>
+        <td class="left"  ><var>cfgfile</var></td>
+        <td class="left"  ><var>content</var></td></tr>
+    <tr><td class="left"   valign="baseline"><code>None</code></td>
+        <td class="left"  >string</td>
+        <td class="left"  >'heredoc'</td>
+        <td class="left"  ><var>content</var></td></tr></tbody>
+</table></div>
+
+<P>
+The <code>add_env_file()</code> method of <tt class="class">ConfigParser</tt> is used to read a
+configuration file specified by an environment variable and returns
+an object which may be used for modifying option settings in the 
+file and writing the changed file contents.  For <code>ini</code> configuration 
+files the returned object is an instance of <code>ConfigFileIni</code>.  If the
+environment variable does not exist, <code>None</code> will be returned.
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><tt id='l2h-4' xml:id='l2h-4' class="function">add_env_file</tt></b>(</nobr></td>
+  <td><var>var</var><big>[</big><var>,keys</var><big>]</big><var></var>)</td></tr></table></dt>
+<dd>
+
+<P>
+<var>var</var> is a required positional argument and is the name of the 
+        environment variable that contains the configuration filename to
+        add.  
+    <var>keys</var> is an optional keyword argument.  When omitted, <code>None</code> 
+        or an empty list, options read from this file will be
+        read and stored using the sections as specified in the configuration
+        file.  Any keys passed in are used to extend the section names in the
+        configuration file when the file is read and stored.  Note, file is
+        only read and parsed if keys used to obtain option settings contain 
+        all the keys in this list.  See "Keys" (section 
+        <A href="cfgparse-keys.html#cfgparse-keys">6</A>) for more details.
+  </dl>
+
+<P>
+
+<DIV CLASS="navigation">
+<div class='online-navigation'>
+<p></p><hr />
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="2.1 Creating the parser"
+  href="cfgparse-create-parser.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="2 Basics"
+  href="node2.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="2.3 Adding Options"
+  href="cfgparse-adding-options.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">cfgparse -- python configuration file parser module</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="cfgparse-create-parser.html">2.1 Creating the parser</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="node2.html">2 Basics</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="cfgparse-adding-options.html">2.3 Adding Options</A>
+</div>
+</div>
+<hr />
+
+</DIV>
+<!--End of Navigation Panel-->
+
+</BODY>
+</HTML>

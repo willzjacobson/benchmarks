@@ -1,0 +1,124 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="cfgparse.css" type='text/css' />
+<link rel="first" href="cfgparse.html" title='cfgparse -- python configuration file parser module' />
+<link rel='last' href='about.html' title='About this document...' />
+<link rel='help' href='about.html' title='About this document...' />
+<link rel="next" href="cfgparse-section-keys.html" />
+<link rel="prev" href="node24.html" />
+<link rel="parent" href="node22.html" />
+<link rel="next" href="cfgparse-section-keys.html" />
+<meta name='aesop' content='information' />
+<title>5.3 Sections</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<div id='top-navigation-panel' xml:id='top-navigation-panel'>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="5.2 Option settings"
+  href="node24.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="5 INI Syntax Summary"
+  href="node22.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="5.4 Section keys"
+  href="cfgparse-section-keys.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">cfgparse -- python configuration file parser module</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="node24.html">5.2 Option settings</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="node22.html">5 INI Syntax Summary</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="cfgparse-section-keys.html">5.4 Section keys</A>
+</div>
+<hr /></div>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION000530000000000000000"></A><A NAME="cfgparse-sections"></A>
+<BR>
+5.3 Sections
+</H2>
+
+<P>
+A configuration file may contain one or more sections to store
+multiple settings of the same option.  A section is started with a 
+line that contains a section name enclosed in [ ] and all option settings
+that follow are part of that section until the next section is reached.  
+If the file contains no section names all settings are deposited into
+the <code>[DEFAULT]</code> section.  If options settings exist before the first
+section in a file, those option settings are a part of the <code>[DEFAULT]</code>
+section.  Simple section names can be considered as keys into a dictionary.
+
+<P>
+For example:
+
+<P>
+<div class="verbatim"><pre>
+[DEFAULT]
+opt1 = v_default
+
+[section1]
+opt1 = v_section1
+</pre></div>
+
+<P>
+Can be thought of as:
+
+<P>
+<div class="verbatim"><pre>
+opt1 = { 'DEFAULT' : 'v_default',
+         'section1' : 'v_section1' }
+</pre></div>
+
+<P>
+
+<DIV CLASS="navigation">
+<div class='online-navigation'>
+<p></p><hr />
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="5.2 Option settings"
+  href="node24.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="5 INI Syntax Summary"
+  href="node22.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="5.4 Section keys"
+  href="cfgparse-section-keys.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">cfgparse -- python configuration file parser module</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="node24.html">5.2 Option settings</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="node22.html">5 INI Syntax Summary</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="cfgparse-section-keys.html">5.4 Section keys</A>
+</div>
+</div>
+<hr />
+
+</DIV>
+<!--End of Navigation Panel-->
+
+</BODY>
+</HTML>

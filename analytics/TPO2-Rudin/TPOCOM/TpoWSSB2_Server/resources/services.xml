@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This file was auto-generated from WSDL -->
+<!-- by the Apache Axis2 version: 1.6.2  Built on : Apr 17, 2012 (05:33:49 IST) -->
+<serviceGroup>
+    <service name="WSSB2">
+        <messageReceivers>
+            <messageReceiver mep="http://www.w3.org/ns/wsdl/in-out" class="com.fin_sif.sb.services.WSSB2MessageReceiverInOut"/>
+            <messageReceiver mep="http://www.w3.org/ns/wsdl/in-only" class="com.fin_sif.sb.services.WSSB2MessageReceiverInOnly"/>
+        </messageReceivers>
+        <parameter name="ServiceClass">tpo.adapter.server.impl.Wssb2Impl</parameter>
+        <parameter name="useOriginalwsdl">true</parameter>
+        <parameter name="modifyUserWSDLPortAddress">true</parameter>
+        <operation name="SBunregister" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://sb.fin-sif.com/services">
+            <actionMapping>http://sb.fin-sif.com/types/SBunregister</actionMapping>
+            <outputActionMapping>http://sb.fin-sif.com/services/WSSB2/SBunregisterResponse</outputActionMapping>
+        </operation>
+        <operation name="e2eonMessageAndResponse" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://sb.fin-sif.com/services">
+            <actionMapping>http://sb.fin-sif.com/types/e2eonMessageAndResponse</actionMapping>
+            <outputActionMapping>http://sb.fin-sif.com/services/WSSB2/e2eonMessageAndResponseResponse</outputActionMapping>
+        </operation>
+        <operation name="SBsystemslist" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://sb.fin-sif.com/services">
+            <actionMapping>http://sb.fin-sif.com/types/SBsystemslist</actionMapping>
+            <outputActionMapping>http://sb.fin-sif.com/services/WSSB2/SBsystemslistResponse</outputActionMapping>
+        </operation>
+        <operation name="SBkeepalive" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://sb.fin-sif.com/services">
+            <actionMapping>http://sb.fin-sif.com/types/SBkeepalive</actionMapping>
+            <outputActionMapping>http://sb.fin-sif.com/services/WSSB2/SBkeepaliveResponse</outputActionMapping>
+        </operation>
+        <operation name="onMessageAndResponse" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://sb.fin-sif.com/services">
+            <actionMapping>http://sb.fin-sif.com/types/onMessageAndResponse</actionMapping>
+            <outputActionMapping>http://sb.fin-sif.com/services/WSSB2/onMessageAndResponseResponse</outputActionMapping>
+        </operation>
+        <operation name="SBhealthstatus" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://sb.fin-sif.com/services">
+            <actionMapping>http://sb.fin-sif.com/types/SBhealthstatus</actionMapping>
+            <outputActionMapping>http://sb.fin-sif.com/services/WSSB2/SBhealthstatusResponse</outputActionMapping>
+        </operation>
+        <operation name="AMsetHDBsubscriptions" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://sb.fin-sif.com/services">
+            <actionMapping>http://sb.fin-sif.com/types/AMsetHDBsubscriptions</actionMapping>
+            <outputActionMapping>http://sb.fin-sif.com/services/WSSB2/AMsetHDBsubscriptionsResponse</outputActionMapping>
+        </operation>
+        <operation name="onMessage" mep="http://www.w3.org/ns/wsdl/in-only" namespace="http://sb.fin-sif.com/services">
+            <actionMapping>http://sb.fin-sif.com/types/onMessage</actionMapping>
+        </operation>
+        <operation name="SBregisterandsubscribe" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://sb.fin-sif.com/services">
+            <actionMapping>http://sb.fin-sif.com/types/SBregisterandsubscribe</actionMapping>
+            <outputActionMapping>http://sb.fin-sif.com/services/WSSB2/SBregisterandsubscribeResponse</outputActionMapping>
+        </operation>
+    </service>
+</serviceGroup>

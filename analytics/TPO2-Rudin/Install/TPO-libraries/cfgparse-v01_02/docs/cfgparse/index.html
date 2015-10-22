@@ -1,0 +1,277 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="cfgparse.css" type='text/css' />
+<link rel="first" href="cfgparse.html" title='cfgparse -- python configuration file parser module' />
+<link rel='last' href='about.html' title='About this document...' />
+<link rel='help' href='about.html' title='About this document...' />
+<link rel="next" href="node1.html" />
+<meta name='aesop' content='information' />
+<title>cfgparse -- python configuration file parser module</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<div id='top-navigation-panel' xml:id='top-navigation-panel'>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></td>
+<td class='online-navigation'><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></td>
+<td class='online-navigation'><a rel="next" title="1 Public interface summary"
+  href="node1.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">cfgparse -- python configuration file parser module</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="node1.html">1 Public interface summary</A>
+</div>
+<hr /></div>
+</DIV>
+<!--End of Navigation Panel-->
+
+<div class="titlepage">
+<div class='center'>
+<h1>cfgparse -- python configuration file parser module</h1>
+<p><b><font size="+2">Dan Gass (dan.gass@gmail.com)</font></b></p>
+<p></p>
+</div>
+</div>
+
+<P>
+<DIV ALIGN="CENTER">
+Version 1.2
+</DIV>
+<P>
+<DIV ALIGN="CENTER">Download Source and Documentation:
+<a class="url" href="https://sourceforge.net/projects/cfgparse">https://sourceforge.net/projects/cfgparse</a></DIV>
+<P>
+<DIV ALIGN="CENTER"><i>Requires Python 2.3 -or- Python 2.2 and textwrap module from 2.3</i>
+
+</DIV>
+
+<P>
+<tt class="module">cfgparse</tt> is a more convenient, flexible, and powerful module for parsing 
+configuration files than the standard library <tt class="module">ConfigParser</tt> module.  
+<tt class="module">cfgparse</tt> uses a more declarative style modelled after the popular <tt class="module">optparse</tt> 
+standard library module.  
+
+<P>
+<tt class="module">cfgparse</tt> can optionally cooperate with the <tt class="module">optparse</tt> module to provide
+coordination between command line and configuration file options.  In addition, the 
+cooperation can be used to allow the user to control features of the parser from the command line.
+
+<P>
+If you like this module and want to see it in the standard Python distribution, 
+please take the time and add your comments to the Python Configuration File 
+Parser Shootout wiki: <a class="url" href="http://www.python.org/moin/ConfigParserShootout">http://www.python.org/moin/ConfigParserShootout</a>.
+
+<P>
+
+<H4><A NAME="SECTION000000100000000000000">
+Standard Features</A>
+</H4>
+
+<P>
+
+<UL>
+<LI>Simple <code>ini</code> style configuration syntax
+</LI>
+<LI>Type checking with error handling and help messages
+</LI>
+<LI>Help summary modelled after that in <tt class="module">optparse</tt>
+</LI>
+<LI>Round trip - read, modify, write configuration files with comment retention
+</LI>
+<LI>Cooperates with <tt class="module">optparse</tt> for configuration file options that 
+    should be overridden by command line options
+</LI>
+</UL>
+
+<P>
+
+<H4><A NAME="SECTION000000200000000000000">
+Advanced Features</A>
+</H4>
+
+<P>
+
+<UL>
+<LI>Supports heirarchically organized option settings
+    
+<UL>
+<LI>User may store multiple option settings in a arbitrarily deep keyed dictionary. 
+</LI>
+<LI>Application uses a key list to walk into the dictionary to obtain a setting.
+</LI>
+<LI>User controls key list with setting in configuration file.
+</LI>
+<LI>Supports adding keys to the list through a command line option or from environment variables.
+    
+</LI>
+</UL>
+</LI>
+<LI>Supports allowing user control of configuration files used.
+    
+<UL>
+<LI>Environment variables may be used to allow user to specify a default configuration file.
+</LI>
+<LI>Command line options to specify configuration file supported.
+</LI>
+<LI>Configuration files may include other configuration files where where sections are read in parallel.
+</LI>
+<LI>Configuration files may be nested heirarchically by including configuration files from within a section or subsection.
+    
+</LI>
+</UL>
+</LI>
+<LI>Configuration files may alternatively be written in Python.
+    
+<UL>
+<LI>full power and flexibility of Python available for creation of option settings
+</LI>
+<LI>allows options settings to be real Python objects
+</LI>
+<LI>this feature is NOT enabled by default
+    
+</LI>
+</UL>
+</LI>
+<LI>May be extended to support syntax such as XML.
+</LI>
+</UL>
+
+<P>
+For example:
+
+<P>
+<div class="verbatim"><pre>
+# file: intro.ini
+retries = 10
+</pre></div>
+
+<P>
+And script:
+
+<P>
+<div class="verbatim"><pre>
+# file: intro.py
+import cfgparse
+c = cfgparse.ConfigParser()
+c.add_option('retries', type='int')
+c.add_file('intro.ini')
+opts = c.parse()
+print 'Number of retries:',opts.retries
+</pre></div>
+
+<P>
+Results in:
+
+<P>
+<div class="verbatim"><pre>
+$ python intro.py
+Number of retries: 10
+</pre></div>
+
+<P>
+
+<P>
+
+<p><br /></p><hr class='online-navigation' />
+<div class='online-navigation'>
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"></a>
+
+<UL CLASS="ChildLinks">
+<LI><A href="node1.html">1 Public interface summary</a>
+<LI><A href="node2.html">2 Basics</a>
+<UL>
+<LI><A href="cfgparse-create-parser.html">2.1 Creating the parser</a>
+<LI><A href="cfgparse-adding-files.html">2.2 Adding Files</a>
+<LI><A href="cfgparse-adding-options.html">2.3 Adding Options</a>
+<UL>
+<LI><A href="cfgparse-option-name.html">2.3.1 Name and Destination</a>
+<LI><A href="cfgparse-option-type.html">2.3.2 Option type</a>
+<LI><A href="cfgparse-option-check.html">2.3.3 Option check</a>
+<LI><A href="cfgparse-option-help.html">2.3.4 Option Help</a>
+<LI><A href="node10.html">2.3.5 Sections</a>
+</ul>
+<LI><A href="cfgparse-groups.html">2.4 Groups</a>
+<LI><A href="cfgparse-parsing.html">2.5 Parsing and Obtaining Options</a>
+</ul>
+<LI><A href="cfgparse-cmd-line-coop.html">3 Command line cooperation</a>
+<UL>
+<LI><A href="cfgparse-coop-help.html">3.1 Help switch</a>
+<LI><A href="cfgparse-coop-option.html">3.2 Option cooperation</a>
+<LI><A href="cfgparse-coop-keys.html">3.3 Keys switch</a>
+<LI><A href="cfgparse-coop-files.html">3.4 Files switch</a>
+</ul>
+<LI><A href="node18.html">4 Round Trip</a>
+<UL>
+<LI><A href="cfgparse-round-trip-set.html">4.1 set method</a>
+<LI><A href="cfgparse-round-trip-set-option.html">4.2 set_option method</a>
+<LI><A href="cfgparse-round-trip-write.html">4.3 write method</a>
+</ul>
+<LI><A href="node22.html">5 INI Syntax Summary</a>
+<UL>
+<LI><A href="node23.html">5.1 Comments</a>
+<LI><A href="node24.html">5.2 Option settings</a>
+<LI><A href="cfgparse-sections.html">5.3 Sections</a>
+<LI><A href="cfgparse-section-keys.html">5.4 Section keys</a>
+<LI><A href="cfgparse-text-sub.html">5.5 Text substitution</a>
+<LI><A href="node28.html">5.6 Including Files</a>
+<LI><A href="cfgparse-default-keys.html">5.7 Default keys</a>
+<LI><A href="cfgparse-env-keys.html">5.8 Environment keys</a>
+</ul>
+<LI><A href="cfgparse-keys.html">6 Keys</a>
+<LI><A href="cfgparse-python.html">7 Python configuration files</a>
+<LI><A href="node33.html">8 misc</a>
+<UL>
+<LI><A href="cfgparse-printing-help.html">8.1 Printing help</a>
+<LI><A href="cfgparse-help-notes.html">8.2 Help Notes</a>
+<LI><A href="node36.html">8.3 History</a>
+</ul>
+<LI><A href="about.html">About this document ...</a>
+</ul>
+<!--End of Table of Child-Links-->
+</div>
+
+<DIV CLASS="navigation">
+<div class='online-navigation'>
+<p></p><hr />
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></td>
+<td class='online-navigation'><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></td>
+<td class='online-navigation'><a rel="next" title="1 Public interface summary"
+  href="node1.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">cfgparse -- python configuration file parser module</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="node1.html">1 Public interface summary</A>
+</div>
+</div>
+<hr />
+
+</DIV>
+<!--End of Navigation Panel-->
+
+</BODY>
+</HTML>

@@ -1,0 +1,184 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" href="cfgparse.css" type='text/css' />
+<link rel="first" href="cfgparse.html" title='cfgparse -- python configuration file parser module' />
+<link rel='last' href='about.html' title='About this document...' />
+<link rel='help' href='about.html' title='About this document...' />
+<link rel="next" href="cfgparse-round-trip-write.html" />
+<link rel="prev" href="cfgparse-round-trip-set.html" />
+<link rel="parent" href="node18.html" />
+<link rel="next" href="cfgparse-round-trip-write.html" />
+<meta name='aesop' content='information' />
+<title>4.2 set_option method</title>
+</head>
+<body>
+<DIV CLASS="navigation">
+<div id='top-navigation-panel' xml:id='top-navigation-panel'>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="4.1 set method"
+  href="cfgparse-round-trip-set.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="4 Round Trip"
+  href="node18.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="4.3 write method"
+  href="cfgparse-round-trip-write.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">cfgparse -- python configuration file parser module</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="cfgparse-round-trip-set.html">4.1 set method</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="node18.html">4 Round Trip</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="cfgparse-round-trip-write.html">4.3 write method</A>
+</div>
+<hr /></div>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION000420000000000000000"></A><A NAME="cfgparse-round-trip-set-option"></A>
+<BR>
+4.2 set_option method
+</H2>
+
+<P>
+The <code>set_option()</code> method of the object returned from the <code>add_file()</code> 
+method of the <code>ConfigParser</code> class can be used to modify an option setting 
+in a specific configuration file.  This method offers more direct control of 
+which section the option to be set is located in.  If the option is not in the 
+section specified, the option will be added to that section.  If multiple copies 
+of the option exist in the desired section, all copies will be updated.  This 
+method does not return anything.
+
+<P>
+<dl><dt><table cellpadding="0" cellspacing="0"><tr valign="baseline">
+  <td><nobr><b><tt id='l2h-13' xml:id='l2h-13' class="function">set_option</tt></b>(</nobr></td>
+  <td><var>name, value</var><big>[</big><var>, keys</var><big>]</big><var></var><big>[</big><var>, help</var><big>]</big><var></var>)</td></tr></table></dt>
+<dd>
+
+<P>
+<var>name</var> is a required positional argument and is the name of the
+        option to set the value of.
+
+<P>
+<var>value</var> is a required positional argument and is the new option
+        value.
+
+<P>
+<var>keys</var> is an optional keyword argument.  This key list identifies
+        the configuration file section where option is located or to be
+        added.
+
+<P>
+<var>help</var> is an optional string keyword argument.  This string is
+        placed ahead of an option setting if it is necessary to add the
+        option to a section.
+
+<P>
+</dl>
+
+<P>
+For example:
+
+<P>
+<div class="verbatim"><pre>
+[DEFAULT]
+
+# this section applies to all devices
+timeout = 10 # in seconds
+retries = 3
+
+
+[DEV0]
+
+# this section if for settings specific to device #0
+retries = 5 # overrides default
+</pre></div>
+
+<P>
+And script:
+
+<P>
+<div class="verbatim"><pre>
+import cfgparse,sys
+c = cfgparse.ConfigParser()
+f = c.add_file('set_option.ini')
+f.set_option('retries',6)
+f.set_option('retries',10,keys='DEV0')
+f.set_option('retries',100,keys='DEV1',help='In new section')
+f.write(sys.stdout)
+</pre></div>
+
+<P>
+Results in:
+<div class="verbatim"><pre>
+$ python set_option.py
+[DEFAULT]
+
+# this section applies to all devices
+timeout = 10 # in seconds
+retries = 6
+
+
+[DEV0]
+
+# this section if for settings specific to device #0
+retries = 10 # overrides default
+
+
+[DEV1]
+
+# In new section
+retries = 100
+</pre></div>
+
+<P>
+
+<DIV CLASS="navigation">
+<div class='online-navigation'>
+<p></p><hr />
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td class='online-navigation'><a rel="prev" title="4.1 set method"
+  href="cfgparse-round-trip-set.html"><img src='previous.png'
+  border='0' height='32'  alt='Previous Page' width='32' /></A></td>
+<td class='online-navigation'><a rel="parent" title="4 Round Trip"
+  href="node18.html"><img src='up.png'
+  border='0' height='32'  alt='Up One Level' width='32' /></A></td>
+<td class='online-navigation'><a rel="next" title="4.3 write method"
+  href="cfgparse-round-trip-write.html"><img src='next.png'
+  border='0' height='32'  alt='Next Page' width='32' /></A></td>
+<td align="center" width="100%">cfgparse -- python configuration file parser module</td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+<td class='online-navigation'><img src='blank.png'
+  border='0' height='32'  alt='' width='32' /></td>
+</tr></table>
+<div class='online-navigation'>
+<b class="navlabel">Previous:</b>
+<a class="sectref" rel="prev" href="cfgparse-round-trip-set.html">4.1 set method</A>
+<b class="navlabel">Up:</b>
+<a class="sectref" rel="parent" href="node18.html">4 Round Trip</A>
+<b class="navlabel">Next:</b>
+<a class="sectref" rel="next" href="cfgparse-round-trip-write.html">4.3 write method</A>
+</div>
+</div>
+<hr />
+
+</DIV>
+<!--End of Navigation Panel-->
+
+</BODY>
+</HTML>

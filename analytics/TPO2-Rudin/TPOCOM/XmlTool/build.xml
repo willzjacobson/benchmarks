@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="xmlTool" default="build_dist">
+
+	<property name="libraries" value="lib"/>
+	<property name="srcDir" value="src"/>
+	<property name="buildDir" value="build"/>
+	<property name="compDir" value="build/classes"/>
+	<property name="jarDir" value="build/jar"/>
+
+	<path id="xmlTool.classpath">
+		<pathelement location="${libraries}/jdom-2.0.3.jar"/>
+		<pathelement location="${libraries}/log4j-1.2.17.jar"/>
+	</path>
+	
+	<target name="init">
+		<mkdir dir="${compDir}"/>
+		<mkdir dir="${jarDir}"/>
+		<copy  includeemptydirs="false" todir="${compDir}">
+			<fileset dir="${srcDir}" excludes="**/.svn/, **/*.java"/>
+		</copy>
+	</target>
+	
+	<target name="clean">
+		<delete dir="${compDir}"/>
+		<delete dir="${jarDir}"/>
+		<delete dir="${buildDir}"/>
+	</target>
+		
+	<target name="build_dev" depends="clean,init">
+		<javac srcdir="${srcDir}" destdir="${compDir}" debug="true">		 
+		     <include name="**/*.java" />
+			 <classpath refid="xmlTool.classpath"/>
+		</javac>
+		<ant target="create_jar"/>
+	</target>
+	
+	<target name="build_dist" depends="clean,init">
+		<javac srcdir="${srcDir}" destdir="${compDir}">		 
+		     <include name="**/*.java" />
+			 <classpath refid="xmlTool.classpath"/>
+		</javac>
+		<ant target="create_jar"/>
+	</target>
+	
+	<target name="create_jar">
+		<jar destfile="${jarDir}/${ant.project.name}.jar">
+			<fileset dir="${compDir}" />
+			<zipgroupfileset dir="${libraries}" includes="*.jar"/>
+			<manifest>
+				<attribute name="Class-Path" value="log4j-1.2.17.jar jdom-2.0.3.jar" />
+			</manifest>
+		</jar>
+		<delete dir="${compDir}"/>
+	</target>
+	
+</project>
+
+
+
+
+
+
+
+
+

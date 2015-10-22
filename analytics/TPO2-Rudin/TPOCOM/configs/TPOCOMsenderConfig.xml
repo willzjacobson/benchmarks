@@ -1,0 +1,1982 @@
+<?xml version="1.0" ?>
+<tpocom_configuration>
+	<tpo_sender_id>000TPO</tpo_sender_id>
+	<tpo_location_id>NYC.COL1.CEN</tpo_location_id>
+	<tpo_db_poll_interval_seconds>900</tpo_db_poll_interval_seconds>
+	<tpocom_version>1.0</tpocom_version>
+	<tpocom_ttl_ms>600000</tpocom_ttl_ms>
+	<tpocom_heart_beat_interval_sec>60</tpocom_heart_beat_interval_sec>
+	<tpocom_subscription>
+		<point type="measure">
+			<subscription_name>measure.&gt;</subscription_name>
+			<filter>measure/sender</filter>
+		</point>
+		<point type="status">
+			<subscription_name>status.&gt;</subscription_name>
+			<filter>status/sender</filter>
+		</point>
+	</tpocom_subscription>
+	<sif_endpoint>
+		<host>dibossws.selex-es.com</host>
+		<port>80</port>
+		<path>axis2/services/WSSB2</path>
+	</sif_endpoint>
+	<tpo_receiver_endpoint>
+		<host>129.236.31.170</host>
+		<port>8080</port>
+		<path>axis2/services/WSSB2</path>
+	</tpo_receiver_endpoint>
+	<databases>
+		<database_config name="db1">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>345</database>
+			<table>dbo.[Space_Temp_Prediction]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="trackerdb1">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>TPOCOM</database>
+			<table>dbo.[345park_stp_sendid_tracker]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="db2">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>345</database>
+			<table>dbo.[345---------000TPOFORELECON001---001]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="trackerdb2">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>TPOCOM</database>
+			<table>dbo.[345park_elp_sendid_tracker]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="db3">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>345</database>
+			<table>dbo.[345---------000TPOFORSTECON001---001]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="trackerdb3">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>TPOCOM</database>
+			<table>dbo.[345park_sdp_sendid_tracker]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="db6">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>345</database>
+			<table>dbo.[345---------000TPOOPTTEMUPT001---001]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="trackerdb6">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>TPOCOM</database>
+			<table>dbo.[345park_str_sendid_tracker]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="db7">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>345</database>
+			<table>dbo.[345---------000TPOOPTTEMRDW001---001]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="trackerdb7">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>TPOCOM</database>
+			<table>dbo.[345park_rdr_sendid_tracker]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="345---------000TPOFORELETEC001---001">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>345</database>
+			<table>dbo.[345---------000TPOFORELETEC001---001]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="345---------000TPOFORELETEC001---001_sendid_tracker">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>TPOCOM</database>
+			<table>dbo.[345---------000TPOFORELETEC001---001_sendid_tracker]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="345---------000TPOFORELETEC002---001">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>345</database>
+			<table>dbo.[345---------000TPOFORELETEC002---001]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="345---------000TPOFORELETEC002---001_sendid_tracker">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>TPOCOM</database>
+			<table>dbo.[345---------000TPOFORELETEC002---001_sendid_tracker]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="345---------000TPOFORELETEC003---001">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>345</database>
+			<table>dbo.[345---------000TPOFORELETEC003---001]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="345---------000TPOFORELETEC003---001_sendid_tracker">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>TPOCOM</database>
+			<table>dbo.[345---------000TPOFORELETEC003---001_sendid_tracker]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="345---------000TPOFORELETEC004---001">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>345</database>
+			<table>dbo.[345---------000TPOFORELETEC004---001]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="345---------000TPOFORELETEC004---001_sendid_tracker">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>TPOCOM</database>
+			<table>dbo.[345---------000TPOFORELETEC004---001_sendid_tracker]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="345---------000TPOFORELETEC006---001">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>345</database>
+			<table>dbo.[345---------000TPOFORELETEC006---001]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="345---------000TPOFORELETEC006---001_sendid_tracker">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>TPOCOM</database>
+			<table>dbo.[345---------000TPOFORELETEC006---001_sendid_tracker]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="345---------000TPOFORPEOBUI001---001">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>345</database>
+			<table>dbo.[345---------000TPOFORPEOBUI001---001]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="345---------000TPOFORPEOBUI001---001_sendid_tracker">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>TPOCOM</database>
+			<table>dbo.[345---------000TPOFORPEOBUI001---001_sendid_tracker]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="560---------000TPOFORPEOBUI001---001">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>560</database>
+			<table>dbo.[560---------000TPOFORPEOBUI001---001]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="560---------000TPOFORPEOBUI001---001_sendid_tracker">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>TPOCOM</database>
+			<table>dbo.[560---------000TPOFORPEOBUI001---001_sendid_tracker]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="345---------000TPOOPTTEMPRH001---001">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>345</database>
+			<table>dbo.[345---------000TPOOPTTEMPRH001---001]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="345---------000TPOOPTTEMPRH001---001_sendid_tracker">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>TPOCOM</database>
+			<table>dbo.[345---------000TPOOPTTEMPRH001---001_sendid_tracker]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="db4">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>560</database>
+			<table>dbo.[560---------000TPOFORTEMSPA001---001]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="trackerdb4">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>TPOCOM</database>
+			<table>dbo.[560lex_stp_sendid_tracker]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="db5">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>560</database>
+			<table>dbo.[560---------000TPOFORELECON001---001]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="trackerdb5">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>TPOCOM</database>
+			<table>dbo.[560lex_elp_sendid_tracker]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="db8">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>560</database>
+			<table>dbo.[560---------000TPOOPTTEMUPT001---001]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="trackerdb8">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>TPOCOM</database>
+			<table>dbo.[560lex_str_sendid_tracker]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="db9">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>560</database>
+			<table>dbo.[560---------000TPOOPTTEMRDW001---001]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="trackerdb9">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>TPOCOM</database>
+			<table>dbo.[560lex_rdr_sendid_tracker]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="db10">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>Weather</database>
+			<table>dbo.Hourly_Forecast</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="trackerdb10">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>TPOCOM</database>
+			<table>dbo.[weather_hourly_forecast_sendid_tracker]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="trackerdb12">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>TPOCOM</database>
+			<table>dbo.[weather_hourly_forecast_sendid_tracker_status]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="db11">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>Weather</database>
+			<table>dbo.Observations_History</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="trackerdb11">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>TPOCOM</database>
+			<table>dbo.[observations_history_sendid_tracker]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="trackerdb13">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>TPOCOM</database>
+			<table>dbo.[observations_history_sendid_tracker_status]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="345alarm_tpodb">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>345</database>
+			<table>dbo.[345---------000TPO---ALA---001]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="345ALARM_trackerdb">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>TPOCOM</database>
+			<table>dbo.[345alarm_sendid_tracker]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="560alarm_tpodb">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>560</database>
+			<table>dbo.[560---------000TPO---ALA---001]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="560ALARM_trackerdb">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>TPOCOM</database>
+			<table>dbo.[560alarm_sendid_tracker]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="1BP---------000TPOFORELECON001---001">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>1BP</database>
+			<table>dbo.[1BP---------000TPOFORELECON001---001]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="1BP---------000TPOFORELECON001---001_sendid_tracker">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>TPOCOM</database>
+			<table>dbo.[1BP---------000TPOFORELECON001---001_sendid_tracker]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="1BP---------000TPOFORSTECON001---001">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>1BP</database>
+			<table>dbo.[1BP---------000TPOFORSTECON001---001]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="1BP---------000TPOFORSTECON001---001_sendid_tracker">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>TPOCOM</database>
+			<table>dbo.[1BP---------000TPOFORSTECON001---001_sendid_tracker]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="1BP---------000TPOFORPEOBUI001---001">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>1BP</database>
+			<table>dbo.[1BP---------000TPOFORPEOBUI001---001]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="1BP---------000TPOFORPEOBUI001---001_sendid_tracker">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>TPOCOM</database>
+			<table>dbo.[1BP---------000TPOFORPEOBUI001---001_sendid_tracker]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="1BP---------000TPOFORTEMSPA001---001">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>1BP</database>
+			<table>dbo.[Space_Temp_Prediction]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="1BP---------000TPOFORTEMSPA001---001_sendid_tracker">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>TPOCOM</database>
+			<table>dbo.[1BP---------000TPOFORTEMSPA001---001_sendid_tracker]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="1BP---------000TPOOPTTEMRDW001---001">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>1BP</database>
+			<table>dbo.[1BP---------000TPOOPTTEMRDW001---001]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="1BP---------000TPOOPTTEMRDW001---001_sendid_tracker">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>TPOCOM</database>
+			<table>dbo.[1BP---------000TPOOPTTEMRDW001---001_sendid_tracker]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="1BP---------000TPOOPTTEMUPT001---001">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>1BP</database>
+			<table>dbo.[1BP---------000TPOOPTTEMUPT001---001]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="1BP---------000TPOOPTTEMUPT001---001_sendid_tracker">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>TPOCOM</database>
+			<table>dbo.[1BP---------000TPOOPTTEMUPT001---001_sendid_tracker]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="4E5---------000TPOFORELECON001---001">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>4E5</database>
+			<table>dbo.[4E5---------000TPOFORELECON001---001]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="4E5---------000TPOFORELECON001---001_sendid_tracker">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>TPOCOM</database>
+			<table>dbo.[4E5---------000TPOFORELECON001---001_sendid_tracker]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="4E5---------000TPOFORELETEC001---001">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>4E5</database>
+			<table>dbo.[4E5---------000TPOFORELETEC001---001]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="4E5---------000TPOFORELETEC001---001_sendid_tracker">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>TPOCOM</database>
+			<table>dbo.[4E5---------000TPOFORELETEC001---001_sendid_tracker]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="4E5---------000TPOFORPEOBUI001---001">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>4E5</database>
+			<table>dbo.[4E5---------000TPOFORPEOBUI001---001]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="4E5---------000TPOFORPEOBUI001---001_sendid_tracker">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>TPOCOM</database>
+			<table>dbo.[4E5---------000TPOFORPEOBUI001---001_sendid_tracker]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="4E5---------000TPOFORSTECON001---001">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>4E5</database>
+			<table>dbo.[4E5---------000TPOFORSTECON001---001]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="4E5---------000TPOFORSTECON001---001_sendid_tracker">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>TPOCOM</database>
+			<table>dbo.[4E5---------000TPOFORSTECON001---001_sendid_tracker]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="4E5---------000TPOFORTEMSPA001---001">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>4E5</database>
+			<table>dbo.[Space_Temp_Prediction]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="4E5---------000TPOFORTEMSPA001---001_sendid_tracker">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>TPOCOM</database>
+			<table>dbo.[4E5---------000TPOFORTEMSPA001---001_sendid_tracker]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="4E5---------000TPOOPTTEMRDW001---001">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>4E5</database>
+			<table>dbo.[4E5---------000TPOOPTTEMRDW001---001]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="4E5---------000TPOOPTTEMRDW001---001_sendid_tracker">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>TPOCOM</database>
+			<table>dbo.[4E5---------000TPOOPTTEMRDW001---001_sendid_tracker]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="4E5---------000TPOOPTTEMUPT001---001">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>4E5</database>
+			<table>dbo.[4E5---------000TPOOPTTEMUPT001---001]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="4E5---------000TPOOPTTEMUPT001---001_sendid_tracker">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>TPOCOM</database>
+			<table>dbo.[4E5---------000TPOOPTTEMUPT001---001_sendid_tracker]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="WHI---------000TPOFORELECON001---001">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>WHI</database>
+			<table>dbo.[WHI---------000TPOFORELECON001---001]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="WHI---------000TPOFORELECON001---001_sendid_tracker">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>TPOCOM</database>
+			<table>dbo.[WHI---------000TPOFORELECON001---001_sendid_tracker]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="WHI---------000TPOFORSTECON001---001">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>WHI</database>
+			<table>dbo.[WHI---------000TPOFORSTECON001---001]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="WHI---------000TPOFORSTECON001---001_sendid_tracker">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>TPOCOM</database>
+			<table>dbo.[WHI---------000TPOFORSTECON001---001_sendid_tracker]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="WHI---------000TPOOPTTEMUPT001---001">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>WHI</database>
+			<table>dbo.[WHI---------000TPOOPTTEMUPT001---001]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="WHI---------000TPOOPTTEMUPT001---001_sendid_tracker">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>TPOCOM</database>
+			<table>dbo.[WHI---------000TPOOPTTEMUPT001---001_sendid_tracker]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="WHI---------000TPOOPTTEMRDW001---001">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>WHI</database>
+			<table>dbo.[WHI---------000TPOOPTTEMRDW001---001]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="WHI---------000TPOOPTTEMRDW001---001_sendid_tracker">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>TPOCOM</database>
+			<table>dbo.[WHI---------000TPOOPTTEMRDW001---001_sendid_tracker]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="WHI---------000TPOFORPEOBUI001---001">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>WHI</database>
+			<table>dbo.[WHI---------000TPOFORPEOBUI001---001]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="WHI---------000TPOFORPEOBUI001---001_sendid_tracker">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>TPOCOM</database>
+			<table>dbo.[WHI---------000TPOFORPEOBUI001---001_sendid_tracker]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="WHI---------000TPOHVATEMSPA001---001">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>WHI</database>
+			<table>dbo.[Space_Temp_Prediction]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+		<database_config name="WHI---------000TPOHVATEMSPA001---001_sendid_tracker">
+			<host>anderson.ldeo.columbia.edu</host>
+			<port>1433</port>
+			<database>TPOCOM</database>
+			<table>dbo.[WHI---------000TPOHVATEMSPA001---001_sendid_tracker]</table>
+			<user>tpo</user>
+			<password>tpo</password>
+		</database_config>
+	</databases>
+	<points_config>
+		<point_config name="1BP---------000TPOFORELECON001---001">
+			<database>1BP---------000TPOFORELECON001---001</database>
+			<send_tracker_database>1BP---------000TPOFORELECON001---001_sendid_tracker</send_tracker_database>
+			<primary_column>ID</primary_column>
+			<tracker_column>SENTID</tracker_column>
+			<point_constants>
+				<constant pointName="Pbs_Loc_A1">1BP</constant>
+				<constant pointName="Pbs_Sys_T">000</constant>
+				<constant pointName="Pbs_Sys_S">TPO</constant>
+				<constant pointName="Pbs_Eq_L1">FOR</constant>
+				<constant pointName="Pbs_Eq_L2">ELE</constant>
+				<constant pointName="Pbs_Eq_L3">CON</constant>
+				<constant pointName="Pbs_Eq_n">001</constant>
+				<constant pointName="Sign_Prog">001</constant>
+				<constant pointName="Sender">000TPO</constant>
+				<constant pointName="Realtime">1</constant>
+				<constant pointName="Pbs_Native">1BP---------000TPOFORELECON001---001</constant>
+				<constant pointName="Point_Type">measure</constant>
+			</point_constants>
+			<point_variables/>
+			<value_codes_AND_column_maps>
+				<constant colName="Prediction_Value" valueDataType="double">VAL</constant>
+				<constant colName="Lower_Bound_95" valueDataType="double">VLOLIM</constant>
+				<constant colName="Upper_Bound_95" valueDataType="double">VHILIM</constant>
+				<constant colName="Lower_Bound_68" valueDataType="double">LOLIM</constant>
+				<constant colName="Upper_Bound_68" valueDataType="double">HILIM</constant>
+			</value_codes_AND_column_maps>
+			<value_attributes>
+				<variable colName="Prediction_DateTime" valueDataType="date">RefTs</variable>
+			</value_attributes>
+		</point_config>
+		<point_config name="1BP---------000TPOFORSTECON001---001">
+			<database>1BP---------000TPOFORSTECON001---001</database>
+			<send_tracker_database>1BP---------000TPOFORSTECON001---001_sendid_tracker</send_tracker_database>
+			<primary_column>ID</primary_column>
+			<tracker_column>SENTID</tracker_column>
+			<point_constants>
+				<constant pointName="Pbs_Loc_A1">1BP</constant>
+				<constant pointName="Pbs_Sys_T">000</constant>
+				<constant pointName="Pbs_Sys_S">TPO</constant>
+				<constant pointName="Pbs_Eq_L1">FOR</constant>
+				<constant pointName="Pbs_Eq_L2">STE</constant>
+				<constant pointName="Pbs_Eq_L3">CON</constant>
+				<constant pointName="Pbs_Eq_n">001</constant>
+				<constant pointName="Sign_Prog">001</constant>
+				<constant pointName="Sender">000TPO</constant>
+				<constant pointName="Realtime">1</constant>
+				<constant pointName="Pbs_Native">1BP---------000TPOFORSTECON001---001</constant>
+				<constant pointName="Point_Type">measure</constant>
+			</point_constants>
+			<point_variables/>
+			<value_codes_AND_column_maps>
+				<constant colName="Prediction_Value" valueDataType="double">VAL</constant>
+				<constant colName="Lower_Bound_95" valueDataType="double">VLOLIM</constant>
+				<constant colName="Upper_Bound_95" valueDataType="double">VHILIM</constant>
+				<constant colName="Lower_Bound_68" valueDataType="double">LOLIM</constant>
+				<constant colName="Upper_Bound_68" valueDataType="double">HILIM</constant>
+			</value_codes_AND_column_maps>
+			<value_attributes>
+				<variable colName="Prediction_DateTime" valueDataType="date">RefTs</variable>
+			</value_attributes>
+		</point_config>
+		<point_config name="1BP---------000TPOFORPEOBUI001---001">
+			<database>1BP---------000TPOFORPEOBUI001---001</database>
+			<send_tracker_database>1BP---------000TPOFORPEOBUI001---001_sendid_tracker</send_tracker_database>
+			<primary_column>ID</primary_column>
+			<tracker_column>SENTID</tracker_column>
+			<point_constants>
+				<constant pointName="Pbs_Loc_A1">1BP</constant>
+				<constant pointName="Pbs_Sys_T">000</constant>
+				<constant pointName="Pbs_Sys_S">TPO</constant>
+				<constant pointName="Pbs_Eq_L1">FOR</constant>
+				<constant pointName="Pbs_Eq_L2">PEO</constant>
+				<constant pointName="Pbs_Eq_L3">BUI</constant>
+				<constant pointName="Pbs_Eq_n">001</constant>
+				<constant pointName="Sign_Prog">001</constant>
+				<constant pointName="Sender">000TPO</constant>
+				<constant pointName="Realtime">1</constant>
+				<constant pointName="Pbs_Native">1BP---------000TPOFORPEOBUI001---001</constant>
+				<constant pointName="Point_Type">measure</constant>
+			</point_constants>
+			<point_variables/>
+			<value_codes_AND_column_maps>
+				<constant colName="Prediction_Value" valueDataType="double">VAL</constant>
+				<constant colName="Lower_Bound_95" valueDataType="double">VLOLIM</constant>
+				<constant colName="Upper_Bound_95" valueDataType="double">VHILIM</constant>
+				<constant colName="Lower_Bound_68" valueDataType="double">LOLIM</constant>
+				<constant colName="Upper_Bound_68" valueDataType="double">HILIM</constant>
+			</value_codes_AND_column_maps>
+			<value_attributes>
+				<variable colName="Prediction_DateTime" valueDataType="date">RefTs</variable>
+			</value_attributes>
+		</point_config>
+		<point_config name="1BP---------000TPOFORTEMSPA001---001">
+			<database>1BP---------000TPOFORTEMSPA001---001</database>
+			<send_tracker_database>1BP---------000TPOFORTEMSPA001---001_sendid_tracker</send_tracker_database>
+			<primary_column>ID</primary_column>
+			<tracker_column>SENTID</tracker_column>
+			<point_constants>
+				<constant pointName="Pbs_Loc_A1">1BP</constant>
+				<constant pointName="Pbs_Sys_T">000</constant>
+				<constant pointName="Pbs_Sys_S">TPO</constant>
+				<constant pointName="Pbs_Eq_L1">FOR</constant>
+				<constant pointName="Pbs_Eq_L2">TEM</constant>
+				<constant pointName="Pbs_Eq_L3">SPA</constant>
+				<constant pointName="Pbs_Eq_n">001</constant>
+				<constant pointName="Sign_Prog">001</constant>
+				<constant pointName="Sender">000TPO</constant>
+				<constant pointName="Realtime">1</constant>
+				<constant pointName="Pbs_Native">1BP---------000TPOFORTEMSPA001---001</constant>
+				<constant pointName="Point_Type">measure</constant>
+			</point_constants>
+			<point_variables>
+				<variable colName="ZONE" pointDataType="string">Pbs_Loc_A2</variable>
+				<variable colName="Floor" pointDataType="string">Pbs_Loc_A3</variable>
+				<variable colName="Quadrant" pointDataType="string">Pbs_Loc_A4</variable>
+			</point_variables>
+			<value_codes_AND_column_maps>
+				<constant colName="Prediction_Value" valueDataType="double">VAL</constant>
+				<constant colName="Lower_Bound_95" valueDataType="double">VLOLIM</constant>
+				<constant colName="Upper_Bound_95" valueDataType="double">VHILIM</constant>
+				<constant colName="Lower_Bound_68" valueDataType="double">LOLIM</constant>
+				<constant colName="Upper_Bound_68" valueDataType="double">HILIM</constant>
+			</value_codes_AND_column_maps>
+			<value_attributes>
+				<variable colName="Prediction_DateTime" valueDataType="date">RefTs</variable>
+			</value_attributes>
+		</point_config>
+		<point_config name="1BP---------000TPOOPTTEMRDW001---001">
+			<database>1BP---------000TPOOPTTEMRDW001---001</database>
+			<send_tracker_database>1BP---------000TPOOPTTEMRDW001---001_sendid_tracker</send_tracker_database>
+			<primary_column>ID</primary_column>
+			<tracker_column>SENTID</tracker_column>
+			<point_constants>
+				<constant pointName="Pbs_Loc_A1">1BP</constant>
+				<constant pointName="Pbs_Sys_T">000</constant>
+				<constant pointName="Pbs_Sys_S">TPO</constant>
+				<constant pointName="Pbs_Eq_L1">OPT</constant>
+				<constant pointName="Pbs_Eq_L2">TEM</constant>
+				<constant pointName="Pbs_Eq_L3">RDW</constant>
+				<constant pointName="Pbs_Eq_n">001</constant>
+				<constant pointName="Sign_Prog">001</constant>
+				<constant pointName="Sender">000TPO</constant>
+				<constant pointName="Realtime">1</constant>
+				<constant pointName="Pbs_Native">rampdown</constant>
+				<constant pointName="Point_Type">status</constant>
+			</point_constants>
+			<point_variables>
+				<variable colName="Prediction_DateTime" pointDataType="date">RefTs</variable>
+			</point_variables>
+			<value_codes_AND_column_maps>
+				<constant colName="Prediction_DateTime" valueDataType="string">VAL</constant>
+			</value_codes_AND_column_maps>
+			<value_attributes/>
+		</point_config>
+		<point_config name="1BP---------000TPOOPTTEMUPT001---001">
+			<database>1BP---------000TPOOPTTEMUPT001---001</database>
+			<send_tracker_database>1BP---------000TPOOPTTEMUPT001---001_sendid_tracker</send_tracker_database>
+			<primary_column>ID</primary_column>
+			<tracker_column>SENTID</tracker_column>
+			<point_constants>
+				<constant pointName="Pbs_Loc_A1">1BP</constant>
+				<constant pointName="Pbs_Sys_T">000</constant>
+				<constant pointName="Pbs_Sys_S">TPO</constant>
+				<constant pointName="Pbs_Eq_L1">OPT</constant>
+				<constant pointName="Pbs_Eq_L2">TEM</constant>
+				<constant pointName="Pbs_Eq_L3">UPT</constant>
+				<constant pointName="Pbs_Eq_n">001</constant>
+				<constant pointName="Sign_Prog">001</constant>
+				<constant pointName="Sender">000TPO</constant>
+				<constant pointName="Realtime">1</constant>
+				<constant pointName="Pbs_Native">startup</constant>
+				<constant pointName="Point_Type">status</constant>
+			</point_constants>
+			<point_variables>
+				<variable colName="Prediction_DateTime" pointDataType="date">RefTs</variable>
+			</point_variables>
+			<value_codes_AND_column_maps>
+				<constant colName="Prediction_DateTime" valueDataType="string">VAL</constant>
+			</value_codes_AND_column_maps>
+			<value_attributes/>
+		</point_config>
+		<point_config name="4E5---------000TPOFORELECON001---001">
+			<database>4E5---------000TPOFORELECON001---001</database>
+			<send_tracker_database>4E5---------000TPOFORELECON001---001_sendid_tracker</send_tracker_database>
+			<primary_column>ID</primary_column>
+			<tracker_column>SENTID</tracker_column>
+			<point_constants>
+				<constant pointName="Pbs_Loc_A1">4E5</constant>
+				<constant pointName="Pbs_Sys_T">000</constant>
+				<constant pointName="Pbs_Sys_S">TPO</constant>
+				<constant pointName="Pbs_Eq_L1">FOR</constant>
+				<constant pointName="Pbs_Eq_L2">ELE</constant>
+				<constant pointName="Pbs_Eq_L3">CON</constant>
+				<constant pointName="Pbs_Eq_n">001</constant>
+				<constant pointName="Sign_Prog">001</constant>
+				<constant pointName="Sender">000TPO</constant>
+				<constant pointName="Realtime">1</constant>
+				<constant pointName="Pbs_Native">4E5---------000TPOFORELECON001---001</constant>
+				<constant pointName="Point_Type">measure</constant>
+			</point_constants>
+			<point_variables/>
+			<value_codes_AND_column_maps>
+				<constant colName="Prediction_Value" valueDataType="double">VAL</constant>
+				<constant colName="Lower_Bound_95" valueDataType="double">VLOLIM</constant>
+				<constant colName="Upper_Bound_95" valueDataType="double">VHILIM</constant>
+				<constant colName="Lower_Bound_68" valueDataType="double">LOLIM</constant>
+				<constant colName="Upper_Bound_68" valueDataType="double">HILIM</constant>
+			</value_codes_AND_column_maps>
+			<value_attributes>
+				<variable colName="Prediction_DateTime" valueDataType="date">RefTs</variable>
+			</value_attributes>
+		</point_config>
+		<point_config name="4E5---------000TPOFORELETEC001---001">
+			<database>4E5---------000TPOFORELETEC001---001</database>
+			<send_tracker_database>4E5---------000TPOFORELETEC001---001_sendid_tracker</send_tracker_database>
+			<primary_column>ID</primary_column>
+			<tracker_column>SENTID</tracker_column>
+			<point_constants>
+				<constant pointName="Pbs_Loc_A1">4E5</constant>
+				<constant pointName="Pbs_Sys_T">000</constant>
+				<constant pointName="Pbs_Sys_S">TPO</constant>
+				<constant pointName="Pbs_Eq_L1">FOR</constant>
+				<constant pointName="Pbs_Eq_L2">ELE</constant>
+				<constant pointName="Pbs_Eq_L3">TEC</constant>
+				<constant pointName="Pbs_Eq_n">001</constant>
+				<constant pointName="Sign_Prog">001</constant>
+				<constant pointName="Sender">000TPO</constant>
+				<constant pointName="Realtime">1</constant>
+				<constant pointName="Pbs_Native">4E5---------000TPOFORELETEC001---001</constant>
+				<constant pointName="Point_Type">measure</constant>
+			</point_constants>
+			<point_variables/>
+			<value_codes_AND_column_maps>
+				<constant colName="Prediction_Value" valueDataType="double">VAL</constant>
+				<constant colName="Lower_Bound_95" valueDataType="double">VLOLIM</constant>
+				<constant colName="Upper_Bound_95" valueDataType="double">VHILIM</constant>
+				<constant colName="Lower_Bound_68" valueDataType="double">LOLIM</constant>
+				<constant colName="Upper_Bound_68" valueDataType="double">HILIM</constant>
+			</value_codes_AND_column_maps>
+			<value_attributes>
+				<variable colName="Prediction_DateTime" valueDataType="date">RefTs</variable>
+			</value_attributes>
+		</point_config>
+		<point_config name="4E5---------000TPOFORPEOBUI001---001">
+			<database>4E5---------000TPOFORPEOBUI001---001</database>
+			<send_tracker_database>4E5---------000TPOFORPEOBUI001---001_sendid_tracker</send_tracker_database>
+			<primary_column>ID</primary_column>
+			<tracker_column>SENTID</tracker_column>
+			<point_constants>
+				<constant pointName="Pbs_Loc_A1">4E5</constant>
+				<constant pointName="Pbs_Sys_T">000</constant>
+				<constant pointName="Pbs_Sys_S">TPO</constant>
+				<constant pointName="Pbs_Eq_L1">FOR</constant>
+				<constant pointName="Pbs_Eq_L2">PEO</constant>
+				<constant pointName="Pbs_Eq_L3">BUI</constant>
+				<constant pointName="Pbs_Eq_n">001</constant>
+				<constant pointName="Sign_Prog">001</constant>
+				<constant pointName="Sender">000TPO</constant>
+				<constant pointName="Realtime">1</constant>
+				<constant pointName="Pbs_Native">4E5---------000TPOFORPEOBUI001---001</constant>
+				<constant pointName="Point_Type">measure</constant>
+			</point_constants>
+			<point_variables/>
+			<value_codes_AND_column_maps>
+				<constant colName="Prediction_Value" valueDataType="double">VAL</constant>
+				<constant colName="Lower_Bound_95" valueDataType="double">VLOLIM</constant>
+				<constant colName="Upper_Bound_95" valueDataType="double">VHILIM</constant>
+				<constant colName="Lower_Bound_68" valueDataType="double">LOLIM</constant>
+				<constant colName="Upper_Bound_68" valueDataType="double">HILIM</constant>
+			</value_codes_AND_column_maps>
+			<value_attributes>
+				<variable colName="Prediction_DateTime" valueDataType="date">RefTs</variable>
+			</value_attributes>
+		</point_config>
+		<point_config name="4E5---------000TPOFORSTECON001---001">
+			<database>4E5---------000TPOFORSTECON001---001</database>
+			<send_tracker_database>4E5---------000TPOFORSTECON001---001_sendid_tracker</send_tracker_database>
+			<primary_column>ID</primary_column>
+			<tracker_column>SENTID</tracker_column>
+			<point_constants>
+				<constant pointName="Pbs_Loc_A1">4E5</constant>
+				<constant pointName="Pbs_Sys_T">000</constant>
+				<constant pointName="Pbs_Sys_S">TPO</constant>
+				<constant pointName="Pbs_Eq_L1">FOR</constant>
+				<constant pointName="Pbs_Eq_L2">STE</constant>
+				<constant pointName="Pbs_Eq_L3">CON</constant>
+				<constant pointName="Pbs_Eq_n">001</constant>
+				<constant pointName="Sign_Prog">001</constant>
+				<constant pointName="Sender">000TPO</constant>
+				<constant pointName="Realtime">1</constant>
+				<constant pointName="Pbs_Native">4E5---------000TPOFORSTECON001---001</constant>
+				<constant pointName="Point_Type">measure</constant>
+			</point_constants>
+			<point_variables/>
+			<value_codes_AND_column_maps>
+				<constant colName="Prediction_Value" valueDataType="double">VAL</constant>
+				<constant colName="Lower_Bound_95" valueDataType="double">VLOLIM</constant>
+				<constant colName="Upper_Bound_95" valueDataType="double">VHILIM</constant>
+				<constant colName="Lower_Bound_68" valueDataType="double">LOLIM</constant>
+				<constant colName="Upper_Bound_68" valueDataType="double">HILIM</constant>
+			</value_codes_AND_column_maps>
+			<value_attributes>
+				<variable colName="Prediction_DateTime" valueDataType="date">RefTs</variable>
+			</value_attributes>
+		</point_config>
+		<point_config name="4E5---------000TPOFORTEMSPA001---001">
+			<database>4E5---------000TPOFORTEMSPA001---001</database>
+			<send_tracker_database>4E5---------000TPOFORTEMSPA001---001_sendid_tracker</send_tracker_database>
+			<primary_column>ID</primary_column>
+			<tracker_column>SENTID</tracker_column>
+			<point_constants>
+				<constant pointName="Pbs_Loc_A1">4E5</constant>
+				<constant pointName="Pbs_Sys_T">000</constant>
+				<constant pointName="Pbs_Sys_S">TPO</constant>
+				<constant pointName="Pbs_Eq_L1">FOR</constant>
+				<constant pointName="Pbs_Eq_L2">TEM</constant>
+				<constant pointName="Pbs_Eq_L3">SPA</constant>
+				<constant pointName="Pbs_Eq_n">001</constant>
+				<constant pointName="Sign_Prog">001</constant>
+				<constant pointName="Sender">000TPO</constant>
+				<constant pointName="Realtime">1</constant>
+				<constant pointName="Pbs_Native">4E5---------000TPOFORTEMSPA001---001</constant>
+				<constant pointName="Point_Type">measure</constant>
+			</point_constants>
+			<point_variables>
+				<variable colName="ZONE" pointDataType="string">Pbs_Loc_A2</variable>
+				<variable colName="Floor" pointDataType="string">Pbs_Loc_A3</variable>
+				<variable colName="Quadrant" pointDataType="string">Pbs_Loc_A4</variable>
+			</point_variables>
+			<value_codes_AND_column_maps>
+				<constant colName="Prediction_Value" valueDataType="double">VAL</constant>
+				<constant colName="Lower_Bound_95" valueDataType="double">VLOLIM</constant>
+				<constant colName="Upper_Bound_95" valueDataType="double">VHILIM</constant>
+				<constant colName="Lower_Bound_68" valueDataType="double">LOLIM</constant>
+				<constant colName="Upper_Bound_68" valueDataType="double">HILIM</constant>
+			</value_codes_AND_column_maps>
+			<value_attributes>
+				<variable colName="Prediction_DateTime" valueDataType="date">RefTs</variable>
+			</value_attributes>
+		</point_config>
+		<point_config name="4E5---------000TPOOPTTEMRDW001---001">
+			<database>4E5---------000TPOOPTTEMRDW001---001</database>
+			<send_tracker_database>4E5---------000TPOOPTTEMRDW001---001_sendid_tracker</send_tracker_database>
+			<primary_column>ID</primary_column>
+			<tracker_column>SENTID</tracker_column>
+			<point_constants>
+				<constant pointName="Pbs_Loc_A1">4E5</constant>
+				<constant pointName="Pbs_Sys_T">000</constant>
+				<constant pointName="Pbs_Sys_S">TPO</constant>
+				<constant pointName="Pbs_Eq_L1">OPT</constant>
+				<constant pointName="Pbs_Eq_L2">TEM</constant>
+				<constant pointName="Pbs_Eq_L3">RDW</constant>
+				<constant pointName="Pbs_Eq_n">001</constant>
+				<constant pointName="Sign_Prog">001</constant>
+				<constant pointName="Sender">000TPO</constant>
+				<constant pointName="Realtime">1</constant>
+				<constant pointName="Pbs_Native">rampdown</constant>
+				<constant pointName="Point_Type">status</constant>
+			</point_constants>
+			<point_variables>
+				<variable colName="Prediction_DateTime" pointDataType="date">RefTs</variable>
+			</point_variables>
+			<value_codes_AND_column_maps>
+				<constant colName="Prediction_DateTime" valueDataType="string">VAL</constant>
+			</value_codes_AND_column_maps>
+			<value_attributes/>
+		</point_config>
+		<point_config name="4E5---------000TPOOPTTEMUPT001---001">
+			<database>4E5---------000TPOOPTTEMUPT001---001</database>
+			<send_tracker_database>4E5---------000TPOOPTTEMUPT001---001_sendid_tracker</send_tracker_database>
+			<primary_column>ID</primary_column>
+			<tracker_column>SENTID</tracker_column>
+			<point_constants>
+				<constant pointName="Pbs_Loc_A1">4E5</constant>
+				<constant pointName="Pbs_Sys_T">000</constant>
+				<constant pointName="Pbs_Sys_S">TPO</constant>
+				<constant pointName="Pbs_Eq_L1">OPT</constant>
+				<constant pointName="Pbs_Eq_L2">TEM</constant>
+				<constant pointName="Pbs_Eq_L3">UPT</constant>
+				<constant pointName="Pbs_Eq_n">001</constant>
+				<constant pointName="Sign_Prog">001</constant>
+				<constant pointName="Sender">000TPO</constant>
+				<constant pointName="Realtime">1</constant>
+				<constant pointName="Pbs_Native">startup</constant>
+				<constant pointName="Point_Type">status</constant>
+			</point_constants>
+			<point_variables>
+				<variable colName="Prediction_DateTime" pointDataType="date">RefTs</variable>
+			</point_variables>
+			<value_codes_AND_column_maps>
+				<constant colName="Prediction_DateTime" valueDataType="string">VAL</constant>
+			</value_codes_AND_column_maps>
+			<value_attributes/>
+		</point_config>
+		<point_config name="345park_space_temperature_prediction">
+			<database>db1</database>
+			<send_tracker_database>trackerdb1</send_tracker_database>
+			<primary_column>ID</primary_column>
+			<tracker_column>SENTID</tracker_column>
+			<point_constants>
+				<constant pointName="Pbs_Loc_A1">345</constant>
+				<constant pointName="Pbs_Sys_T">000</constant>
+				<constant pointName="Pbs_Sys_S">TPO</constant>
+				<constant pointName="Pbs_Eq_L1">FOR</constant>
+				<constant pointName="Pbs_Eq_L2">TEM</constant>
+				<constant pointName="Pbs_Eq_L3">SPA</constant>
+				<constant pointName="Pbs_Eq_n">001</constant>
+				<constant pointName="Sign_Prog">001</constant>
+				<constant pointName="Sender">000TPO</constant>
+				<constant pointName="Realtime">1</constant>
+				<constant pointName="Pbs_Native">345park_space_temperature_prediction</constant>
+				<constant pointName="Point_Type">measure</constant>
+			</point_constants>
+			<point_variables>
+				<variable colName="ZONE" pointDataType="string">Pbs_Loc_A2</variable>
+				<variable colName="Floor" pointDataType="string">Pbs_Loc_A3</variable>
+				<variable colName="Quadrant" pointDataType="string">Pbs_Loc_A4</variable>
+			</point_variables>
+			<value_codes_AND_column_maps>
+				<constant colName="Prediction_Value" valueDataType="double">VAL</constant>
+				<constant colName="Lower_Bound_95" valueDataType="double">VLOLIM</constant>
+				<constant colName="Upper_Bound_95" valueDataType="double">VHILIM</constant>
+				<constant colName="Lower_Bound_68" valueDataType="double">LOLIM</constant>
+				<constant colName="Upper_Bound_68" valueDataType="double">HILIM</constant>
+			</value_codes_AND_column_maps>
+			<value_attributes>
+				<variable colName="Prediction_DateTime" valueDataType="date">RefTs</variable>
+			</value_attributes>
+		</point_config>
+		<point_config name="345park_electric_load_prediction">
+			<database>db2</database>
+			<send_tracker_database>trackerdb2</send_tracker_database>
+			<primary_column>ID</primary_column>
+			<tracker_column>SENTID</tracker_column>
+			<point_constants>
+				<constant pointName="Pbs_Loc_A1">345</constant>
+				<constant pointName="Pbs_Sys_T">000</constant>
+				<constant pointName="Pbs_Sys_S">TPO</constant>
+				<constant pointName="Pbs_Eq_L1">FOR</constant>
+				<constant pointName="Pbs_Eq_L2">ELE</constant>
+				<constant pointName="Pbs_Eq_L3">CON</constant>
+				<constant pointName="Pbs_Eq_n">001</constant>
+				<constant pointName="Sign_Prog">001</constant>
+				<constant pointName="Sender">000TPO</constant>
+				<constant pointName="Realtime">1</constant>
+				<constant pointName="Pbs_Native">345park_electric_load_prediction</constant>
+				<constant pointName="Point_Type">measure</constant>
+			</point_constants>
+			<point_variables/>
+			<value_codes_AND_column_maps>
+				<constant colName="Prediction_Value" valueDataType="double">VAL</constant>
+				<constant colName="Lower_Bound_95" valueDataType="double">VLOLIM</constant>
+				<constant colName="Upper_Bound_95" valueDataType="double">VHILIM</constant>
+				<constant colName="Lower_Bound_68" valueDataType="double">LOLIM</constant>
+				<constant colName="Upper_Bound_68" valueDataType="double">HILIM</constant>
+			</value_codes_AND_column_maps>
+			<value_attributes>
+				<variable colName="Prediction_DateTime" valueDataType="date">RefTs</variable>
+			</value_attributes>
+		</point_config>
+		<point_config name="345---------000TPOFORELETEC001---001">
+			<database>345---------000TPOFORELETEC001---001</database>
+			<send_tracker_database>345---------000TPOFORELETEC001---001_sendid_tracker</send_tracker_database>
+			<primary_column>ID</primary_column>
+			<tracker_column>SENTID</tracker_column>
+			<point_constants>
+				<constant pointName="Pbs_Loc_A1">345</constant>
+				<constant pointName="Pbs_Sys_T">000</constant>
+				<constant pointName="Pbs_Sys_S">TPO</constant>
+				<constant pointName="Pbs_Eq_L1">FOR</constant>
+				<constant pointName="Pbs_Eq_L2">ELE</constant>
+				<constant pointName="Pbs_Eq_L3">TEC</constant>
+				<constant pointName="Pbs_Eq_n">001</constant>
+				<constant pointName="Sign_Prog">001</constant>
+				<constant pointName="Sender">000TPO</constant>
+				<constant pointName="Realtime">1</constant>
+				<constant pointName="Pbs_Native">NFL electric load</constant>
+				<constant pointName="Point_Type">measure</constant>
+			</point_constants>
+			<point_variables/>
+			<value_codes_AND_column_maps>
+				<constant colName="Prediction_Value" valueDataType="double">VAL</constant>
+				<constant colName="Lower_Bound_95" valueDataType="double">VLOLIM</constant>
+				<constant colName="Upper_Bound_95" valueDataType="double">VHILIM</constant>
+				<constant colName="Lower_Bound_68" valueDataType="double">LOLIM</constant>
+				<constant colName="Upper_Bound_68" valueDataType="double">HILIM</constant>
+			</value_codes_AND_column_maps>
+			<value_attributes>
+				<variable colName="Prediction_DateTime" valueDataType="date">RefTs</variable>
+			</value_attributes>
+		</point_config>
+		<point_config name="345---------000TPOFORELETEC002---001">
+			<database>345---------000TPOFORELETEC002---001</database>
+			<send_tracker_database>345---------000TPOFORELETEC002---001_sendid_tracker</send_tracker_database>
+			<primary_column>ID</primary_column>
+			<tracker_column>SENTID</tracker_column>
+			<point_constants>
+				<constant pointName="Pbs_Loc_A1">345</constant>
+				<constant pointName="Pbs_Sys_T">000</constant>
+				<constant pointName="Pbs_Sys_S">TPO</constant>
+				<constant pointName="Pbs_Eq_L1">FOR</constant>
+				<constant pointName="Pbs_Eq_L2">ELE</constant>
+				<constant pointName="Pbs_Eq_L3">TEC</constant>
+				<constant pointName="Pbs_Eq_n">002</constant>
+				<constant pointName="Sign_Prog">001</constant>
+				<constant pointName="Sender">000TPO</constant>
+				<constant pointName="Realtime">1</constant>
+				<constant pointName="Pbs_Native">Deutsche Bank electric load</constant>
+				<constant pointName="Point_Type">measure</constant>
+			</point_constants>
+			<point_variables/>
+			<value_codes_AND_column_maps>
+				<constant colName="Prediction_Value" valueDataType="double">VAL</constant>
+				<constant colName="Lower_Bound_95" valueDataType="double">VLOLIM</constant>
+				<constant colName="Upper_Bound_95" valueDataType="double">VHILIM</constant>
+				<constant colName="Lower_Bound_68" valueDataType="double">LOLIM</constant>
+				<constant colName="Upper_Bound_68" valueDataType="double">HILIM</constant>
+			</value_codes_AND_column_maps>
+			<value_attributes>
+				<variable colName="Prediction_DateTime" valueDataType="date">RefTs</variable>
+			</value_attributes>
+		</point_config>
+		<point_config name="345---------000TPOFORELETEC003---001">
+			<database>345---------000TPOFORELETEC003---001</database>
+			<send_tracker_database>345---------000TPOFORELETEC003---001_sendid_tracker</send_tracker_database>
+			<primary_column>ID</primary_column>
+			<tracker_column>SENTID</tracker_column>
+			<point_constants>
+				<constant pointName="Pbs_Loc_A1">345</constant>
+				<constant pointName="Pbs_Sys_T">000</constant>
+				<constant pointName="Pbs_Sys_S">TPO</constant>
+				<constant pointName="Pbs_Eq_L1">FOR</constant>
+				<constant pointName="Pbs_Eq_L2">ELE</constant>
+				<constant pointName="Pbs_Eq_L3">TEC</constant>
+				<constant pointName="Pbs_Eq_n">003</constant>
+				<constant pointName="Sign_Prog">001</constant>
+				<constant pointName="Sender">000TPO</constant>
+				<constant pointName="Realtime">1</constant>
+				<constant pointName="Pbs_Native">KPMG electric load</constant>
+				<constant pointName="Point_Type">measure</constant>
+			</point_constants>
+			<point_variables/>
+			<value_codes_AND_column_maps>
+				<constant colName="Prediction_Value" valueDataType="double">VAL</constant>
+				<constant colName="Lower_Bound_95" valueDataType="double">VLOLIM</constant>
+				<constant colName="Upper_Bound_95" valueDataType="double">VHILIM</constant>
+				<constant colName="Lower_Bound_68" valueDataType="double">LOLIM</constant>
+				<constant colName="Upper_Bound_68" valueDataType="double">HILIM</constant>
+			</value_codes_AND_column_maps>
+			<value_attributes>
+				<variable colName="Prediction_DateTime" valueDataType="date">RefTs</variable>
+			</value_attributes>
+		</point_config>
+		<point_config name="345---------000TPOFORELETEC004---001">
+			<database>345---------000TPOFORELETEC004---001</database>
+			<send_tracker_database>345---------000TPOFORELETEC004---001_sendid_tracker</send_tracker_database>
+			<primary_column>ID</primary_column>
+			<tracker_column>SENTID</tracker_column>
+			<point_constants>
+				<constant pointName="Pbs_Loc_A1">345</constant>
+				<constant pointName="Pbs_Sys_T">000</constant>
+				<constant pointName="Pbs_Sys_S">TPO</constant>
+				<constant pointName="Pbs_Eq_L1">FOR</constant>
+				<constant pointName="Pbs_Eq_L2">ELE</constant>
+				<constant pointName="Pbs_Eq_L3">TEC</constant>
+				<constant pointName="Pbs_Eq_n">004</constant>
+				<constant pointName="Sign_Prog">001</constant>
+				<constant pointName="Sender">000TPO</constant>
+				<constant pointName="Realtime">1</constant>
+				<constant pointName="Pbs_Native">Ladder Capital electric load</constant>
+				<constant pointName="Point_Type">measure</constant>
+			</point_constants>
+			<point_variables/>
+			<value_codes_AND_column_maps>
+				<constant colName="Prediction_Value" valueDataType="double">VAL</constant>
+				<constant colName="Lower_Bound_95" valueDataType="double">VLOLIM</constant>
+				<constant colName="Upper_Bound_95" valueDataType="double">VHILIM</constant>
+				<constant colName="Lower_Bound_68" valueDataType="double">LOLIM</constant>
+				<constant colName="Upper_Bound_68" valueDataType="double">HILIM</constant>
+			</value_codes_AND_column_maps>
+			<value_attributes>
+				<variable colName="Prediction_DateTime" valueDataType="date">RefTs</variable>
+			</value_attributes>
+		</point_config>
+		<point_config name="345---------000TPOFORELETEC006---001">
+			<database>345---------000TPOFORELETEC006---001</database>
+			<send_tracker_database>345---------000TPOFORELETEC006---001_sendid_tracker</send_tracker_database>
+			<primary_column>ID</primary_column>
+			<tracker_column>SENTID</tracker_column>
+			<point_constants>
+				<constant pointName="Pbs_Loc_A1">345</constant>
+				<constant pointName="Pbs_Sys_T">000</constant>
+				<constant pointName="Pbs_Sys_S">TPO</constant>
+				<constant pointName="Pbs_Eq_L1">FOR</constant>
+				<constant pointName="Pbs_Eq_L2">ELE</constant>
+				<constant pointName="Pbs_Eq_L3">TEC</constant>
+				<constant pointName="Pbs_Eq_n">006</constant>
+				<constant pointName="Sign_Prog">001</constant>
+				<constant pointName="Sender">000TPO</constant>
+				<constant pointName="Realtime">1</constant>
+				<constant pointName="Pbs_Native">Black Stone electric load</constant>
+				<constant pointName="Point_Type">measure</constant>
+			</point_constants>
+			<point_variables/>
+			<value_codes_AND_column_maps>
+				<constant colName="Prediction_Value" valueDataType="double">VAL</constant>
+				<constant colName="Lower_Bound_95" valueDataType="double">VLOLIM</constant>
+				<constant colName="Upper_Bound_95" valueDataType="double">VHILIM</constant>
+				<constant colName="Lower_Bound_68" valueDataType="double">LOLIM</constant>
+				<constant colName="Upper_Bound_68" valueDataType="double">HILIM</constant>
+			</value_codes_AND_column_maps>
+			<value_attributes>
+				<variable colName="Prediction_DateTime" valueDataType="date">RefTs</variable>
+			</value_attributes>
+		</point_config>
+		<point_config name="345---------000TPOFORPEOBUI001---001">
+			<database>345---------000TPOFORPEOBUI001---001</database>
+			<send_tracker_database>345---------000TPOFORPEOBUI001---001_sendid_tracker</send_tracker_database>
+			<primary_column>ID</primary_column>
+			<tracker_column>SENTID</tracker_column>
+			<point_constants>
+				<constant pointName="Pbs_Loc_A1">345</constant>
+				<constant pointName="Pbs_Sys_T">000</constant>
+				<constant pointName="Pbs_Sys_S">TPO</constant>
+				<constant pointName="Pbs_Eq_L1">FOR</constant>
+				<constant pointName="Pbs_Eq_L2">PEO</constant>
+				<constant pointName="Pbs_Eq_L3">BUI</constant>
+				<constant pointName="Pbs_Eq_n">001</constant>
+				<constant pointName="Sign_Prog">001</constant>
+				<constant pointName="Sender">000TPO</constant>
+				<constant pointName="Realtime">1</constant>
+				<constant pointName="Pbs_Native">345 Occupancy Forecasting</constant>
+				<constant pointName="Point_Type">measure</constant>
+			</point_constants>
+			<point_variables/>
+			<value_codes_AND_column_maps>
+				<constant colName="Prediction_Value" valueDataType="double">VAL</constant>
+				<constant colName="Lower_Bound_95" valueDataType="double">VLOLIM</constant>
+				<constant colName="Upper_Bound_95" valueDataType="double">VHILIM</constant>
+				<constant colName="Lower_Bound_68" valueDataType="double">LOLIM</constant>
+				<constant colName="Upper_Bound_68" valueDataType="double">HILIM</constant>
+			</value_codes_AND_column_maps>
+			<value_attributes>
+				<variable colName="Prediction_DateTime" valueDataType="date">RefTs</variable>
+			</value_attributes>
+		</point_config>
+		<point_config name="345---------000TPOOPTTEMPRH001---001">
+			<database>345---------000TPOOPTTEMPRH001---001</database>
+			<send_tracker_database>345---------000TPOOPTTEMPRH001---001_sendid_tracker</send_tracker_database>
+			<primary_column>ID</primary_column>
+			<tracker_column>SENTID</tracker_column>
+			<point_constants>
+				<constant pointName="Pbs_Loc_A1">345</constant>
+				<constant pointName="Pbs_Sys_T">000</constant>
+				<constant pointName="Pbs_Sys_S">TPO</constant>
+				<constant pointName="Pbs_Eq_L1">OPT</constant>
+				<constant pointName="Pbs_Eq_L2">TEM</constant>
+				<constant pointName="Pbs_Eq_L3">PRH</constant>
+				<constant pointName="Pbs_Eq_n">001</constant>
+				<constant pointName="Sign_Prog">001</constant>
+				<constant pointName="Sender">000TPO</constant>
+				<constant pointName="Realtime">1</constant>
+				<constant pointName="Pbs_Native">345 Preheat recommendation</constant>
+				<constant pointName="Point_Type">status</constant>
+			</point_constants>
+			<point_variables>
+				<variable colName="Prediction_DateTime" pointDataType="date">RefTs</variable>
+			</point_variables>
+			<value_codes_AND_column_maps>
+				<constant colName="Prediction_DateTime" valueDataType="string">VAL</constant>
+			</value_codes_AND_column_maps>
+			<value_attributes/>
+		</point_config>
+		<point_config name="345park_steam_demand_prediction">
+			<database>db3</database>
+			<send_tracker_database>trackerdb3</send_tracker_database>
+			<primary_column>ID</primary_column>
+			<tracker_column>SENTID</tracker_column>
+			<point_constants>
+				<constant pointName="Pbs_Loc_A1">345</constant>
+				<constant pointName="Pbs_Sys_T">000</constant>
+				<constant pointName="Pbs_Sys_S">TPO</constant>
+				<constant pointName="Pbs_Eq_L1">FOR</constant>
+				<constant pointName="Pbs_Eq_L2">STE</constant>
+				<constant pointName="Pbs_Eq_L3">CON</constant>
+				<constant pointName="Pbs_Eq_n">001</constant>
+				<constant pointName="Sign_Prog">001</constant>
+				<constant pointName="Sender">000TPO</constant>
+				<constant pointName="Realtime">1</constant>
+				<constant pointName="Pbs_Native">345park_steam_demand_prediction</constant>
+				<constant pointName="Point_Type">measure</constant>
+			</point_constants>
+			<point_variables/>
+			<value_codes_AND_column_maps>
+				<constant colName="Upper_Bound_95" valueDataType="double">VHILIM</constant>
+				<constant colName="Prediction_Value" valueDataType="double">VAL</constant>
+				<constant colName="Lower_Bound_95" valueDataType="double">VLOLIM</constant>
+				<constant colName="Lower_Bound_68" valueDataType="double">LOLIM</constant>
+				<constant colName="Upper_Bound_68" valueDataType="double">HILIM</constant>
+			</value_codes_AND_column_maps>
+			<value_attributes>
+				<variable colName="Prediction_DateTime" valueDataType="date">RefTs</variable>
+			</value_attributes>
+		</point_config>
+		<point_config name="345park_startup_time_rec">
+			<database>db6</database>
+			<send_tracker_database>trackerdb6</send_tracker_database>
+			<primary_column>ID</primary_column>
+			<tracker_column>SENTID</tracker_column>
+			<point_constants>
+				<constant pointName="Pbs_Loc_A1">345</constant>
+				<constant pointName="Pbs_Sys_T">000</constant>
+				<constant pointName="Pbs_Sys_S">TPO</constant>
+				<constant pointName="Pbs_Eq_L1">OPT</constant>
+				<constant pointName="Pbs_Eq_L2">TEM</constant>
+				<constant pointName="Pbs_Eq_L3">UPT</constant>
+				<constant pointName="Pbs_Eq_n">001</constant>
+				<constant pointName="Sign_Prog">001</constant>
+				<constant pointName="Sender">000TPO</constant>
+				<constant pointName="Realtime">1</constant>
+				<constant pointName="Pbs_Native">345park_startup_time_rec</constant>
+				<constant pointName="Point_Type">status</constant>
+			</point_constants>
+			<point_variables>
+				<variable colName="Prediction_DateTime" pointDataType="date">RefTs</variable>
+			</point_variables>
+			<value_codes_AND_column_maps>
+				<constant colName="Prediction_DateTime" valueDataType="string">VAL</constant>
+			</value_codes_AND_column_maps>
+			<value_attributes/>
+		</point_config>
+		<point_config name="345park_rampdown_time_rec">
+			<database>db7</database>
+			<send_tracker_database>trackerdb7</send_tracker_database>
+			<primary_column>ID</primary_column>
+			<tracker_column>SENTID</tracker_column>
+			<point_constants>
+				<constant pointName="Pbs_Loc_A1">345</constant>
+				<constant pointName="Pbs_Sys_T">000</constant>
+				<constant pointName="Pbs_Sys_S">TPO</constant>
+				<constant pointName="Pbs_Eq_L1">OPT</constant>
+				<constant pointName="Pbs_Eq_L2">TEM</constant>
+				<constant pointName="Pbs_Eq_L3">RDW</constant>
+				<constant pointName="Pbs_Eq_n">001</constant>
+				<constant pointName="Sign_Prog">001</constant>
+				<constant pointName="Sender">000TPO</constant>
+				<constant pointName="Realtime">1</constant>
+				<constant pointName="Pbs_Native">345park_rampdown_time_rec</constant>
+				<constant pointName="Point_Type">status</constant>
+			</point_constants>
+			<point_variables>
+				<variable colName="Prediction_DateTime" pointDataType="date">RefTs</variable>
+			</point_variables>
+			<value_codes_AND_column_maps>
+				<constant colName="Prediction_DateTime" valueDataType="string">VAL</constant>
+			</value_codes_AND_column_maps>
+			<value_attributes/>
+		</point_config>
+		<point_config name="560lex_space_temperature_prediction">
+			<database>db4</database>
+			<send_tracker_database>trackerdb4</send_tracker_database>
+			<primary_column>ID</primary_column>
+			<tracker_column>SENTID</tracker_column>
+			<point_constants>
+				<constant pointName="Pbs_Loc_A1">560</constant>
+				<constant pointName="Pbs_Loc_A2">Z00</constant>
+				<constant pointName="Pbs_Sys_T">000</constant>
+				<constant pointName="Pbs_Sys_S">TPO</constant>
+				<constant pointName="Pbs_Eq_L1">FOR</constant>
+				<constant pointName="Pbs_Eq_L2">TEM</constant>
+				<constant pointName="Pbs_Eq_L3">SPA</constant>
+				<constant pointName="Pbs_Eq_n">001</constant>
+				<constant pointName="Sign_Prog">001</constant>
+				<constant pointName="Sender">000TPO</constant>
+				<constant pointName="Realtime">1</constant>
+				<constant pointName="Pbs_Native">560lex_space_temperature_prediction</constant>
+				<constant pointName="Point_Type">measure</constant>
+			</point_constants>
+			<point_variables>
+				<variable colName="Floor" pointDataType="string">Pbs_Loc_A3</variable>
+			</point_variables>
+			<value_codes_AND_column_maps>
+				<constant colName="Prediction_Value" valueDataType="double">VAL</constant>
+				<constant colName="Lower_Bound_95" valueDataType="double">VLOLIM</constant>
+				<constant colName="Upper_Bound_95" valueDataType="double">VHILIM</constant>
+				<constant colName="Lower_Bound_68" valueDataType="double">LOLIM</constant>
+				<constant colName="Upper_Bound_68" valueDataType="double">HILIM</constant>
+			</value_codes_AND_column_maps>
+			<value_attributes>
+				<variable colName="Prediction_DateTime" valueDataType="date">RefTs</variable>
+			</value_attributes>
+		</point_config>
+		<point_config name="560lex_electric_load_prediction">
+			<database>db5</database>
+			<send_tracker_database>trackerdb5</send_tracker_database>
+			<primary_column>ID</primary_column>
+			<tracker_column>SENTID</tracker_column>
+			<point_constants>
+				<constant pointName="Pbs_Loc_A1">560</constant>
+				<constant pointName="Pbs_Sys_T">000</constant>
+				<constant pointName="Pbs_Sys_S">TPO</constant>
+				<constant pointName="Pbs_Eq_L1">FOR</constant>
+				<constant pointName="Pbs_Eq_L2">ELE</constant>
+				<constant pointName="Pbs_Eq_L3">CON</constant>
+				<constant pointName="Pbs_Eq_n">001</constant>
+				<constant pointName="Sign_Prog">001</constant>
+				<constant pointName="Sender">000TPO</constant>
+				<constant pointName="Realtime">1</constant>
+				<constant pointName="Pbs_Native">560lex_electric_load_prediction</constant>
+				<constant pointName="Point_Type">measure</constant>
+			</point_constants>
+			<point_variables/>
+			<value_codes_AND_column_maps>
+				<constant colName="Prediction_Value" valueDataType="double">VAL</constant>
+				<constant colName="Lower_Bound_95" valueDataType="double">VLOLIM</constant>
+				<constant colName="Upper_Bound_95" valueDataType="double">VHILIM</constant>
+				<constant colName="Lower_Bound_68" valueDataType="double">LOLIM</constant>
+				<constant colName="Upper_Bound_68" valueDataType="double">HILIM</constant>
+			</value_codes_AND_column_maps>
+			<value_attributes>
+				<variable colName="Prediction_DateTime" valueDataType="date">RefTs</variable>
+			</value_attributes>
+		</point_config>
+		<point_config name="560lex_startup_time_rec">
+			<database>db8</database>
+			<send_tracker_database>trackerdb8</send_tracker_database>
+			<primary_column>ID</primary_column>
+			<tracker_column>SENTID</tracker_column>
+			<point_constants>
+				<constant pointName="Pbs_Loc_A1">560</constant>
+				<constant pointName="Pbs_Sys_T">000</constant>
+				<constant pointName="Pbs_Sys_S">TPO</constant>
+				<constant pointName="Pbs_Eq_L1">OPT</constant>
+				<constant pointName="Pbs_Eq_L2">TEM</constant>
+				<constant pointName="Pbs_Eq_L3">UPT</constant>
+				<constant pointName="Pbs_Eq_n">001</constant>
+				<constant pointName="Sign_Prog">001</constant>
+				<constant pointName="Sender">000TPO</constant>
+				<constant pointName="Realtime">1</constant>
+				<constant pointName="Pbs_Native">560lex_startup_time_rec</constant>
+				<constant pointName="Point_Type">status</constant>
+			</point_constants>
+			<point_variables>
+				<variable colName="Prediction_DateTime" pointDataType="date">RefTs</variable>
+			</point_variables>
+			<value_codes_AND_column_maps>
+				<constant colName="Prediction_DateTime" valueDataType="string">VAL</constant>
+			</value_codes_AND_column_maps>
+			<value_attributes/>
+		</point_config>
+		<point_config name="560lex_rampdown_time_rec">
+			<database>db9</database>
+			<send_tracker_database>trackerdb9</send_tracker_database>
+			<primary_column>ID</primary_column>
+			<tracker_column>SENTID</tracker_column>
+			<point_constants>
+				<constant pointName="Pbs_Loc_A1">560</constant>
+				<constant pointName="Pbs_Sys_T">000</constant>
+				<constant pointName="Pbs_Sys_S">TPO</constant>
+				<constant pointName="Pbs_Eq_L1">OPT</constant>
+				<constant pointName="Pbs_Eq_L2">TEM</constant>
+				<constant pointName="Pbs_Eq_L3">RDW</constant>
+				<constant pointName="Pbs_Eq_n">001</constant>
+				<constant pointName="Sign_Prog">001</constant>
+				<constant pointName="Sender">000TPO</constant>
+				<constant pointName="Realtime">1</constant>
+				<constant pointName="Pbs_Native">560lex_rampdown_time_rec</constant>
+				<constant pointName="Point_Type">status</constant>
+			</point_constants>
+			<point_variables>
+				<variable colName="Prediction_DateTime" pointDataType="date">RefTs</variable>
+			</point_variables>
+			<value_codes_AND_column_maps>
+				<constant colName="Prediction_DateTime" valueDataType="string">VAL</constant>
+			</value_codes_AND_column_maps>
+			<value_attributes/>
+		</point_config>
+		<point_config name="560---------000TPOFORPEOBUI001---001">
+			<database>560---------000TPOFORPEOBUI001---001</database>
+			<send_tracker_database>560---------000TPOFORPEOBUI001---001_sendid_tracker</send_tracker_database>
+			<primary_column>ID</primary_column>
+			<tracker_column>SENTID</tracker_column>
+			<point_constants>
+				<constant pointName="Pbs_Loc_A1">560</constant>
+				<constant pointName="Pbs_Sys_T">000</constant>
+				<constant pointName="Pbs_Sys_S">TPO</constant>
+				<constant pointName="Pbs_Eq_L1">FOR</constant>
+				<constant pointName="Pbs_Eq_L2">PEO</constant>
+				<constant pointName="Pbs_Eq_L3">BUI</constant>
+				<constant pointName="Pbs_Eq_n">001</constant>
+				<constant pointName="Sign_Prog">001</constant>
+				<constant pointName="Sender">000TPO</constant>
+				<constant pointName="Realtime">1</constant>
+				<constant pointName="Pbs_Native">560 Occupancy Forecasting</constant>
+				<constant pointName="Point_Type">measure</constant>
+			</point_constants>
+			<point_variables/>
+			<value_codes_AND_column_maps>
+				<constant colName="Prediction_Value" valueDataType="double">VAL</constant>
+				<constant colName="Lower_Bound_95" valueDataType="double">VLOLIM</constant>
+				<constant colName="Upper_Bound_95" valueDataType="double">VHILIM</constant>
+				<constant colName="Lower_Bound_68" valueDataType="double">LOLIM</constant>
+				<constant colName="Upper_Bound_68" valueDataType="double">HILIM</constant>
+			</value_codes_AND_column_maps>
+			<value_attributes>
+				<variable colName="Prediction_DateTime" valueDataType="date">RefTs</variable>
+			</value_attributes>
+		</point_config>
+		<point_config name="weather_forecast">
+			<database>db10</database>
+			<send_tracker_database>trackerdb10</send_tracker_database>
+			<primary_column>ID</primary_column>
+			<tracker_column>SENTID</tracker_column>
+			<point_constants>
+				<constant pointName="Pbs_Loc_A1">EXT</constant>
+				<constant pointName="Pbs_Sys_T">000</constant>
+				<constant pointName="Pbs_Sys_S">TPO</constant>
+				<constant pointName="Pbs_Eq_L1">FOR</constant>
+				<constant pointName="Pbs_Eq_L2">WEA</constant>
+				<constant pointName="Pbs_Eq_n">001</constant>
+				<constant pointName="Sign_Prog">001</constant>
+				<constant pointName="Sender">000TPO</constant>
+				<constant pointName="Realtime">1</constant>
+				<constant pointName="Pbs_Native">weather_forecast</constant>
+				<constant pointName="Point_Type">measure</constant>
+			</point_constants>
+			<point_variables/>
+			<value_codes_AND_column_maps>
+				<constant colName="TempA" valueDataType="double">TEMPI</constant>
+				<constant colName="TempM" valueDataType="double">TEMPM</constant>
+				<constant colName="DewA" valueDataType="double">DEWPTI</constant>
+				<constant colName="DewM" valueDataType="double">DEWPTM</constant>
+				<constant colName="Sky" valueDataType="double">SKY</constant>
+				<constant colName="WSpeedA" valueDataType="double">WSPDI</constant>
+				<constant colName="WSpeedM" valueDataType="double">WSPDM</constant>
+				<constant colName="WDir" valueDataType="double">WDIRD</constant>
+				<constant colName="WX" valueDataType="string">WX</constant>
+				<constant colName="UVI" valueDataType="double">UVI</constant>
+				<constant colName="Humidity" valueDataType="double">HUM</constant>
+				<constant colName="WindChillA" valueDataType="double">WINDCHILLI</constant>
+				<constant colName="WindChillM" valueDataType="double">WINDCHILLM</constant>
+				<constant colName="HeatIndexA" valueDataType="double">HEATINDEXI</constant>
+				<constant colName="HeatIndexM" valueDataType="double">HEATINDEXM</constant>
+				<constant colName="QPFA" valueDataType="double">QPFI</constant>
+				<constant colName="QPFM" valueDataType="double">QPFM</constant>
+				<constant colName="SNOWA" valueDataType="double">SNOWI</constant>
+				<constant colName="SNOWM" valueDataType="double">SNOWM</constant>
+				<constant colName="POP" valueDataType="double">POP</constant>
+			</value_codes_AND_column_maps>
+			<value_attributes>
+				<variable colName="Date" valueDataType="date">RefTs</variable>
+			</value_attributes>
+		</point_config>
+		<point_config name="weather_forecast2">
+			<database>db10</database>
+			<send_tracker_database>trackerdb12</send_tracker_database>
+			<primary_column>ID</primary_column>
+			<tracker_column>SENTID</tracker_column>
+			<point_constants>
+				<constant pointName="Pbs_Loc_A1">EXT</constant>
+				<constant pointName="Pbs_Sys_T">000</constant>
+				<constant pointName="Pbs_Sys_S">TPO</constant>
+				<constant pointName="Pbs_Eq_L1">FOR</constant>
+				<constant pointName="Pbs_Eq_L2">WEA</constant>
+				<constant pointName="Pbs_Eq_n">001</constant>
+				<constant pointName="Sign_Prog">001</constant>
+				<constant pointName="Sender">000TPO</constant>
+				<constant pointName="Realtime">1</constant>
+				<constant pointName="Pbs_Native">weather_forecast</constant>
+				<constant pointName="Point_Type">status</constant>
+			</point_constants>
+			<point_variables>
+				<variable colName="Date" pointDataType="date">RefTs</variable>
+			</point_variables>
+			<value_codes_AND_column_maps>
+				<constant colName="Condition" valueDataType="string">CONDITION</constant>
+			</value_codes_AND_column_maps>
+			<value_attributes/>
+		</point_config>
+		<point_config name="weather_observation">
+			<database>db11</database>
+			<send_tracker_database>trackerdb11</send_tracker_database>
+			<primary_column>ID</primary_column>
+			<tracker_column>SENTID</tracker_column>
+			<point_constants>
+				<constant pointName="Pbs_Loc_A1">EXT</constant>
+				<constant pointName="Pbs_Sys_T">000</constant>
+				<constant pointName="Pbs_Sys_S">TPO</constant>
+				<constant pointName="Pbs_Eq_L1">ACT</constant>
+				<constant pointName="Pbs_Eq_L2">WEA</constant>
+				<constant pointName="Pbs_Eq_n">001</constant>
+				<constant pointName="Sign_Prog">001</constant>
+				<constant pointName="Sender">000TPO</constant>
+				<constant pointName="Realtime">1</constant>
+				<constant pointName="Pbs_Native">pippo</constant>
+				<constant pointName="Point_Type">measure</constant>
+			</point_constants>
+			<point_variables/>
+			<value_codes_AND_column_maps>
+				<constant colName="TempA" valueDataType="double">TEMPI</constant>
+				<constant colName="TempM" valueDataType="double">TEMPM</constant>
+				<constant colName="DewPointA" valueDataType="double">DEWPTI</constant>
+				<constant colName="DewPointM" valueDataType="double">DEWPTM</constant>
+				<constant colName="Humidity" valueDataType="double">HUM</constant>
+				<constant colName="WindSpeedA" valueDataType="double">WSPDI</constant>
+				<constant colName="WindSpeedM" valueDataType="double">WSPDM</constant>
+				<constant colName="WindGustA" valueDataType="double">WGUSTI</constant>
+				<constant colName="WindGustM" valueDataType="double">WGUSTM</constant>
+				<constant colName="WindDir" valueDataType="double">WDIRD</constant>
+				<constant colName="VisibilityA" valueDataType="double">VISI</constant>
+				<constant colName="VisibilityM" valueDataType="double">VISM</constant>
+				<constant colName="PressureA" valueDataType="double">PRESSUREI</constant>
+				<constant colName="PressureM" valueDataType="double">PRESSUREM</constant>
+				<constant colName="WindChillA" valueDataType="double">WINDCHILLI</constant>
+				<constant colName="WindChillM" valueDataType="double">WINDCHILLM</constant>
+				<constant colName="HeatIndexA" valueDataType="double">HEATINDEXI</constant>
+				<constant colName="HeatIndexM" valueDataType="double">HEATINDEXM</constant>
+				<constant colName="PrecipA" valueDataType="double">PRECIPI</constant>
+				<constant colName="PrecipM" valueDataType="double">PRECIPM</constant>
+			</value_codes_AND_column_maps>
+			<value_attributes>
+				<variable colName="Date" valueDataType="date">RefTs</variable>
+			</value_attributes>
+		</point_config>
+		<point_config name="weather_observation2">
+			<database>db11</database>
+			<send_tracker_database>trackerdb13</send_tracker_database>
+			<primary_column>ID</primary_column>
+			<tracker_column>SENTID</tracker_column>
+			<point_constants>
+				<constant pointName="Pbs_Loc_A1">EXT</constant>
+				<constant pointName="Pbs_Sys_T">000</constant>
+				<constant pointName="Pbs_Sys_S">TPO</constant>
+				<constant pointName="Pbs_Eq_L1">ACT</constant>
+				<constant pointName="Pbs_Eq_L2">WEA</constant>
+				<constant pointName="Pbs_Eq_n">001</constant>
+				<constant pointName="Sign_Prog">001</constant>
+				<constant pointName="Sender">000TPO</constant>
+				<constant pointName="Realtime">1</constant>
+				<constant pointName="Pbs_Native">pippo</constant>
+				<constant pointName="Point_Type">status</constant>
+			</point_constants>
+			<point_variables>
+				<variable colName="Date" pointDataType="date">RefTs</variable>
+			</point_variables>
+			<value_codes_AND_column_maps>
+				<constant colName="Condition" valueDataType="string">CONDITION</constant>
+				<constant colName="Fog" valueDataType="boolean">FOG</constant>
+				<constant colName="Rain" valueDataType="boolean">RAIN</constant>
+				<constant colName="SNOW" valueDataType="boolean">SNOW</constant>
+				<constant colName="HAIL" valueDataType="boolean">HAIL</constant>
+				<constant colName="THUNDER" valueDataType="boolean">THUNDER</constant>
+				<constant colName="TORNADO" valueDataType="boolean">TORNADO</constant>
+			</value_codes_AND_column_maps>
+			<value_attributes/>
+		</point_config>
+		<point_config name="345tpoalarm">
+			<database>345alarm_tpodb</database>
+			<send_tracker_database>345ALARM_trackerdb</send_tracker_database>
+			<primary_column>ID</primary_column>
+			<tracker_column>SENTID</tracker_column>
+			<point_constants>
+				<constant pointName="Pbs_Loc_A1">345</constant>
+				<constant pointName="Pbs_Sys_T">000</constant>
+				<constant pointName="Pbs_Sys_S">TPO</constant>
+				<constant pointName="Pbs_Eq_L2">ALA</constant>
+				<constant pointName="Pbs_Eq_n">001</constant>
+				<constant pointName="Sign_Code">ALA</constant>
+				<constant pointName="Sender">000TPO</constant>
+				<constant pointName="Realtime">1</constant>
+				<constant pointName="Pbs_Native">345 lex tpo alarm</constant>
+				<constant pointName="Point_Type">alarm</constant>
+			</point_constants>
+			<point_variables>
+				<variable colName="INITTS" pointDataType="date">Alarm_Init_Ts</variable>
+				<variable colName="NORMTS" pointDataType="date">Alarm_Norm_Ts</variable>
+				<variable colName="STATE" pointDataType="integer">Alarm_State</variable>
+				<variable colName="PROPERTY_PRIO" pointDataType="integer">Alarm_Prio</variable>
+				<variable colName="SIGN" pointDataType="string">Lob_Sign</variable>
+				<variable colName="PBS" pointDataType="string">Lob_Pbs</variable>
+				<variable colName="Sign_Prog" pointDataType="string">Sign_Prog</variable>
+			</point_variables>
+			<value_codes_AND_column_maps/>
+			<value_attributes/>
+		</point_config>
+		<point_config name="560tpoalarm">
+			<database>560alarm_tpodb</database>
+			<send_tracker_database>560ALARM_trackerdb</send_tracker_database>
+			<primary_column>ID</primary_column>
+			<tracker_column>SENTID</tracker_column>
+			<point_constants>
+				<constant pointName="Pbs_Loc_A1">560</constant>
+				<constant pointName="Pbs_Sys_T">000</constant>
+				<constant pointName="Pbs_Sys_S">TPO</constant>
+				<constant pointName="Pbs_Eq_L2">ALA</constant>
+				<constant pointName="Pbs_Eq_n">001</constant>
+				<constant pointName="Sign_Prog">010</constant>
+				<constant pointName="Sign_Code">ALA</constant>
+				<constant pointName="Sender">000TPO</constant>
+				<constant pointName="Realtime">1</constant>
+				<constant pointName="Pbs_Native">560 lex tpo alarm</constant>
+				<constant pointName="Point_Type">alarm</constant>
+			</point_constants>
+			<point_variables>
+				<variable colName="INITTS" pointDataType="date">Alarm_Init_Ts</variable>
+				<variable colName="NORMTS" pointDataType="date">Alarm_Norm_Ts</variable>
+				<variable colName="STATE" pointDataType="integer">Alarm_State</variable>
+				<variable colName="PROPERTY_PRIO" pointDataType="integer">Alarm_Prio</variable>
+				<variable colName="SIGN" pointDataType="string">Lob_Sign</variable>
+				<variable colName="PBS" pointDataType="string">Lob_Pbs</variable>
+			</point_variables>
+			<value_codes_AND_column_maps/>
+			<value_attributes/>
+		</point_config>
+		<point_config name="WHI---------000TPOFORELECON001---001">
+			<database>WHI---------000TPOFORELECON001---001</database>
+			<send_tracker_database>WHI---------000TPOFORELECON001---001_sendid_tracker</send_tracker_database>
+			<primary_column>ID</primary_column>
+			<tracker_column>SENTID</tracker_column>
+			<point_constants>
+				<constant pointName="Pbs_Loc_A1">WHI</constant>
+				<constant pointName="Pbs_Sys_T">000</constant>
+				<constant pointName="Pbs_Sys_S">TPO</constant>
+				<constant pointName="Pbs_Eq_L1">FOR</constant>
+				<constant pointName="Pbs_Eq_L2">ELE</constant>
+				<constant pointName="Pbs_Eq_L3">CON</constant>
+				<constant pointName="Pbs_Eq_n">001</constant>
+				<constant pointName="Sender">000TPO</constant>
+				<constant pointName="Realtime">1</constant>
+				<constant pointName="Pbs_Native">WHI---------000TPOFORELECON001</constant>
+				<constant pointName="Point_Type">measure</constant>
+			</point_constants>
+			<value_codes_AND_column_maps>
+				<constant colName="Prediction_Value" valueDataType="double">VAL</constant>
+				<constant colName="Lower_Bound_95" valueDataType="double">VLOLIM</constant>
+				<constant colName="Upper_Bound_95" valueDataType="double">VHILIM</constant>
+				<constant colName="Lower_Bound_68" valueDataType="double">LOLIM</constant>
+				<constant colName="Upper_Bound_68" valueDataType="double">HILIM</constant>
+			</value_codes_AND_column_maps>
+			<point_variables>
+				<variable colName="Prediction_DateTime" pointDataType="date">RefTs</variable>
+			</point_variables>
+			<point_variables/>
+			<value_attributes/>
+		</point_config>
+		<point_config name="WHI---------000TPOFORSTECON001---001">
+			<database>WHI---------000TPOFORSTECON001---001</database>
+			<send_tracker_database>WHI---------000TPOFORSTECON001---001_sendid_tracker</send_tracker_database>
+			<primary_column>ID</primary_column>
+			<tracker_column>SENTID</tracker_column>
+			<point_constants>
+				<constant pointName="Pbs_Loc_A1">WHI</constant>
+				<constant pointName="Pbs_Sys_T">000</constant>
+				<constant pointName="Pbs_Sys_S">TPO</constant>
+				<constant pointName="Pbs_Eq_L1">FOR</constant>
+				<constant pointName="Pbs_Eq_L2">STE</constant>
+				<constant pointName="Pbs_Eq_L3">CON</constant>
+				<constant pointName="Pbs_Eq_n">001</constant>
+				<constant pointName="Sender">000TPO</constant>
+				<constant pointName="Realtime">1</constant>
+				<constant pointName="Pbs_Native">WHI---------000TPOFORSTECON001</constant>
+				<constant pointName="Point_Type">measure</constant>
+			</point_constants>
+			<value_codes_AND_column_maps>
+				<constant colName="Prediction_Value" valueDataType="double">VAL</constant>
+				<constant colName="Lower_Bound_95" valueDataType="double">VLOLIM</constant>
+				<constant colName="Upper_Bound_95" valueDataType="double">VHILIM</constant>
+				<constant colName="Lower_Bound_68" valueDataType="double">LOLIM</constant>
+				<constant colName="Upper_Bound_68" valueDataType="double">HILIM</constant>
+			</value_codes_AND_column_maps>
+			<point_variables>
+				<variable colName="Prediction_DateTime" pointDataType="date">RefTs</variable>
+			</point_variables>
+			<point_variables/>
+			<value_attributes/>
+		</point_config>
+		<point_config name="WHI---------000TPOOPTTEMUPT001---001">
+			<database>WHI---------000TPOOPTTEMUPT001---001</database>
+			<send_tracker_database>WHI---------000TPOOPTTEMUPT001---001_sendid_tracker</send_tracker_database>
+			<primary_column>ID</primary_column>
+			<tracker_column>SENTID</tracker_column>
+			<point_constants>
+				<constant pointName="Pbs_Loc_A1">WHI</constant>
+				<constant pointName="Pbs_Sys_T">000</constant>
+				<constant pointName="Pbs_Sys_S">TPO</constant>
+				<constant pointName="Pbs_Eq_L1">OPT</constant>
+				<constant pointName="Pbs_Eq_L2">TEM</constant>
+				<constant pointName="Pbs_Eq_L3">UPT</constant>
+				<constant pointName="Pbs_Eq_n">001</constant>
+				<constant pointName="Sender">000TPO</constant>
+				<constant pointName="Realtime">1</constant>
+				<constant pointName="Pbs_Native">WHI---------000TPOOPTTEMUPT001</constant>
+				<constant pointName="Point_Type">status</constant>
+			</point_constants>
+			<value_codes_AND_column_maps>
+				<constant colName="Prediction_DateTime" valueDataType="string">VAL</constant>
+			</value_codes_AND_column_maps>
+			<point_variables>
+				<variable colName="Prediction_DateTime" pointDataType="date">RefTs</variable>
+			</point_variables>
+			<value_attributes/>
+		</point_config>
+		<point_config name="WHI---------000TPOOPTTEMRDW001---001">
+			<database>WHI---------000TPOOPTTEMRDW001---001</database>
+			<send_tracker_database>WHI---------000TPOOPTTEMRDW001---001_sendid_tracker</send_tracker_database>
+			<primary_column>ID</primary_column>
+			<tracker_column>SENTID</tracker_column>
+			<point_constants>
+				<constant pointName="Pbs_Loc_A1">WHI</constant>
+				<constant pointName="Pbs_Sys_T">000</constant>
+				<constant pointName="Pbs_Sys_S">TPO</constant>
+				<constant pointName="Pbs_Eq_L1">OPT</constant>
+				<constant pointName="Pbs_Eq_L2">TEM</constant>
+				<constant pointName="Pbs_Eq_L3">RDW</constant>
+				<constant pointName="Pbs_Eq_n">001</constant>
+				<constant pointName="Sender">000TPO</constant>
+				<constant pointName="Realtime">1</constant>
+				<constant pointName="Pbs_Native">WHI---------000TPOOPTTEMRDW001</constant>
+				<constant pointName="Point_Type">status</constant>
+			</point_constants>
+			<value_codes_AND_column_maps>
+				<constant colName="Prediction_DateTime" valueDataType="string">VAL</constant>
+			</value_codes_AND_column_maps>
+			<point_variables>
+				<variable colName="Prediction_DateTime" pointDataType="date">RefTs</variable>
+			</point_variables>
+			<value_attributes/>
+		</point_config>
+		<point_config name="WHI---------000TPOFORPEOBUI001---001">
+			<database>WHI---------000TPOFORPEOBUI001---001</database>
+			<send_tracker_database>WHI---------000TPOFORPEOBUI001---001_sendid_tracker</send_tracker_database>
+			<primary_column>ID</primary_column>
+			<tracker_column>SENTID</tracker_column>
+			<point_constants>
+				<constant pointName="Pbs_Loc_A1">WHI</constant>
+				<constant pointName="Pbs_Sys_T">000</constant>
+				<constant pointName="Pbs_Sys_S">TPO</constant>
+				<constant pointName="Pbs_Eq_L1">FOR</constant>
+				<constant pointName="Pbs_Eq_L2">PEO</constant>
+				<constant pointName="Pbs_Eq_L3">BUI</constant>
+				<constant pointName="Pbs_Eq_n">001</constant>
+				<constant pointName="Sender">000TPO</constant>
+				<constant pointName="Realtime">1</constant>
+				<constant pointName="Pbs_Native">WHI---------000TPOFORPEOBUI001</constant>
+				<constant pointName="Point_Type">measure</constant>
+			</point_constants>
+			<value_codes_AND_column_maps>
+				<constant colName="Prediction_Value" valueDataType="double">VAL</constant>
+				<constant colName="Lower_Bound_95" valueDataType="double">VLOLIM</constant>
+				<constant colName="Upper_Bound_95" valueDataType="double">VHILIM</constant>
+				<constant colName="Lower_Bound_68" valueDataType="double">LOLIM</constant>
+				<constant colName="Upper_Bound_68" valueDataType="double">HILIM</constant>
+			</value_codes_AND_column_maps>
+			<point_variables>
+				<variable colName="Prediction_DateTime" pointDataType="date">RefTs</variable>
+			</point_variables>
+			<point_variables/>
+			<value_attributes/>
+		</point_config>
+		<point_config name="WHI---------000TPOHVATEMSPA001---001">
+			<database>WHI---------000TPOHVATEMSPA001---001</database>
+			<send_tracker_database>WHI---------000TPOHVATEMSPA001---001_sendid_tracker</send_tracker_database>
+			<primary_column>ID</primary_column>
+			<tracker_column>SENTID</tracker_column>
+			<point_constants>
+				<constant pointName="Pbs_Loc_A1">WHI</constant>
+				<constant pointName="Pbs_Sys_T">000</constant>
+				<constant pointName="Pbs_Sys_S">TPO</constant>
+				<constant pointName="Pbs_Eq_L1">HVA</constant>
+				<constant pointName="Pbs_Eq_L2">TEM</constant>
+				<constant pointName="Pbs_Eq_L3">SPA</constant>
+				<constant pointName="Pbs_Eq_n">001</constant>
+				<constant pointName="Sender">000TPO</constant>
+				<constant pointName="Realtime">1</constant>
+				<constant pointName="Pbs_Native">WHIZ03F03CNO000TPOHVATEMSPA001</constant>
+				<constant pointName="Point_Type">measure</constant>
+			</point_constants>
+			<value_codes_AND_column_maps>
+				<constant colName="Prediction_Value" valueDataType="double">VAL</constant>
+				<constant colName="Lower_Bound_95" valueDataType="double">VLOLIM</constant>
+				<constant colName="Upper_Bound_95" valueDataType="double">VHILIM</constant>
+				<constant colName="Lower_Bound_68" valueDataType="double">LOLIM</constant>
+				<constant colName="Upper_Bound_68" valueDataType="double">HILIM</constant>
+			</value_codes_AND_column_maps>
+			<point_variables>
+				<variable colName="ZONE" pointDataType="string">Pbs_Loc_A2</variable>
+				<variable colName="Floor" pointDataType="string">Pbs_Loc_A3</variable>
+				<variable colName="Quadrant" pointDataType="string">Pbs_Loc_A4</variable>
+				<variable colName="Prediction_DateTime" pointDataType="date">RefTs</variable>
+			</point_variables>
+			<value_attributes/>
+		</point_config>
+	</points_config>
+</tpocom_configuration>
