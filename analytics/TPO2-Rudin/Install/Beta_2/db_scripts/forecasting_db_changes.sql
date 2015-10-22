@@ -1,1 +1,0 @@
-ALTER TABLE [560].[dbo].[560---------000TPOFORTEMSPA001---001_Stats] ALTER COLUMN [MAPE] [float];
