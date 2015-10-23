@@ -80,6 +80,6 @@ def csv_multicsv_to_hdf(path_to_dir, sep="|"):
     #frames = (_split_concat(file, root, sep) for file in files)
 
     master = pd.concat(frames)
-    store['df'] = master.reset_index().drop_duplicates('TIMESTAMP').set_index('TIMESTAMP')
+    store['df'] = master.reset_index()
     store.close()
     return frames
