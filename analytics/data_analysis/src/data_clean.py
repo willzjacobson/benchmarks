@@ -79,7 +79,7 @@ def csv_multicsv_to_hdf(path_to_dir, sep="|"):
 
     frames = (_split_concat(file, root, sep) for file in files)
 
-    # master = pd.concat(frames, verify_integrity=True)
-    # store['df'] = master
-    # store.close()
+    master = pd.concat(frames, verify_integrity=True)
+    store['df'] = master
+    store.close()
     return frames
