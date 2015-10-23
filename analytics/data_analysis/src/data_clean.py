@@ -34,8 +34,9 @@ def _split_concat(file, root, sep="|"):
     print(file)
     temp = pd.read_csv(root + "/" + file,
                        #header=None,
+                       engine='python',
                        sep=sep,
-                       dtype="object")
+                       )#dtype="object")
 
     if file.count("_") > 1:
         string_split = file.split("_", 2)
