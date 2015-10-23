@@ -112,7 +112,7 @@ def main(argv):
     except:
         lgr.critical('An error occurred while predicting rampdown: %s' % traceback.format_exc())
 
-        #_configFile = 'C:\\Rudin\\fallback_logic\\config.ini'
+        #_configFile = 'C:\\Rudin\\fallback_logic\\config_master.json'
         failover.fall_back(configFile, configKey, 'rampdown', lgr)
     
 if __name__ == '__main__':

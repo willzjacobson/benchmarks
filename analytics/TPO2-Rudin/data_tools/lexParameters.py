@@ -11,7 +11,7 @@ with the queries made in dataCollectors
 '''
 def initializeParametersLex(configFile, configKey):
 
-    #configFile = 'D:/Rudin/data_tools/config.ini'
+    #configFile = 'D:/Rudin/data_tools/config_master.json'
     #configKey = '560_Lex_Params'
     cParser = paramConfigParser(configFile, configKey)
 

@@ -344,7 +344,7 @@ def setup_cparser(cparser, module):
   #cparser.add_optparse_files_option(oparser)
 
 
-def find_config(cfgname='config.ini', locs=sys.path):
+def find_config(cfgname='config_master.json', locs=sys.path):
   """ locate TECAC.ini somewhere along PYTHONPATH """
   for loc in locs:
     candidate = os.path.join(loc, cfgname)

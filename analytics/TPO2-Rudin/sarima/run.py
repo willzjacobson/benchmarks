@@ -4,7 +4,6 @@
 import pandas as pd
 import weather
 
-import start_up
 
 
 
