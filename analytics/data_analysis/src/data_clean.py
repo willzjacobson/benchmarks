@@ -74,8 +74,10 @@ def csv_multicsv_to_hdf(path_to_dir, sep="|"):
     root, dirs, files = list(os.walk(path_to_dir))[0][0:3]
     store = pd.HDFStore(root + ".h5")
 
-    frames = (Parallel(n_jobs=-1, verbose=51)(delayed(_split_concat)(file, root, sep)
-                                  for file in files))
+    #frames = (Parallel(n_jobs=-1, verbose=51)(delayed(_split_concat)(file, root, sep)
+    #                              for file in files))
+
+    frames = (_split_concat(file, root, sep) for file in files)
 
     # master = pd.concat(frames, verify_integrity=True)
     # store['df'] = master
