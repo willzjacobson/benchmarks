@@ -6,5 +6,5 @@ HDF5_file = '/data/park345_1a_1b.h5'
 
 store_iter = pandas.read_hdf(HDF5_file, 'df', iterator=True)
 
-for ts in sore_iter:
+for ts in store_iter:
     print ts
