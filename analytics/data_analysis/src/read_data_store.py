@@ -31,7 +31,7 @@ store.close()
 #     print('loading pickle\n')
 #     with open(GROUPS_PICKLE_file, 'rb') as f:
 #         groups = pickle.load(f)
-)
+#)
 
 
 # write group keys
