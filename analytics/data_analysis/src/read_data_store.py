@@ -8,11 +8,11 @@ store = pd.HDFStore(HDF5_file)
 
 # find distinct timeseries
 df = store.select('df')
-grouped = df.groupby(['Controller', 'Subcontroller', 'PointName'])
-groups = grouped.groups()
+grouped = df.groupby(['Controller', 'Subcontroller', 'PointName'], sort=False)
+
 
 # write group keys
-for k, v in groups.iteritems():
+for k, v in grouped.groups.iteritems():
     ctrlr, sub_cntrlr, pt_nm = k
     print('%s,%s,%s' % (ctrlr, subcntrlr, pt_nm))
 
