@@ -21,7 +21,7 @@ _module = 'historical_band'
 
 
 def main(argv):
-    #str_argv = "python C:\Rudin\historical_band\345Park\runPark C:\Rudin\data_tools\config.ini 345_Park"
+    #str_argv = "python C:\Rudin\historical_band\345Park\runPark C:\Rudin\data_tools\config_master.json 345_Park"
     if argv is None:
         argv = ' '.split(str_argv)
     if argv is None:

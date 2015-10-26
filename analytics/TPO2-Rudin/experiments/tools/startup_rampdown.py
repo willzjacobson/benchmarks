@@ -705,17 +705,17 @@ def main(argv):
 	cparser = cfgparse.ConfigParser()
 	cparser.add_option('base_dir', dest='base_dir', type='string', keys='DEFAULT')
 	cparser.add_option('building_ids', dest='building_ids', type='string', keys='DEFAULT')
-	cparser.add_file('../config.ini')
+	cparser.add_file('../config_master.json')
 	options = cparser.parse()
 
 	if len(argv) == 1:
 		buildings = options.building_ids.replace(' ', '').split(',')
 		for building in buildings:
-			recommend('../config.ini', building, lgr)
+			recommend('../config_master.json', building, lgr)
 
 	elif len(argv) == 2:
 		building = argv[1]
-		recommend('../config.ini', building, lgr)
+		recommend('../config_master.json', building, lgr)
 
 	else:
 		print "Wrong usage!"

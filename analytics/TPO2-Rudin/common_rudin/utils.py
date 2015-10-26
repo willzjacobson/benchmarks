@@ -644,7 +644,7 @@ def compute_prediction_derivatives(forecast_start_ts, predictions,
 	pred_drvtvs = []
 
 	# n-hour vane slope
-	gap_hours = 2 # TODO: move to config.ini
+	gap_hours = 2 # TODO: move to config_master.json
 	gap_td = datetime.timedelta(hours=gap_hours)
 	target_ts = forecast_start_ts + gap_td
 

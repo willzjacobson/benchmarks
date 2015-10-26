@@ -1,0 +1,19 @@
+{
+  "default": {
+    "base_dir": "/home/davidkarapetyan/Documents/workspace/Adirondack/analytics",
+    "python_prog": "/home/davidkarapetyan/anaconda3/bin/python",
+    "data_sources": "/data",
+    "log_dir": "/var/log"
+  },
+  "weather": {
+    "wund_url": "http://api.wunderground.com/api/bab4ba5bcbc2dbec/",
+    "table": "/data/weather.h5",
+    "history": "history",
+    "forecast": "forecast"
+  },
+  "sampling": {
+    "forecast_granularity": 15,
+    "forecast_length": 24
+  }
+}
+
