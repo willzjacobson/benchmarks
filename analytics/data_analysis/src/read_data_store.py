@@ -12,7 +12,7 @@ groups = None
 
 if not os.path.exists(GROUPS_PICKLE_file):
 
-    print('pickle file not found')
+    print('pickle file not found\n')
 
     store = pd.HDFStore(HDF5_file)
 
@@ -24,7 +24,7 @@ if not os.path.exists(GROUPS_PICKLE_file):
     store.close()
 
 else:
-    print('loading pickle')
+    print('loading pickle\n')
     with open(GROUPS_PICKLE_file, 'rb') as f:
         groups = pickle.load(f)
 
