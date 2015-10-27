@@ -5,7 +5,7 @@ import pickle
 import os
 import json
 import itertools
-import numpy
+import numpy as np
 
 
 HDF5_file = '/data/park345_1a_1b.h5'
