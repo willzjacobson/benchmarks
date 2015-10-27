@@ -4,6 +4,9 @@ import pandas as pd
 import pickle
 import os
 import json
+import itertools
+import numpy
+
 
 HDF5_file = '/data/park345_1a_1b.h5'
 GROUPS_PICKLE_file = '/home/ashishgagneja/misc/groups.pickle'
@@ -18,11 +21,30 @@ store = pd.HDFStore(HDF5_file)
 
 # find distinct timeseries
 df = store.select('df')
-grouped = df.groupby(['Controller', 'Subcontroller', 'PointName'], sort=False)
-groups = grouped.groups
+#grouped = df.groupby(['Controller', 'Subcontroller', 'PointName'], sort=False)
+#groups = grouped.groups
 
-with open('/home/ashishgagneja/misc/groups.json', 'wb+') as f:
-    json.dump(groups, f)
+controller_list = pd.unique(df['Controller'].ravel())
+controller_list = np.delete(controller_list, np.nan)
+
+subcontroller_list = pd.unique(df['Subcontroller'].ravel())
+subcontroller_list = np.delete(subcontroller_list, np.nan)
+
+pointname_list = pd.unique(df['Pointname'].ravel())
+pointname_list = np.delete(pointname_list, np.nan)
+
+cross_product = itertools.product(controller_list, subcontroller_list, pointname_list)
+
+valid_keys = {}
+for key in cross_product:
+    ctrlr, sub_cntrlr, pt_nm = key
+    tmp_dt = df[(df.Controller == ctrlr) & (df.Subcontroller == sub_cntrlr) & (df.PointName == pt_nm)]
+    if tmp_dt.size:
+        valid_keys[key] = tmp_dt.size
+
+
+with open('/home/ashishgagneja/misc/valid_keys.json', 'wb+') as f:
+    json.dump(valid_keys, f)
 
 store.close()
 
@@ -33,10 +55,9 @@ store.close()
 #         groups = pickle.load(f)
 #)
 
-
 # write group keys
-for k, v in groups.iteritems():
-    ctrlr, sub_cntrlr, pt_nm = k
-    print('%s,%s,%s' % (ctrlr, sub_cntrlr, pt_nm))
+#for k, v in groups.iteritems():
+#    ctrlr, sub_cntrlr, pt_nm = k
+#    print('%s,%s,%s' % (ctrlr, sub_cntrlr, pt_nm))
 
 
