@@ -1,6 +1,6 @@
 import fallback_logic.failover as failover
 
-configFile = 'config_master.json'
+configFile = 'config_master.py'
 failover.fall_back(configFile, '345', 'startup')
 failover.fall_back(configFile, '345', 'rampdown')
 

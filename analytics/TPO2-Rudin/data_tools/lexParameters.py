@@ -10,8 +10,7 @@ holder class, to represent the necesarry parameters needed to pair
 with the queries made in dataCollectors
 '''
 def initializeParametersLex(configFile, configKey):
-
-    #configFile = 'D:/Rudin/data_tools/config_master.json'
+    # configFile = 'D:/Rudin/data_tools/config_master.py'
     #configKey = '560_Lex_Params'
     cParser = paramConfigParser(configFile, configKey)
 

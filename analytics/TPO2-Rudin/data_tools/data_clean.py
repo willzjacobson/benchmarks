@@ -1,3 +1,4 @@
+__author__ = "David Karapetyan"
 # coding: utf-8
 # from IPython.parallel import Client
 # rc=Client()
