@@ -30,7 +30,7 @@ controller_list = np.delete(controller_list, np.nan)
 subcontroller_list = pd.unique(df['Subcontroller'].ravel())
 subcontroller_list = np.delete(subcontroller_list, np.nan)
 
-pointname_list = pd.unique(df['Pointname'].ravel())
+pointname_list = pd.unique(df['PointName'].ravel())
 pointname_list = np.delete(pointname_list, np.nan)
 
 cross_product = itertools.product(controller_list, subcontroller_list, pointname_list)
