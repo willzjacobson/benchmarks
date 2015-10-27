@@ -3,6 +3,8 @@
 var util = require('util');
 var logger = require('./logger.js');
 var crypto = require('crypto');
+var fs = require('fs');
+var path = require('path');
 
 function sampleProducer(kinesis, config, driverObj) {
   var log = logger().getLogger('sampleProducer');
@@ -54,8 +56,13 @@ function sampleProducer(kinesis, config, driverObj) {
     var cipher = crypto.createCipher('aes256', 'letmein345');
     record = cipher.update(JSON.stringify(record), 'utf8', 'base64');
     record += cipher.final('base64');
+    var key = fs.readFileSync(path.join(__dirname + '/key.pem'));
+    var sign = crypto.createSign('RSA-SHA256');
+    var signed = sign.update(record);
+    signed = sign.sign(key, 'base64');
+    var kinesisObj = JSON.stringify({record: record, signature: signed})
     var recordParams = {
-      Data : record,
+      Data : kinesisObj,
       PartitionKey : driverObj.partitionkey,
       StreamName : config.stream
     };
