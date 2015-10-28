@@ -10,8 +10,6 @@ david = dict(default={
     "forecast": "forecast",
     "city": "New_York",
     "state": "NY",
-    "history": "history",
-    "forecast": "forecast",
     "cap": 9
 }, sampling={
     "forecast_granularity": 15,
