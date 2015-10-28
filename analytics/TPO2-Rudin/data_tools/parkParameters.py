@@ -12,7 +12,7 @@ with the queries made in dataCollectors
 def initializeParametersPark(configFile, configKey):
     ''' General '''
     #TODO: Determine config file by passing the name of the file
-    #configFile = 'D:/Rudin/data_tools/config_master.json'
+    # configFile = 'D:/Rudin/data_tools/config_master.py'
     #configKey = '345_Park_Params'
     cParser = paramConfigParser(configFile, configKey)
     floorList = cParser.floorList()

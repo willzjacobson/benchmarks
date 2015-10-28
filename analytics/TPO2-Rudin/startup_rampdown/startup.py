@@ -109,7 +109,7 @@ def main(argv):
     except:
         lgr.critical('An error occurred while predicting startup: %s' % traceback.format_exc())
 
-        #_configFile = 'C:\\Rudin\\fallback_logic\\config_master.json'
+        # _configFile = 'C:\\Rudin\\fallback_logic\\config_master.py'
         failover.fall_back(configFile, configKey, 'startup', lgr)
 
     

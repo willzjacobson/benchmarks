@@ -1,12 +1,9 @@
-# Logs
-logs
+# Temporary files.
+.#*
+
+# Log files.
 *.log
-npm-debug.log*
 
-# Runtime data
-pids
-*.pid
-*.seed
+# Don't push node_modules - we want the build server to install these.
+node_modules/
 
-# Dependency directory
-node_modules

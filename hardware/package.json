@@ -5,7 +5,7 @@
   "main": "controller.js",
   "scripts": {
     "preinstall": "bash deps.sh",
-    "start": "bash start.sh && node app.js && node ./XML/xml.js",
+    "start": "node app.js",
     "test": "test"
   },
   "author": "Anirban Ray",
@@ -15,12 +15,14 @@
     "bluebird": "^2.9.34",
     "child-process-promise": "^1.1.0",
     "cron": "^1.0.9",
+    "csv-parse": "^1.0.0",
     "csvtojson": "^0.4.3",
     "express": "^4.13.3",
     "express-xml-bodyparser": "^0.2.2",
     "kinesis": "^1.2.2",
     "leveldown": "^1.4.1",
     "levelup": "^1.2.1",
+    "lodash": "^3.10.1",
     "log4js": "^0.6.27",
     "morgan": "^1.6.1",
     "net-snmp": "^1.1.13",

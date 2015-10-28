@@ -1,0 +1,477 @@
+buildingRoute,BMSPointName,Master,Controller,PointName,System,System display name,Description,Units,Sample
+Rudin345Park\\BCX34th\\MainChilledWater,AirCompLowPress,BCX34th,MainChilledWater,ACLowPressure,Misc,Miscellaneous,Air Compressor Low Pressure Alarm,None,Off
+Rudin345Park\\BCX34th\\MiscPts34th,CH1ReturnTemp,BCX34th,MiscPts34th,CH1ReturnTemp,MCW,Main Chilled Water,Chiller1 CHW Return Temp,Fahrenheit,56.9
+Rudin345Park\\BCX34th\\MiscPts34th,CH1SupplyTemp,BCX34th,MiscPts34th,CH1SupplyTemp,MCW,Main Chilled Water,Chiller1 CHW Supply Temp,Fahrenheit,45.9
+Rudin345Park\\BCX34th\\MiscPts34th,CH2ReturnTemp,BCX34th,MiscPts34th,CH2ReturnTemp,MCW,Main Chilled Water,Chiller2 CHW Return Temp,Fahrenheit,56.9
+Rudin345Park\\BCX34th\\MiscPts34th,CH2SupplyTemp,BCX34th,MiscPts34th,CH2SupplyTemp,MCW,Main Chilled Water,Chiller2 CHW Supply Temp,Fahrenheit,40.8
+Rudin345Park\\BCXCellar\\InteriorReheatC,CHWDiffPress,BCXCellar,InteriorReheatC,CHWDIffPressC,CWIntRH,Level C Internal Water Reheat,CHW Differential Pressure C,PSI,100
+Rudin345Park\\BCX34th\\MainChilledWater,CHWDiffPress34,BCX34th,MainChilledWater,CHWDIffPress34,MCW,Main Chilled Water,CHW Differential Pressure 34,PSI,20.8
+Rudin345Park\\BCX9th\\InteriorReheat9,CHWDiffPress9,BCX9th,InteriorReheat9,CHWDIffPress9,9WIntRH,Floor 9 Internal Water Reheat,CHW Differential Pressure 9,PSI,22.8
+Rudin345Park\\BCXCellar\\InteriorFanS_18,CHWDiffPressCLev,BCXCellar,InteriorFanS_18,CHWDIffPressC,S18,Supply Fan 18,CHW Differential Pressure C,PSI,0.8
+Rudin345Park\\BCX34th\\MainCoolingTower,CHWDiffPressRoof,BCX34th,MainCoolingTower,CHWDIffPressR,MCW,Main Chilled Water,CHW Differential Pressure Roof,PSI,11.2
+Rudin345Park\\BCX34th\\MainCoolingTower,CWReturnTemp,BCX34th,MainCoolingTower,CWReturnTemp,MCW,Main Chilled Water,Condenser Water Return Temp Main CT,Fahrenheit,89.6
+Rudin345Park\\BCX34th\\TenantCT2,CWReturnTemp,BCX34th,TenantCT2,CWReturnTemp,TCT2,Tenant Cooling Tower 2,Condenser Water Return Temp Tenant CT2,Fahrenheit,80.2
+Rudin345Park\\BCX34th\\TenantCT1,CWReturnTemp,BCX34th,TenantCT1,CWReturnTemp,TCT1,Tenant Cooling Tower 1,Condenser Water Return Temp Tenant CT1,Fahrenheit,82.2
+Rudin345Park\\BCX34th\\TenantCT1,CWSupplyTemp,BCX34th,TenantCT1,CWSupplyTemp,TCT1,Tenant Cooling Tower 1,Condenser Water Supply Temp Tenant CT2,Fahrenheit,78.6
+Rudin345Park\\BCX34th\\TenantCT2,CWSupplyTemp,BCX34th,TenantCT2,CWSupplyTemp,TCT2,Tenant Cooling Tower 2,Condenser Water Supply Temp Tenant CT2,Fahrenheit,77.7
+Rudin345Park\\BCX34th\\MainCoolingTower,CWSupplyTemp,BCX34th,MainCoolingTower,CWSupplyTemp,MCW,Main Chilled Water,Condenser Water Supply Temp Main CT,Fahrenheit,79.4
+Rudin345Park\\BCX34th\\MiscPtsRoof,DHWHighTemp1,BCX34th,MiscPtsRoof,DHWTempR1,Water,Building Water,Domestic Hot Water High Temp 1 Roof,None,Off
+Rudin345Park\\BCX34th\\MiscPtsRoof,DHWHighTemp2,BCX34th,MiscPtsRoof,DHWTempR2,Water,Building Water,Domestic Hot Water High Temp 2 Roof,None,Off
+Rudin345Park\\BCX34th\\MainChilledWater,DHWHighTempEast,BCX34th,MainChilledWater,DHWTemp34^E,MCW,Main Chilled Water,Domestic Hot Water High Temp East 34th Fl,None,Off
+Rudin345Park\\BCX9th\\MiscPts9thFl,DHWHighTempEast,BCX9th,MiscPts9thFl,DHWTemp9^E,Water,Building Water,Domestic Hot Water High Temp East 9th Fl,None,Off
+Rudin345Park\\BCXCellar\\MCC.West1,DHWHighTempNorth,BCXCellar,MCC.West1,DHWTempC^N,Water,Building Water,Domestic Hot Water High Temp North C Level,None,Off
+Rudin345Park\\BCXCellar\\MCC.West1,DHWHighTempSouth,BCXCellar,MCC.West1,DHWTempC^S,Water,Building Water,Domestic Hot Water High Temp South C Level,None,Off
+Rudin345Park\\BCX9th\\MiscPts9thFl,DHWHighTempWest,BCX9th,MiscPts9thFl,DHWTemp9^W,Water,Building Water,Domestic Hot Water High Temp West 9th Fl,None,Off
+Rudin345Park\\BCX34th\\MainChilledWater,DHWHighTempWest,BCX34th,MainChilledWater,DHWTemp34^W,Water,Building Water,Domestic Hot Water High Temp West 34th Floor,None,Off
+Rudin345Park\\BCXCellar\\MCC.West1,EjectorPitHigh,BCXCellar,MCC.West1,EjectorPitHigh,Misc,Miscellaneous,Ejector Pit High Level C Level,None,Off
+Rudin345Park\\BCX34th\\TenantCT1,HighLevel.CT1,BCX34th,TenantCT1,HighLevel,TCT1,Tenant Cooling Tower 1,High Water Level Tenant CT1,None,Off
+Rudin345Park\\BCX34th\\TenantCT2,HighLevel.CT2.1,BCX34th,TenantCT2,HighLevel,TCT2,Tenant Cooling Tower 2,High Water Level Tenant CT2,None,Off
+Rudin345Park\\BCXCellar\\MCC.West2,HouseTankHi34,BCXCellar,MCC.West2,HouseTank34High,Water,Building Water,High Water Level House Tank 34th Floor,None,Off
+Rudin345Park\\BCXCellar\\MCC.West2,HouseTankHi45,BCXCellar,MCC.West2,HouseTank45High,Water,Building Water,High Water Level House Tank 45th Floor,None,Off
+Rudin345Park\\BCXCellar\\MCC.West2,HouseTankHi9,BCXCellar,MCC.West2,HouseTank9High,Water,Building Water,High Water Level House Tank 9th Floor,None,Off
+Rudin345Park\\BCXCellar\\MCC.West2,HouseTankLo34,BCXCellar,MCC.West2,HouseTank34Low,Water,Building Water,Low Water Level House Tank 34th Floor,None,Off
+Rudin345Park\\BCXCellar\\MCC.West2,HouseTankLo45,BCXCellar,MCC.West2,HouseTank45Low,Water,Building Water,Low Water Level House Tank 45th Floor,None,Off
+Rudin345Park\\BCXCellar\\MCC.West2,HouseTankLo9,BCXCellar,MCC.West2,HouseTank9Low,Water,Building Water,Low Water Level House Tank 9th Floor,None,Off
+Rudin345Park\\BCXCellar\\PerimeterHeating,HWSupplyTemp,BCXCellar,PerimeterHeating,HWSupplyTempC^Per,Water,Building Water,Hot Water Supply Temp Perimter C Level,Fahrenheit,98.6
+Rudin345Park\\BCX9th\\InteriorReheat9,HWSupplyTemp,BCX9th,InteriorReheat9,HWSupplyTemp9^Int,Water,Building Water,Hot Water Supply Temp Interior 9th Floor,Fahrenheit,100
+Rudin345Park\\BCXCellar\\InteriorReheatC,HWSupplyTemp,BCXCellar,InteriorReheatC,HWSupplyTempC^Int,Water,Building Water,Hot Water Supply Temp Interior C Level,Fahrenheit,82.8
+Rudin345Park\\BCX34th\\InteriorReheat34,HWSupplyTemp,BCX34th,InteriorReheat34,HWSupplyTemp34^Int,Water,Building Water,Hot Water Supply Temp Interior 34th Floor,Fahrenheit,65.6
+Rudin345Park\\BCX34th\\TenantCT1,LowLevel.CT1,BCX34th,TenantCT1,LowWaterLevel,TCT1,Tenant Cooling Tower 1,Low Water Level Tenant CT1,None,Off
+Rudin345Park\\BCX34th\\TenantCT2,LowLevel.CT2.1,BCX34th,TenantCT2,LowWaterLevel,TCT2,Tenant Cooling Tower 2,Low Water Level Tenant CT2,None,Off
+Rudin345Park\\BCX34th\\NWSecWater,NWReturnTemp,BCX34th,NWSecWater,SWaterSupplyTemp34^NW,34NW2WS,Floor 34 NorthWest Secondary Water System ,NW Secondary Water Return Temp 34th Floor,Fahrenheit,58.8
+Rudin345Park\\BCX9th\\NWSecWater9th,NWReturnTemp,BCX9th,NWSecWater9th,SWaterSupplyTemp9^NW,9NW2WS,Floor 9 NorthWest Secondary Water System ,NW Secondary Water Return Temp 9th Floor,Fahrenheit,58.2
+Rudin345Park\\BCX9th\\NWSecWater9th,NWSupplyTemp,BCX9th,NWSecWater9th,SWaterSupplyTemp9^NW,9NW2WS,Floor 9 NorthWest Secondary Water System ,NW Secondary Water Supply Temp 9th Floor,Fahrenheit,56.5
+Rudin345Park\\BCX34th\\NWSecWater,NWSupplyTemp,BCX34th,NWSecWater,SWaterSupplyTemp34^NW,34NW2WS,Floor 34 NorthWest Secondary Water System ,NW Secondary Water Return Temp 34th Floor,Fahrenheit,55.7
+Rudin345Park\\BCX34th\\TenantCT1,OAH_East,BCX34th,TenantCT1,Humidity^E,OA,Outdoor Air,Outdoor Air Humidity East,%RH,49.10%
+Rudin345Park\\BCX34th\\TenantCT2,OAH_West,BCX34th,TenantCT2,Humidity^W,OA,Outdoor Air,Outdoor Air Humidity West,%RH,39.30%
+Rudin345Park\\BCX34th\\TenantCT1,OAT_East,BCX34th,TenantCT1,Temp^E,OA,Outdoor Air,Outdoor Air Temp East,Fahrenheit,83.1
+Rudin345Park\\BCX34th\\TenantCT2,OAT_West,BCX34th,TenantCT2,Temp^W,OA,Outdoor Air,Outdoor Air Temp West,Fahrenheit,83.8
+Rudin345Park\\BCX34th\\TenantCT1,OA_CO2East,BCX34th,TenantCT1,C02^E,OA,Outdoor Air,Outdoor Air CO2 Level East,PPM,617.8
+Rudin345Park\\BCX34th\\TenantCT2,OA_Co2West,BCX34th,TenantCT2,C02^W,OA,Outdoor Air,Outdoor Air CO2 Level West,PPM,444.2
+Rudin345Park\\BCX34th\\MCC_34th_CWPumps,PumpStatus.P1,BCX34th,MCC_34th_CWPumps,P1-PumpStatus,MCW,Main Chilled Water,Pump Run Status,None,On
+Rudin345Park\\BCX34th\\NWSecWater,PumpStatus.P10,BCX34th,NWSecWater,P10-PumpStatus,Misc,Miscellaneous,Pump Run Status,None,Off
+Rudin345Park\\BCX34th\\NWSecWater,PumpStatus.P11,BCX34th,NWSecWater,P11-PumpStatus,34NW2WS,Floor 34 NorthWest Secondary Water System ,Pump Run Status,None,On
+Rudin345Park\\BCX34th\\InteriorReheat34,PumpStatus.P12,BCX34th,InteriorReheat34,P12-PumpStatus,34WIntRH,Floor 34 Internal Water Reheat,Pump Run Status,None,Off
+Rudin345Park\\BCX34th\\InteriorReheat34,PumpStatus.P13,BCX34th,InteriorReheat34,P13-PumpStatus,34WIntRH,Floor 34 Internal Water Reheat,Pump Run Status,None,Off
+Rudin345Park\\BCX9th\\SESecWater9th,PumpStatus.P16,BCX9th,SESecWater9th,P16-PumpStatus,9SE2WS,Floor 9 SouthEast Secondary Water System,Pump Run Status,None,On
+Rudin345Park\\BCX9th\\SESecWater9th,PumpStatus.P17,BCX9th,SESecWater9th,P17-PumpStatus,Misc,Miscellaneous,Pump Run Status,None,Off
+Rudin345Park\\BCX9th\\NWSecWater9th,PumpStatus.P18,BCX9th,NWSecWater9th,P18-PumpStatus,9NW2WS,Floor 9 NorthWest Secondary Water System ,Pump Run Status,None,On
+Rudin345Park\\BCX9th\\InteriorReheat9,PumpStatus.P19,BCX9th,InteriorReheat9,P19-PumpStatus,9WIntRH,Floor 9 Internal Water Reheat,Pump Run Status,None,On
+Rudin345Park\\BCX34th\\MCC_34th_CWPumps,PumpStatus.P2,BCX34th,MCC_34th_CWPumps,P2-PumpStatus,MCW,Main Chilled Water,Pump Run Status,None,On
+Rudin345Park\\BCX9th\\InteriorReheat9,PumpStatus.P20,BCX9th,InteriorReheat9,P20-PumpStatus,9WIntRH,Floor 9 Internal Water Reheat,Pump Run Status,None,Off
+Rudin345Park\\BCXCellar\\InteriorReheatC,PumpStatus.P23,BCXCellar,InteriorReheatC,P23-PumpStatus,CWIntRH,Level C Internal Water Reheat,Pump Run Status,None,Off
+Rudin345Park\\BCXCellar\\InteriorReheatC,PumpStatus.P24,BCXCellar,InteriorReheatC,P24-PumpStatus,CWIntRH,Level C Internal Water Reheat,Pump Run Status,None,Off
+Rudin345Park\\BCXCellar\\PerimeterHeating,PumpStatus.P25,BCXCellar,PerimeterHeating,P25-PumpStatus,CWPerRH,Level C Perimeter Water Reheat,Pump Run Status,None,Off
+Rudin345Park\\BCXCellar\\PerimeterHeating,PumpStatus.P26,BCXCellar,PerimeterHeating,P26-PumpStatus,CWPerRH,Level C Perimeter Water Reheat,Pump Run Status,None,Off
+Rudin345Park\\BCX34th\\MCC_34th_CWPumps,PumpStatus.P3,BCX34th,MCC_34th_CWPumps,P3-PumpStatus,MCW,Main Chilled Water,Pump Run Status,None,On
+Rudin345Park\\BCX34th\\TenantCT1,PumpStatus.P33,BCX34th,TenantCT1,P33-PumpStatus,TCT1,Tenant Cooling Tower 1,Pump Run Status,None,Off
+Rudin345Park\\BCX34th\\TenantCT1,PumpStatus.P34,BCX34th,TenantCT1,P34-PumpStatus,TCT1,Tenant Cooling Tower 1,Pump Run Status,None,On
+Rudin345Park\\BCX34th\\TenantCT1,PumpStatus.P35,BCX34th,TenantCT1,P35-PumpStatus,TCT1,Tenant Cooling Tower 1,Pump Run Status,None,On
+Rudin345Park\\BCX34th\\TenantCT1,PumpStatus.P36,BCX34th,TenantCT1,P36-PumpStatus,TCT1,Tenant Cooling Tower 1,Pump Run Status,None,On
+Rudin345Park\\BCX34th\\TenantCT1,PumpStatus.P37,BCX34th,TenantCT1,P37-PumpStatus,TCT1,Tenant Cooling Tower 1,Pump Run Status,None,Off
+Rudin345Park\\BCX34th\\TenantCT2,PumpStatus.P38,BCX34th,TenantCT2,P38-PumpStatus,TCT2,Tenant Cooling Tower 2,Pump Run Status,None,On
+Rudin345Park\\BCX34th\\TenantCT2,PumpStatus.P39,BCX34th,TenantCT2,P39-PumpStatus,TCT2,Tenant Cooling Tower 2,Pump Run Status,None,Off
+Rudin345Park\\BCX34th\\MCC_34th_CWPumps,PumpStatus.P4,BCX34th,MCC_34th_CWPumps,P4-PumpStatus,MCW,Main Chilled Water,Pump Run Status,None,On
+Rudin345Park\\BCX34th\\TenantCT2,PumpStatus.P40,BCX34th,TenantCT2,P40-PumpStatus,TCT2,Tenant Cooling Tower 2,Pump Run Status,None,On
+Rudin345Park\\BCX34th\\MainChilledWater,PumpStatus.P5,BCX34th,MainChilledWater,P5-PumpStatus,MCW,Main Chilled Water,Pump Run Status,None,On
+Rudin345Park\\BCX34th\\MainChilledWater,PumpStatus.P6,BCX34th,MainChilledWater,P6-PumpStatus,MCW,Main Chilled Water,Pump Run Status,None,On
+Rudin345Park\\BCX34th\\MainChilledWater,PumpStatus.P7,BCX34th,MainChilledWater,P7-PumpStatus,MCW,Main Chilled Water,Pump Run Status,None,On
+Rudin345Park\\BCX34th\\MainChilledWater,PumpStatus.P8,BCX34th,MainChilledWater,P8-PumpStatus,MCW,Main Chilled Water,Pump Run Status,None,On
+Rudin345Park\\BCX34th\\SESecondaryWater,PumpStatus.P9,BCX34th,SESecondaryWater,P9-PumpStatus,34SE2WS,Floor,Pump Run Status,None,On
+Rudin345Park\\BCX34th\\PrimaryFanS_1.2,RCHTempEast,BCX34th,PrimaryFanS_1.2,S1-Reheat^E,S1,,Reheat Temperature,Fahrenheit,55.3
+Rudin345Park\\BCX9th\\PrimaryFanS_7.2,RCHTempEast,BCX9th,PrimaryFanS_7.2,S7-Reheat^E,S7,,Reheat Temperature,ÁF,56.2
+Rudin345Park\\BCX9th\\PrimaryFanS_8.2,RCHTempNorth,BCX9th,PrimaryFanS_8.2,S8-Reheat^N,S8,,Reheat Temperature,ÁF,56.2
+Rudin345Park\\BCX34th\\PrimaryFanS_2.2,RCHTempNorth,BCX34th,PrimaryFanS_2.2,S2-Reheat^N,S2,,Reheat Temperature,ÁF,56.5
+Rudin345Park\\BCX34th\\PrimaryFanS_1.2,RCHTempSouth,BCX34th,PrimaryFanS_1.2,S1-Reheat^S,S1,,Reheat Temperature,ÁF,55.3
+Rudin345Park\\BCX9th\\PrimaryFanS_7.2,RCHTempSouth,BCX9th,PrimaryFanS_7.2,S7-Reheat^S,S7,,Reheat Temperature,ÁF,56.9
+Rudin345Park\\BCX9th\\PrimaryFanS_8.2,RCHTempWest,BCX9th,PrimaryFanS_8.2,S8-Reheat^W,S8,,Reheat Temperature,ÁF,56.3
+Rudin345Park\\BCX34th\\PrimaryFanS_2.2,RCHTempWest,BCX34th,PrimaryFanS_2.2,S2-Reheat^W,S2,,Reheat Temperature,ÁF,56.5
+Rudin345Park\\BCX34th\\InteriorFanS_4.2,ReturnCO2.F1,BCX34th,InteriorFanS_4.2,F1-ReturnCO2,S4,,Return CO2 Level,PPM,685
+Rudin345Park\\BCX9th\\InteriorFanS_9,ReturnCO2.F10,BCX9th,InteriorFanS_9,F10-ReturnCO2,S9,,Return CO2 Level,PPM,650.3
+Rudin345Park\\BCX9th\\InteriorFanS_12,ReturnCO2.F11,BCX9th,InteriorFanS_12,F11-ReturnCO2,S12,,Return CO2 Level,PPM,806
+Rudin345Park\\BCX9th\\InteriorFanS_11,ReturnCO2.F12,BCX9th,InteriorFanS_11,F12-ReturnCO2,S11,,Return CO2 Level,PPM,705
+Rudin345Park\\BCXCellar\\InteriorFanS_13,ReturnCO2.F17,BCXCellar,InteriorFanS_13,F17-ReturnCO2,S13,,Return CO2 Level,PPM,707.5
+Rudin345Park\\BCXCellar\\InteriorFanS_14,ReturnCO2.F18,BCXCellar,InteriorFanS_14,F18-ReturnCO2,S14,,Return CO2 Level,PPM,740.3
+Rudin345Park\\BCXCellar\\InteriorFanS_15,ReturnCO2.F19,BCXCellar,InteriorFanS_15,F19-ReturnCO2,S15,,Return CO2 Level,PPM,584.3
+Rudin345Park\\BCX34th\\InteriorFanS_3,ReturnCO2.F2,BCX34th,InteriorFanS_3,F2-ReturnCO2,S3,,Return CO2 Level,PPM,609.6
+Rudin345Park\\BCXCellar\\InteriorFanS_16,ReturnCO2.F20,BCXCellar,InteriorFanS_16,F20-ReturnCO2,S16,,Return CO2 Level,PPM,685
+Rudin345Park\\BCXCellar\\InteriorFanS_17,ReturnCO2.F21,BCXCellar,InteriorFanS_17,F21-ReturnCO2,S25,,Return CO2 Level,PPM,661.1
+Rudin345Park\\BCXCellar\\InteriorFanS_18,ReturnCO2.F22,BCXCellar,InteriorFanS_18,F22-ReturnCO2,S18,,Return CO2 Level,PPM,701.2
+Rudin345Park\\BCXCellar\\InteriorFanS_19,ReturnCo2.F23,BCXCellar,InteriorFanS_19,F23-ReturnCO2,S19,,Return CO2 Level,PPM,659.6
+Rudin345Park\\BCXCellar\\InteriorFanS_20,ReturnCO2.F24,BCXCellar,InteriorFanS_20,F24-ReturnCO2,S20,,Return CO2 Level,PPM,717.9
+Rudin345Park\\BCXCellar\\InteriorFanS_21,ReturnCO2.F25,BCXCellar,InteriorFanS_21,F25-ReturnCO2,S21,,Return CO2 Level,PPM,712.7
+Rudin345Park\\BCXCellar\\InteriorFanS_22,ReturnCO2.F26,BCXCellar,InteriorFanS_22,F26-ReturnCO2,S22,,Return CO2 Level,PPM,675.7
+Rudin345Park\\BCX34th\\InteriorFanS_5,ReturnCO2.F3,BCX34th,InteriorFanS_5,F3-ReturnCO2,S5,,Return CO2 Level,PPM,667
+Rudin345Park\\BCX34th\\InteriorFanS_6.2,ReturnCO2.F4,BCX34th,InteriorFanS_6.2,F4-ReturnCO2,S6,,Return CO2 Level,PPM,710
+Rudin345Park\\BCX9th\\InteriorFanS_10,ReturnCO2.F9,BCX9th,InteriorFanS_10,F9-ReturnCO2,S10,,Return CO2 Level,PPM,626.4
+Rudin345Park\\BCX9th\\InteriorFanS_10,ReturnTemp,BCX9th,InteriorFanS_10,S10-ReturnAirTemp,S10,,Return Air Temperature,Fahrenheit,74.5
+Rudin345Park\\BCX34th\\PrimaryFanS_1.1,ReturnTemp,BCX34th,PrimaryFanS_1.1,S1-ReturnAirTemp,S1,,Return Air Temperature,Fahrenheit,73.5
+Rudin345Park\\BCX34th\\InteriorFanS_5,ReturnTemp,BCX34th,InteriorFanS_5,S5-ReturnAirTemp,S5,,Return Air Temperature,Fahrenheit,74.7
+Rudin345Park\\BCX34th\\PrimaryFanS_2.1,ReturnTemp,BCX34th,PrimaryFanS_2.1,S2-ReturnAirTemp,S2,,Return Air Temperature,Fahrenheit,83.7
+Rudin345Park\\BCX34th\\InteriorFanS_3,ReturnTemp,BCX34th,InteriorFanS_3,S3-ReturnAirTemp,S3,,Return Air Temperature,Fahrenheit,73.3
+Rudin345Park\\BCX34th\\InteriorFanS_4.1,ReturnTemp,BCX34th,InteriorFanS_4.1,S4-ReturnAirTemp,S4,,Return Air Temperature,Fahrenheit,73.4
+Rudin345Park\\BCX34th\\InteriorFanS_6.1,ReturnTemp,BCX34th,InteriorFanS_6.1,S6-ReturnAirTemp,S6,,Return Air Temperature,Fahrenheit,75.4
+Rudin345Park\\BCXCellar\\InteriorFanS_22,ReturnTemp,BCXCellar,InteriorFanS_22,S22-ReturnAirTemp,S22,,Return Air Temperature,Fahrenheit,74.9
+Rudin345Park\\BCXCellar\\InteriorFanS_21,ReturnTemp,BCXCellar,InteriorFanS_21,S21-ReturnAirTemp,S21,,Return Air Temperature,Fahrenheit,75.6
+Rudin345Park\\BCXCellar\\InteriorFanS_20,ReturnTemp,BCXCellar,InteriorFanS_20,S20-ReturnAirTemp,S20,,Return Air Temperature,Fahrenheit,76.2
+Rudin345Park\\BCXCellar\\InteriorFanS_19,ReturnTemp,BCXCellar,InteriorFanS_19,S19-ReturnAirTemp,S19,,Return Air Temperature,Fahrenheit,77.3
+Rudin345Park\\BCXCellar\\InteriorFanS_18,ReturnTemp,BCXCellar,InteriorFanS_18,S18-ReturnAirTemp,S18,,Return Air Temperature,Fahrenheit,74
+Rudin345Park\\BCXCellar\\InteriorFanS_17,ReturnTemp,BCXCellar,InteriorFanS_17,S17-ReturnAirTemp,S17,,Return Air Temperature,Fahrenheit,74.7
+Rudin345Park\\BCXCellar\\InteriorFanS_16,ReturnTemp,BCXCellar,InteriorFanS_16,S16-ReturnAirTemp,S16,,Return Air Temperature,Fahrenheit,74.1
+Rudin345Park\\BCXCellar\\InteriorFanS_15,ReturnTemp,BCXCellar,InteriorFanS_15,S15-ReturnAirTemp,S15,,Return Air Temperature,Fahrenheit,76.1
+Rudin345Park\\BCXCellar\\InteriorFanS_14,ReturnTemp,BCXCellar,InteriorFanS_14,S14-ReturnAirTemp,S14,,Return Air Temperature,Fahrenheit,78.4
+Rudin345Park\\BCXCellar\\InteriorFanS_13,ReturnTemp,BCXCellar,InteriorFanS_13,S13-ReturnAirTemp,S13,,Return Air Temperature,Fahrenheit,77.3
+Rudin345Park\\BCX9th\\InteriorFanS_11,ReturnTemp,BCX9th,InteriorFanS_11,S11-ReturnAirTemp,S11,,Return Air Temperature,Fahrenheit,74.9
+Rudin345Park\\BCX9th\\InteriorFanS_12,ReturnTemp,BCX9th,InteriorFanS_12,S12-ReturnAirTemp,S12,,Return Air Temperature,Fahrenheit,74.1
+Rudin345Park\\BCX9th\\InteriorFanS_9,ReturnTemp,BCX9th,InteriorFanS_9,S9-ReturnAirTemp,S9,,Return Air Temperature,Fahrenheit,74.7
+Rudin345Park\\BCX9th\\PrimaryFanS_7.1,ReturnTemp,BCX9th,PrimaryFanS_7.1,S7-ReturnAirTemp,S7,,Return Air Temperature,Fahrenheit,75.3
+Rudin345Park\\BCX9th\\PrimaryFanS_8.1,ReturnTemp,BCX9th,PrimaryFanS_8.1,S8-ReturnAirTemp,S8,,Return Air Temperature,Fahrenheit,85.6
+Rudin345Park\\BCX9th\\SESecWater9th,SEReturnTemp,BCX9th,SESecWater9th,SWaterReturnTemp9,9SE2WS,,Return Water Temperature SE Water System 9th Floor,Fahrenheit,58.2
+Rudin345Park\\BCX34th\\SESecondaryWater,SEReturnTemp,BCX34th,SESecondaryWater,SWaterReturnTemp34,34SE2WS,,Return Water Temperature SE Water System 34th Floor,Fahrenheit,58.1
+Rudin345Park\\BCX34th\\SESecondaryWater,SESupplyTemp,BCX34th,SESecondaryWater,SWaterSupplyTemp34,34SE2WS,,Supply Water Temperature SE Water System 34th Floor,Fahrenheit,56.3
+Rudin345Park\\BCX9th\\SESecWater9th,SESupplyTemp,BCX9th,SESecWater9th,SWaterSupplyTemp9,9SE2WS,,Supply Water Temperature SE Water System 9th Floor,Fahrenheit,56.3
+Rudin345Park\\BCXCellar\\FloorDamper4th1,SpaceTempE,BCXCellar,FloorDamper4th1,SpaceTemp-4^E,S7,,Space Temperature East,Fahrenheit,65.4
+Rudin345Park\\BCXCellar\\FloorDamper2nd,SpaceTempE,BCXCellar,FloorDamper2nd,SpaceTemp-2^E,S7,,Space Temperature East,Fahrenheit,72.2
+Rudin345Park\\BCX34th\\FloorDamper38th,SpaceTempE,BCX34th,FloorDamper38th,SpaceTemp-38^E,S1,,Space Temperature East,Fahrenheit,74.9
+Rudin345Park\\BCX9th\\FloorDamper13th2,SpaceTempE,BCX9th,FloorDamper13th2,SpaceTemp-13^E,S7,,Space Temperature East,Fahrenheit,74.6
+Rudin345Park\\BCX9th\\FloorDamper20th,SpaceTempE,BCX9th,FloorDamper20th,SpaceTemp-20^E,S1,,Space Temperature East,Fahrenheit,72.2
+Rudin345Park\\BCX9th\\FloorDamper24th,SpaceTempE,BCX9th,FloorDamper24th,SpaceTemp-24^E,S1,,Space Temperature East,Fahrenheit,71.6
+Rudin345Park\\BCX9th\\FloorDamper24th,SpaceTempN,BCX9th,FloorDamper24th,SpaceTemp-24^N,S2,,Space Temperature North,Fahrenheit,74.4
+Rudin345Park\\BCX9th\\FloorDamper20th,SpaceTempN,BCX9th,FloorDamper20th,SpaceTemp-20^N,S2,,Space Temperature North,Fahrenheit,73.2
+Rudin345Park\\BCX9th\\FloorDamper13th2,SpaceTempN,BCX9th,FloorDamper13th2,SpaceTemp-13^N,S8,,Space Temperature North,Fahrenheit,73.2
+Rudin345Park\\BCX34th\\FloorDamper38th,SpaceTempN,BCX34th,FloorDamper38th,SpaceTemp-38^N,S2,,Space Temperature North,Fahrenheit,72
+Rudin345Park\\BCXCellar\\FloorDamper2nd,SpaceTempN,BCXCellar,FloorDamper2nd,SpaceTemp-2^N,S8,,Space Temperature North,Fahrenheit,73.2
+Rudin345Park\\BCXCellar\\FloorDamper4th1,SpaceTempN,BCXCellar,FloorDamper4th1,SpaceTemp-4^N,S8,,Space Temperature North,Fahrenheit,70.3
+Rudin345Park\\BCXCellar\\FloorDamper4th2,SpaceTempNE,BCXCellar,FloorDamper4th2,SpaceTemp-4^NE,S12,,Space Temperature North East,Fahrenheit,74.7
+Rudin345Park\\BCXCellar\\FloorDamper5th2,SpaceTempNE,BCXCellar,FloorDamper5th2,SpaceTemp-5^NE,S12,,Space Temperature North East,Fahrenheit,74.2
+Rudin345Park\\BCXCellar\\FloorDamper2nd,SpaceTempNE,BCXCellar,FloorDamper2nd,SpaceTemp-2^NE,S12,,Space Temperature North East,Fahrenheit,74.2
+Rudin345Park\\BCX34th\\FloorDamper40th,SpaceTempNE,BCX34th,FloorDamper40th,SpaceTemp-40^NE,S5,,Space Temperature North East,Fahrenheit,72.8
+Rudin345Park\\BCX34th\\FloorDamper35th,SpaceTempNE,BCX34th,FloorDamper35th,SpaceTemp-35^NE,S5,,Space Temperature North East,Fahrenheit,73.5
+Rudin345Park\\BCX34th\\FloorDamper38th,SpaceTempNE,BCX34th,FloorDamper38th,SpaceTemp-38^NE,S5,,Space Temperature North East,Fahrenheit,72.5
+Rudin345Park\\BCX34th\\FloorDamper36th,SpaceTempNE,BCX34th,FloorDamper36th,SpaceTemp-36^NE,S5,,Space Temperature North East,Fahrenheit,75.3
+Rudin345Park\\BCX9th\\FloorDamper13th1,SpaceTempNE,BCX9th,FloorDamper13th1,SpaceTemp-13^NE,S13,,Space Temperature North East,Fahrenheit,75.4
+Rudin345Park\\BCX9th\\FloorDamper18th,SpaceTempNE,BCX9th,FloorDamper18th,SpaceTemp-18^NE,S13,,Space Temperature North East,Fahrenheit,72
+Rudin345Park\\BCX9th\\FloorDamper20th,SpaceTempNE,BCX9th,FloorDamper20th,SpaceTemp-20^NE,S6,,Space Temperature North East,Fahrenheit,70.6
+Rudin345Park\\BCX9th\\FloorDamper24th,SpaceTempNE,BCX9th,FloorDamper24th,SpaceTemp-24^NE,S6,,Space Temperature North East,Fahrenheit,75.1
+Rudin345Park\\BCX9th\\FloorDamper32nd2,SpaceTempNE,BCX9th,FloorDamper32nd2,SpaceTemp-32^NE,S6,,Space Temperature North East,Fahrenheit,-327.7
+Rudin345Park\\BCX9th\\FloorDamper33rd,SpaceTempNE,BCX9th,FloorDamper33rd,SpaceTemp-33^NE,S6,,Space Temperature North East,Fahrenheit,-327.7
+Rudin345Park\\BCX9th\\FloorDamper22nd1,SpaceTempNE,BCX9th,FloorDamper22nd1,SpaceTemp-22^NE,S6,,Space Temperature North East,Fahrenheit,75.1
+Rudin345Park\\BCX9th\\FloorDamper22nd1,SpaceTempNW,BCX9th,FloorDamper22nd1,SpaceTemp-22^NW,S4,,Space Temperature North West,Fahrenheit,75.3
+Rudin345Park\\BCX9th\\FloorDamper33rd,SpaceTempNW,BCX9th,FloorDamper33rd,SpaceTemp-33^NW,S4,,Space Temperature North West,Fahrenheit,-327.7
+Rudin345Park\\BCX9th\\FloorDamper24th,SpaceTempNW,BCX9th,FloorDamper24th,SpaceTemp-24^NW,S4,,Space Temperature North West,Fahrenheit,73
+Rudin345Park\\BCX9th\\FloorDamper20th,SpaceTempNW,BCX9th,FloorDamper20th,SpaceTemp-20^NW,S4,,Space Temperature North West,Fahrenheit,73
+Rudin345Park\\BCX9th\\FloorDamper18th,SpaceTempNW,BCX9th,FloorDamper18th,SpaceTemp-18^NW,S9,,Space Temperature North West,Fahrenheit,74.1
+Rudin345Park\\BCX9th\\FloorDamper13th1,SpaceTempNW,BCX9th,FloorDamper13th1,SpaceTemp-13^NW,S9,,Space Temperature North West,Fahrenheit,73.4
+Rudin345Park\\BCX34th\\FloorDamper36th,SpaceTempNW,BCX34th,FloorDamper36th,SpaceTemp-36^NW,S3,,Space Temperature North West,Fahrenheit,72.2
+Rudin345Park\\BCX34th\\FloorDamper40th,SpaceTempNW,BCX34th,FloorDamper40th,SpaceTemp-40^NW,S3,,Space Temperature North West,Fahrenheit,74.2
+Rudin345Park\\BCX34th\\FloorDamper38th,SpaceTempNW,BCX34th,FloorDamper38th,SpaceTemp-38^NW,S3,,Space Temperature North West,Fahrenheit,73.5
+Rudin345Park\\BCX34th\\FloorDamper35th,SpaceTempNW,BCX34th,FloorDamper35th,SpaceTemp-35^NW,S3,,Space Temperature North West,Fahrenheit,75.8
+Rudin345Park\\BCXCellar\\FloorDamper2nd,SpaceTempNW,BCXCellar,FloorDamper2nd,SpaceTemp-2^NW,S10,,Space Temperature North West,Fahrenheit,73.7
+Rudin345Park\\BCXCellar\\FloorDamper5th2,SpaceTempNW,BCXCellar,FloorDamper5th2,SpaceTemp-5^NW,S10,,Space Temperature North West,Fahrenheit,74.1
+Rudin345Park\\BCXCellar\\FloorDamper4th2,SpaceTempNW,BCXCellar,FloorDamper4th2,SpaceTemp-4^NW,S10,,Space Temperature North West,Fahrenheit,74.4
+Rudin345Park\\BCX9th\\FloorDamper32nd2,SpaceTempNW,BCX9th,FloorDamper32nd2,SpaceTemp-32^NW,S4,,Space Temperature North West,Fahrenheit,-327.7
+Rudin345Park\\BCXCellar\\FloorDamper4th1,SpaceTempS,BCXCellar,FloorDamper4th1,SpaceTemp-4^S,S7,,Space Temperature South,Fahrenheit,71.6
+Rudin345Park\\BCXCellar\\FloorDamper2nd,SpaceTempS,BCXCellar,FloorDamper2nd,SpaceTemp-2^S,S7,,Space Temperature South,Fahrenheit,70.1
+Rudin345Park\\BCX34th\\FloorDamper38th,SpaceTempS,BCX34th,FloorDamper38th,SpaceTemp-38^S,S1,,Space Temperature South,Fahrenheit,75.8
+Rudin345Park\\BCX9th\\FloorDamper13th2,SpaceTempS,BCX9th,FloorDamper13th2,SpaceTemp-13^S,S7,,Space Temperature South,Fahrenheit,76.1
+Rudin345Park\\BCX9th\\FloorDamper20th,SpaceTempS,BCX9th,FloorDamper20th,SpaceTemp-20^S,S1,,Space Temperature South,Fahrenheit,73.9
+Rudin345Park\\BCX9th\\FloorDamper24th,SpaceTempS,BCX9th,FloorDamper24th,SpaceTemp-24^S,S1,,Space Temperature South,Fahrenheit,75.8
+Rudin345Park\\BCX9th\\FloorDamper24th,SpaceTempSE,BCX9th,FloorDamper24th,SpaceTemp-24^SE,S6,,Space Temperature South East,Fahrenheit,73.9
+Rudin345Park\\BCX9th\\FloorDamper20th,SpaceTempSE,BCX9th,FloorDamper20th,SpaceTemp-20^SE,S6,,Space Temperature South East,Fahrenheit,72.8
+Rudin345Park\\BCX9th\\FloorDamper33rd,SpaceTempSE,BCX9th,FloorDamper33rd,SpaceTemp-33^SE,S6,,Space Temperature South East,Fahrenheit,-327.7
+Rudin345Park\\BCX9th\\FloorDamper22nd1,SpaceTempSE,BCX9th,FloorDamper22nd1,SpaceTemp-22^SE,S6,,Space Temperature South East,Fahrenheit,73
+Rudin345Park\\BCX9th\\FloorDamper32nd2,SpaceTempSE,BCX9th,FloorDamper32nd2,SpaceTemp-32^SE,S6,,Space Temperature South East,Fahrenheit,73.7
+Rudin345Park\\BCX9th\\FloorDamper13th1,SpaceTempSE,BCX9th,FloorDamper13th1,SpaceTemp-13^SE,S11,,Space Temperature South East,Fahrenheit,75.8
+Rudin345Park\\BCX9th\\FloorDamper18th,SpaceTempSE,BCX9th,FloorDamper18th,SpaceTemp-18^SE,S11,,Space Temperature South East,Fahrenheit,72.5
+Rudin345Park\\BCX34th\\FloorDamper40th,SpaceTempSE,BCX34th,FloorDamper40th,SpaceTemp-40^SE,S5,,Space Temperature South East,Fahrenheit,74.1
+Rudin345Park\\BCX34th\\FloorDamper36th,SpaceTempSE,BCX34th,FloorDamper36th,SpaceTemp-36^SE,S5,,Space Temperature South East,Fahrenheit,74.7
+Rudin345Park\\BCX34th\\FloorDamper35th,SpaceTempSE,BCX34th,FloorDamper35th,SpaceTemp-35^SE,S5,,Space Temperature South East,Fahrenheit,72.8
+Rudin345Park\\BCX34th\\FloorDamper38th,SpaceTempSE,BCX34th,FloorDamper38th,SpaceTemp-38^SE,S5,,Space Temperature South East,Fahrenheit,76.5
+Rudin345Park\\BCXCellar\\FloorDamper2nd,SpaceTempSE,BCXCellar,FloorDamper2nd,SpaceTemp-2^SE,S12,,Space Temperature South East,Fahrenheit,75.3
+Rudin345Park\\BCXCellar\\FloorDamper4th2,SpaceTempSE,BCXCellar,FloorDamper4th2,SpaceTemp-4^SE,S12,,Space Temperature South East,Fahrenheit,73.5
+Rudin345Park\\BCXCellar\\FloorDamper5th2,SpaceTempSE,BCXCellar,FloorDamper5th2,SpaceTemp-5^SE,S12,,Space Temperature South East,Fahrenheit,73.7
+Rudin345Park\\BCXCellar\\FloorDamper5th2,SpaceTempSW,BCXCellar,FloorDamper5th2,SpaceTemp-5^SW,S10,,Space Temperature South West,Fahrenheit,72.8
+Rudin345Park\\BCXCellar\\FloorDamper4th2,SpaceTempSW,BCXCellar,FloorDamper4th2,SpaceTemp-4^SW,S10,,Space Temperature South West,Fahrenheit,74.2
+Rudin345Park\\BCXCellar\\FloorDamper2nd,SpaceTempSW,BCXCellar,FloorDamper2nd,SpaceTemp-2^SW,S10,,Space Temperature South West,Fahrenheit,74.6
+Rudin345Park\\BCX34th\\FloorDamper38th,SpaceTempSW,BCX34th,FloorDamper38th,SpaceTemp-38^SW,S3,,Space Temperature South West,Fahrenheit,75.3
+Rudin345Park\\BCX34th\\FloorDamper35th,SpaceTempSW,BCX34th,FloorDamper35th,SpaceTemp-35^SW,S3,,Space Temperature South West,Fahrenheit,75.6
+Rudin345Park\\BCX34th\\FloorDamper36th,SpaceTempSW,BCX34th,FloorDamper36th,SpaceTemp-36^SW,S3,,Space Temperature South West,Fahrenheit,71.5
+Rudin345Park\\BCX34th\\FloorDamper40th,SpaceTempSW,BCX34th,FloorDamper40th,SpaceTemp-40^SW,S3,,Space Temperature South West,Fahrenheit,72.5
+Rudin345Park\\BCX9th\\FloorDamper18th,SpaceTempSW,BCX9th,FloorDamper18th,SpaceTemp-18^SW,S9,,Space Temperature South West,Fahrenheit,74.1
+Rudin345Park\\BCX9th\\FloorDamper13th1,SpaceTempSW,BCX9th,FloorDamper13th1,SpaceTemp-13^SW,S9,,Space Temperature South West,Fahrenheit,73.9
+Rudin345Park\\BCX9th\\FloorDamper32nd2,SpaceTempSW,BCX9th,FloorDamper32nd2,SpaceTemp-32^SW,S4,,Space Temperature South West,Fahrenheit,75.6
+Rudin345Park\\BCX9th\\FloorDamper22nd1,SpaceTempSW,BCX9th,FloorDamper22nd1,SpaceTemp-22^SW,S4,,Space Temperature South West,Fahrenheit,74.9
+Rudin345Park\\BCX9th\\FloorDamper33rd,SpaceTempSW,BCX9th,FloorDamper33rd,SpaceTemp-33^SW,S4,,Space Temperature South West,Fahrenheit,-327.7
+Rudin345Park\\BCX9th\\FloorDamper20th,SpaceTempSW,BCX9th,FloorDamper20th,SpaceTemp-20^SW,S4,,Space Temperature South West,Fahrenheit,72
+Rudin345Park\\BCX9th\\FloorDamper24th,SpaceTempSW,BCX9th,FloorDamper24th,SpaceTemp-24^SW,S4,,Space Temperature South West,Fahrenheit,74.7
+Rudin345Park\\BCX9th\\FloorDamper24th,SpaceTempW,BCX9th,FloorDamper24th,SpaceTemp-5^SW,S10,,Space Temperature South West,Fahrenheit,75.3
+Rudin345Park\\BCX9th\\FloorDamper20th,SpaceTempW,BCX9th,FloorDamper20th,SpaceTemp-20^SW,S2,,Space Temperature South West,Fahrenheit,75.3
+Rudin345Park\\BCX9th\\FloorDamper13th2,SpaceTempW,BCX9th,FloorDamper13th2,SpaceTemp-13^SW,S8,,Space Temperature South West,Fahrenheit,76.1
+Rudin345Park\\BCX34th\\FloorDamper38th,SpaceTempW,BCX34th,FloorDamper38th,SpaceTemp-38^SW,S2,,Space Temperature South West,Fahrenheit,70.8
+Rudin345Park\\BCXCellar\\FloorDamper2nd,SpaceTempW,BCXCellar,FloorDamper2nd,SpaceTemp-2^SW,S8,,Space Temperature South West,Fahrenheit,71.1
+Rudin345Park\\BCXCellar\\FloorDamper4th1,SpaceTempW,BCXCellar,FloorDamper4th1,SpaceTemp-4^SW,S8,,Space Temperature South West,Fahrenheit,75.4
+Rudin345Park\\BCXCellar\\MCC.West1,SumpPitHigh,BCXCellar,MCC.West1,Misc-SumpPitHighC,Misc,,Sump Pit High C Level,None,Off
+Rudin345Park\\BCXCellar\\InteriorFanS_22,SupplyFanStatus,BCXCellar,InteriorFanS_22,S22-SupplyFanStatus,S22,,Supply Fan Run Status,None,On
+Rudin345Park\\BCXCellar\\InteriorFanS_20,SupplyFanStatus,BCXCellar,InteriorFanS_20,S20-SupplyFanStatus,S20,,Supply Fan Run Status,None,On
+Rudin345Park\\BCXCellar\\InteriorFanS_21,SupplyFanStatus,BCXCellar,InteriorFanS_21,S21-SupplyFanStatus,S21,,Supply Fan Run Status,None,On
+Rudin345Park\\BCXCellar\\InteriorFanS_13,SupplyFanStatus,BCXCellar,InteriorFanS_13,S13-SupplyFanStatus,S13,,Supply Fan Run Status,None,On
+Rudin345Park\\BCXCellar\\InteriorFanS_14,SupplyFanStatus,BCXCellar,InteriorFanS_14,S14-SupplyFanStatus,S14,,Supply Fan Run Status,None,On
+Rudin345Park\\BCXCellar\\InteriorFanS_15,SupplyFanStatus,BCXCellar,InteriorFanS_15,S15-SupplyFanStatus,S15,,Supply Fan Run Status,None,On
+Rudin345Park\\BCXCellar\\InteriorFanS_16,SupplyFanStatus,BCXCellar,InteriorFanS_16,S16-SupplyFanStatus,S16,,Supply Fan Run Status,None,On
+Rudin345Park\\BCXCellar\\InteriorFanS_17,SupplyFanStatus,BCXCellar,InteriorFanS_17,S17-SupplyFanStatus,S17,,Supply Fan Run Status,None,On
+Rudin345Park\\BCXCellar\\InteriorFanS_18,SupplyFanStatus,BCXCellar,InteriorFanS_18,S18-SupplyFanStatus,S18,,Supply Fan Run Status,None,On
+Rudin345Park\\BCXCellar\\InteriorFanS_19,SupplyFanStatus,BCXCellar,InteriorFanS_19,S19-SupplyFanStatus,S19,,Supply Fan Run Status,None,On
+Rudin345Park\\BCX9th\\InteriorFanS_9,SupplyFanStatus,BCX9th,InteriorFanS_9,S9-SupplyFanStatus,S9,,Supply Fan Run Status,None,On
+Rudin345Park\\BCX9th\\InteriorFanS_12,SupplyFanStatus,BCX9th,InteriorFanS_12,S12-SupplyFanStatus,S12,,Supply Fan Run Status,None,On
+Rudin345Park\\BCX9th\\InteriorFanS_11,SupplyFanStatus,BCX9th,InteriorFanS_11,S11-SupplyFanStatus,S11,,Supply Fan Run Status,None,On
+Rudin345Park\\BCX9th\\PrimaryFanS_8.1,SupplyFanStatus,BCX9th,PrimaryFanS_8.1,S8-SupplyFanStatus,S8,,Supply Fan Run Status,None,On
+Rudin345Park\\BCX9th\\PrimaryFanS_7.1,SupplyFanStatus,BCX9th,PrimaryFanS_7.1,S7-SupplyFanStatus,S7,,Supply Fan Run Status,None,On
+Rudin345Park\\BCX34th\\PrimaryFanS_2.1,SupplyFanStatus,BCX34th,PrimaryFanS_2.1,S2-SupplyFanStatus,S2,,Supply Fan Run Status,None,On
+Rudin345Park\\BCX34th\\InteriorFanS_5,SupplyFanStatus,BCX34th,InteriorFanS_5,S5-SupplyFanStatus,S5,,Supply Fan Run Status,None,On
+Rudin345Park\\BCX34th\\InteriorFanS_3,SupplyFanStatus,BCX34th,InteriorFanS_3,S3-SupplyFanStatus,S3,,Supply Fan Run Status,None,On
+Rudin345Park\\BCX34th\\InteriorFanS_4.1,SupplyFanStatus,BCX34th,InteriorFanS_4.1,S4-SupplyFanStatus,S4,,Supply Fan Run Status,None,On
+Rudin345Park\\BCX34th\\InteriorFanS_6.1,SupplyFanStatus,BCX34th,InteriorFanS_6.1,S6-SupplyFanStatus,S6,,Supply Fan Run Status,None,On
+Rudin345Park\\BCX34th\\PrimaryFanS_1.1,SupplyFanStatus,BCX34th,PrimaryFanS_1.1,S1-SupplyFanStatus,S1,,Supply Fan Run Status,None,On
+Rudin345Park\\BCX9th\\InteriorFanS_10,SupplyFanStatus,BCX9th,InteriorFanS_10,S10-SupplyFanStatus,S10,,Supply Fan Run Status,None,On
+Rudin345Park\\BCX9th\\InteriorFanS_10,SupplyTemp,BCX9th,InteriorFanS_10,S10-SupplyAirTemp,S10,,Supply Air Temperature,Fahrenheit,60.4
+Rudin345Park\\BCX34th\\InteriorFanS_6.1,SupplyTemp,BCX34th,InteriorFanS_6.1,S6-SupplyAirTemp,S6,,Supply Air Temperature,Fahrenheit,60.1
+Rudin345Park\\BCX34th\\InteriorFanS_4.1,SupplyTemp,BCX34th,InteriorFanS_4.1,S4-SupplyAirTemp,S4,,Supply Air Temperature,Fahrenheit,60
+Rudin345Park\\BCX34th\\InteriorFanS_3,SupplyTemp,BCX34th,InteriorFanS_3,S3-SupplyAirTemp,S3,,Supply Air Temperature,Fahrenheit,58.2
+Rudin345Park\\BCX34th\\PrimaryFanS_1.1,SupplyTemp,BCX34th,PrimaryFanS_1.1,S1-SupplyAirTemp,S1,,Supply Air Temperature,Fahrenheit,54.8
+Rudin345Park\\BCX34th\\InteriorFanS_5,SupplyTemp,BCX34th,InteriorFanS_5,S5-SupplyAirTemp,S5,,Supply Air Temperature,Fahrenheit,59.6
+Rudin345Park\\BCX34th\\PrimaryFanS_2.1,SupplyTemp,BCX34th,PrimaryFanS_2.1,S2-SupplyAirTemp,S2,,Supply Air Temperature,Fahrenheit,56.2
+Rudin345Park\\BCX9th\\PrimaryFanS_7.1,SupplyTemp,BCX9th,PrimaryFanS_7.1,S7-SupplyAirTemp,S7,,Supply Air Temperature,Fahrenheit,54.4
+Rudin345Park\\BCX9th\\PrimaryFanS_8.1,SupplyTemp,BCX9th,PrimaryFanS_8.1,S8-SupplyAirTemp,S8,,Supply Air Temperature,Fahrenheit,55.5
+Rudin345Park\\BCX9th\\InteriorFanS_11,SupplyTemp,BCX9th,InteriorFanS_11,S11-SupplyAirTemp,S11,,Supply Air Temperature,Fahrenheit,59.5
+Rudin345Park\\BCX9th\\InteriorFanS_12,SupplyTemp,BCX9th,InteriorFanS_12,S12-SupplyAirTemp,S12,,Supply Air Temperature,Fahrenheit,60
+Rudin345Park\\BCX9th\\InteriorFanS_9,SupplyTemp,BCX9th,InteriorFanS_9,S9-SupplyAirTemp,S9,,Supply Air Temperature,Fahrenheit,57.9
+Rudin345Park\\BCXCellar\\InteriorFanS_19,SupplyTemp,BCXCellar,InteriorFanS_19,S19-SupplyAirTemp,S19,,Supply Air Temperature,Fahrenheit,60.1
+Rudin345Park\\BCXCellar\\InteriorFanS_18,SupplyTemp,BCXCellar,InteriorFanS_18,S18-SupplyAirTemp,S18,,Supply Air Temperature,Fahrenheit,59.7
+Rudin345Park\\BCXCellar\\InteriorFanS_17,SupplyTemp,BCXCellar,InteriorFanS_17,S17-SupplyAirTemp,S17,,Supply Air Temperature,Fahrenheit,58.1
+Rudin345Park\\BCXCellar\\InteriorFanS_16,SupplyTemp,BCXCellar,InteriorFanS_16,S16-SupplyAirTemp,S16,,Supply Air Temperature,Fahrenheit,61.6
+Rudin345Park\\BCXCellar\\InteriorFanS_15,SupplyTemp,BCXCellar,InteriorFanS_15,S15-SupplyAirTemp,S15,,Supply Air Temperature,Fahrenheit,62.5
+Rudin345Park\\BCXCellar\\InteriorFanS_14,SupplyTemp,BCXCellar,InteriorFanS_14,S14-SupplyAirTemp,S14,,Supply Air Temperature,Fahrenheit,62
+Rudin345Park\\BCXCellar\\InteriorFanS_13,SupplyTemp,BCXCellar,InteriorFanS_13,S13-SupplyAirTemp,S3,,Supply Air Temperature,Fahrenheit,60.2
+Rudin345Park\\BCXCellar\\InteriorFanS_21,SupplyTemp,BCXCellar,InteriorFanS_21,S21-SupplyAirTemp,S21,,Supply Air Temperature,Fahrenheit,61.2
+Rudin345Park\\BCXCellar\\InteriorFanS_20,SupplyTemp,BCXCellar,InteriorFanS_20,S20-SupplyirTemp,S20,,Supply Air Temperature,Fahrenheit,64.4
+Rudin345Park\\BCXCellar\\InteriorFanS_22,SupplyTemp,BCXCellar,InteriorFanS_22,S22-SupplyAirTemp,S22,,Supply Air Temperature,Fahrenheit,63.1
+Rudin345Park\\BCXDiBoss\\InductionUnit33,Unit1SupplyTemp,BCXDiBoss,InductionUnit33,IU1-SupplyAirTemp,Misc,,Supply Air Temperature Induction Unit 1 33rd Floor,Fahrenheit,
+Rudin345Park\\BCXDiBoss\\InductionUnit33,Unit2SupplyTemp,BCXDiBoss,InductionUnit33,IU2-SupplyAirTemp,Misc,,Supply Air Temperature Induction Unit 2 33rd Floor,Fahrenheit,
+Rudin345Park\\BCX34th\\PrimaryFanS_2.1,CoolingValve,BCX34th,PrimaryFanS_2.1,S1-CoolingValve,S1,,Chilled Water Valve Command,% ,100.00%
+Rudin345Park\\BCX34th\\InteriorFanS_5,CoolingValve,BCX34th,InteriorFanS_5,S10-CoolingValve,S10,,Chilled Water Valve Command,% ,100.00%
+Rudin345Park\\BCX34th\\InteriorFanS_4.1,CoolingValve,BCX34th,InteriorFanS_4.1,S11-CoolingValve,S11,,Chilled Water Valve Command,% ,65.50%
+Rudin345Park\\BCX34th\\InteriorFanS_3,CoolingValve,BCX34th,InteriorFanS_3,S12-CoolingValve,S12,,Chilled Water Valve Command,% ,63.00%
+Rudin345Park\\BCX34th\\InteriorFanS_6.1,CoolingValve,BCX34th,InteriorFanS_6.1,S13-CoolingValve,S13,,Chilled Water Valve Command,% ,35.30%
+Rudin345Park\\BCX34th\\PrimaryFanS_1.1,CoolingValve,BCX34th,PrimaryFanS_1.1,S14-CoolingValve,S14,,Chilled Water Valve Command,% ,75.30%
+Rudin345Park\\BCX9th\\InteriorFanS_10,CoolingValve,BCX9th,InteriorFanS_10,S15-CoolingValve,S15,,Chilled Water Valve Command,% ,34.10%
+Rudin345Park\\BCX9th\\InteriorFanS_11,CoolingValve,BCX9th,InteriorFanS_11,S16-CoolingValve,S16,,Chilled Water Valve Command,% ,7.80%
+Rudin345Park\\BCX9th\\InteriorFanS_12,CoolingValve,BCX9th,InteriorFanS_12,S17-CoolingValve,S17,,Chilled Water Valve Command,% ,19.30%
+Rudin345Park\\BCX9th\\InteriorFanS_9,CoolingValve,BCX9th,InteriorFanS_9,S18-CoolingValve,S18,,Chilled Water Valve Command,% ,95.50%
+Rudin345Park\\BCX9th\\PrimaryFanS_7.1,CoolingValve,BCX9th,PrimaryFanS_7.1,S19-CoolingValve,S19,,Chilled Water Valve Command,% ,39.50%
+Rudin345Park\\BCX9th\\PrimaryFanS_8.1,CoolingValve,BCX9th,PrimaryFanS_8.1,S2-CoolingValve,S2,,Chilled Water Valve Command,% ,75.30%
+Rudin345Park\\BCXCellar\\InteriorFanS_13,CoolingValve,BCXCellar,InteriorFanS_13,S20-CoolingValve,S20,,Chilled Water Valve Command,% ,71.50%
+Rudin345Park\\BCXCellar\\InteriorFanS_14,CoolingValve,BCXCellar,InteriorFanS_14,S21-CoolingValve,S21,,Chilled Water Valve Command,% ,65.50%
+Rudin345Park\\BCXCellar\\InteriorFanS_15,CoolingValve,BCXCellar,InteriorFanS_15,S22-CoolingValve,S22,,Chilled Water Valve Command,% ,82.30%
+Rudin345Park\\BCXCellar\\InteriorFanS_16,CoolingValve,BCXCellar,InteriorFanS_16,S3-CoolingValve,S3,,Chilled Water Valve Command,% ,65.60%
+Rudin345Park\\BCXCellar\\InteriorFanS_17,CoolingValve,BCXCellar,InteriorFanS_17,S4-CoolingValve,S4,,Chilled Water Valve Command,% ,62.70%
+Rudin345Park\\BCXCellar\\InteriorFanS_18,CoolingValve,BCXCellar,InteriorFanS_18,S5-CoolingValve,S5,,Chilled Water Valve Command,% ,92.10%
+Rudin345Park\\BCXCellar\\InteriorFanS_19,CoolingValve,BCXCellar,InteriorFanS_19,S6-CoolingValve,S6,,Chilled Water Valve Command,% ,84.80%
+Rudin345Park\\BCXCellar\\InteriorFanS_20,CoolingValve,BCXCellar,InteriorFanS_20,S7-CoolingValve,S7,,Chilled Water Valve Command,% ,49.70%
+Rudin345Park\\BCXCellar\\InteriorFanS_21,CoolingValve,BCXCellar,InteriorFanS_21,S8-CoolingValve,S8,,Chilled Water Valve Command,% ,36.90%
+Rudin345Park\\BCXCellar\\InteriorFanS_22,CoolingValve,BCXCellar,InteriorFanS_22,S9-CoolingValve,S9,,Chilled Water Valve Command,% ,51.20%
+Rudin345Park\\BCX34th\\NWSecWater,PumpSpeed.P10,BCX34th,NWSecWater,P10-PumpSpeed,Misc,,Pump Speed Command,%,0.00%
+Rudin345Park\\BCX34th\\NWSecWater,PumpSpeed.P11,BCX34th,NWSecWater,P11-PumpSpeed,34NW2WS,,Pump Speed Command,%,58.70%
+Rudin345Park\\BCX9th\\SESecWater9th,PumpSpeed.P16,BCX9th,SESecWater9th,P16-PumpSpeed,9SE2WS,,Pump Speed Command,%,63.80%
+Rudin345Park\\BCX9th\\SESecWater9th,PumpSpeed.P17,BCX9th,SESecWater9th,P17-PumpSpeed,Misc,,Pump Speed Command,%,0.00%
+Rudin345Park\\BCX9th\\NWSecWater9th,PumpSpeed.P18,BCX9th,NWSecWater9th,P18-PumpSpeed,9NW2WS,,Pump Speed Command,%,62.70%
+Rudin345Park\\BCX34th\\TenantCT1,PumpSpeed.P33,BCX34th,TenantCT1,P33-PumpSpeed,TCT1,,Pump Speed Command,%,0.00%
+Rudin345Park\\BCX34th\\TenantCT1,PumpSpeed.P34,BCX34th,TenantCT1,P34-PumpSpeed,TCT1,,Pump Speed Command,%,87.60%
+Rudin345Park\\BCX34th\\TenantCT1,PumpSpeed.P35,BCX34th,TenantCT1,P35-PumpSpeed,TCT1,,Pump Speed Command,%,87.60%
+Rudin345Park\\BCX34th\\TenantCT1,PumpSpeed.P36,BCX34th,TenantCT1,P36-PumpSpeed,TCT1,,Pump Speed Command,%,87.60%
+Rudin345Park\\BCX34th\\TenantCT1,PumpSpeed.P37,BCX34th,TenantCT1,P37-PumpSpeed,TCT1,,Pump Speed Command,%,0.00%
+Rudin345Park\\BCX34th\\TenantCT2,PumpSpeed.P38,BCX34th,TenantCT2,P38-PumpSpeed,TCT2,,Pump Speed Command,%,100.00%
+Rudin345Park\\BCX34th\\TenantCT2,PumpSpeed.P39,BCX34th,TenantCT2,P39-PumpSpeed,TCT2,,Pump Speed Command,%,0.00%
+Rudin345Park\\BCX34th\\TenantCT2,PumpSpeed.P40,BCX34th,TenantCT2,P40-PumpSpeed,TCT2,,Pump Speed Command,%,100.00%
+Rudin345Park\\BCX34th\\MainChilledWater,PumpSpeed.P5,BCX34th,MainChilledWater,P5-PumpSpeed,MCW,Main Chilled Water,Pump Speed Command,%,20.00%
+Rudin345Park\\BCX34th\\MainChilledWater,PumpSpeed.P6,BCX34th,MainChilledWater,P6-PumpSpeed,MCW,Main Chilled Water,Pump Speed Command,%,20.00%
+Rudin345Park\\BCX34th\\SESecondaryWater,PumpSpeed.P9,BCX34th,SESecondaryWater,P9-PumpSpeed,MCW,Main Chilled Water,Pump Speed Command,%,56.70%
+Rudin345Park\\BCX34th\\InteriorFanS_4.1,ReturnSpeed.F1,BCX34th,InteriorFanS_4.1,F1-ReturnSpeed,S4,,Return Fan Speed Command,%,100.00%
+Rudin345Park\\BCX9th\\InteriorFanS_9,ReturnSpeed.F10,BCX9th,InteriorFanS_9,F10-ReturnSpeed,S9,,Return Fan Speed Command,%,100.00%
+Rudin345Park\\BCX9th\\InteriorFanS_12,ReturnSpeed.F11,BCX9th,InteriorFanS_12,F11-ReturnSpeed,S7,,Return Fan Speed Command,%,90.00%
+Rudin345Park\\BCX9th\\InteriorFanS_11,ReturnSpeed.F12,BCX9th,InteriorFanS_11,F12-ReturnSpeed,S8,,Return Fan Speed Command,%,90.00%
+Rudin345Park\\BCXCellar\\InteriorFanS_13,ReturnSpeed.F17,BCXCellar,InteriorFanS_13,F17-ReturnSpeed,S13,,Return Fan Speed Command,%,100.00%
+Rudin345Park\\BCXCellar\\InteriorFanS_14,ReturnSpeed.F18,BCXCellar,InteriorFanS_14,F18-ReturnSpeed,S14,,Return Fan Speed Command,%,100.00%
+Rudin345Park\\BCXCellar\\InteriorFanS_15,ReturnSpeed.F19,BCXCellar,InteriorFanS_15,F19-ReturnSpeed,S15,,Return Fan Speed Command,%,100.00%
+Rudin345Park\\BCX34th\\InteriorFanS_3,ReturnSpeed.F2,BCX34th,InteriorFanS_3,F2-ReturnSpeed,S1,,Return Fan Speed Command,%,100.00%
+Rudin345Park\\BCXCellar\\InteriorFanS_16,ReturnSpeed.F20,BCXCellar,InteriorFanS_16,F20-ReturnSpeed,S16,,Return Fan Speed Command,%,100.00%
+Rudin345Park\\BCXCellar\\InteriorFanS_17,ReturnSpeed.F21,BCXCellar,InteriorFanS_17,F21-ReturnSpeed,S17,,Return Fan Speed Command,%,100.00%
+Rudin345Park\\BCXCellar\\InteriorFanS_18,ReturnSpeed.F22,BCXCellar,InteriorFanS_18,F22-ReturnSpeed,S18,,Return Fan Speed Command,%,100.00%
+Rudin345Park\\BCXCellar\\InteriorFanS_19,ReturnSpeed.F23,BCXCellar,InteriorFanS_19,F23-ReturnSpeed,S19,,Return Fan Speed Command,%,100.00%
+Rudin345Park\\BCXCellar\\InteriorFanS_20,ReturnSpeed.F24,BCXCellar,InteriorFanS_20,F24-ReturnSpeed,S20,,Return Fan Speed Command,%,100.00%
+Rudin345Park\\BCXCellar\\InteriorFanS_22,ReturnSpeed.F26,BCXCellar,InteriorFanS_22,F26-ReturnSpeed,S22,,Return Fan Speed Command,%,100.00%
+Rudin345Park\\BCX34th\\InteriorFanS_5,ReturnSpeed.F3,BCX34th,InteriorFanS_5,F3-ReturnSpeed,S2,,Return Fan Speed Command,%,100.00%
+Rudin345Park\\BCX34th\\InteriorFanS_6.1,ReturnSpeed.F4,BCX34th,InteriorFanS_6.1,F4-ReturnSpeed,S6,,Return Fan Speed Command,%,100.00%
+Rudin345Park\\BCX9th\\InteriorFanS_10,ReturnSpeed.F9,BCX9th,InteriorFanS_10,F9-ReturnSpeed,S10,,Return Fan Speed Command,%,100.00%
+Rudin345Park\\BCX34th\\MainCoolingTower,Speed.CT1,BCX34th,MainCoolingTower,CT1-Speed,MCW,Main Chilled Water,Cooling Tower Speed Command,%,100.00%
+Rudin345Park\\BCX34th\\TenantCT1,Speed.CT1.1,BCX34th,TenantCT1,CT1.1-Speed,TCT1,,Cooling Tower Speed Command,%,54.40%
+Rudin345Park\\BCX34th\\TenantCT1,Speed.CT1.2,BCX34th,TenantCT1,CT1.2-Speed,TCT1,,Cooling Tower Speed Command,%,54.40%
+Rudin345Park\\BCX34th\\MainCoolingTower,Speed.CT2,BCX34th,MainCoolingTower,CT2-Speed,MCW,Main Chilled Water,Cooling Tower Speed Command,%,100.00%
+Rudin345Park\\BCX34th\\TenantCT2,Speed.CT2.1,BCX34th,TenantCT2,CT2.1-Speed,TCT2,,Cooling Tower Speed Command,%,28.20%
+Rudin345Park\\BCX34th\\TenantCT2,Speed.CT2.2,BCX34th,TenantCT2,CT2.2-Speed,TCT2,,Cooling Tower Speed Command,%,28.20%
+Rudin345Park\\BCX34th\\MainCoolingTower,Speed.CT3,BCX34th,MainCoolingTower,CT3-Speed,MCW,Main Chilled Water,Cooling Tower Speed Command,%,100.00%
+Rudin345Park\\BCX34th\\MainCoolingTower,Speed.CT4,BCX34th,MainCoolingTower,CT4-Speed,MCW,Main Chilled Water,Cooling Tower Speed Command,%,100.00%
+Rudin345Park\\BCXCellar\\SteamStation,SteamShutoff,BCXCellar,SteamStation,Steam-Shutoff,Steam,,Emergency Steam Shutoff Valve,None,Off
+Rudin345Park\\BCX34th\\PrimaryFanS_1.1,SupplySpeed.S1,BCX34th,PrimaryFanS_1.1,S1-SupplySpeed,S1,,Supply Fan Speed Command,%,77.00%
+Rudin345Park\\BCX9th\\InteriorFanS_10,SupplySpeed.S10,BCX9th,InteriorFanS_10,S10-SupplySpeed,S10,,Supply Fan Speed Command,%,100.00%
+Rudin345Park\\BCX9th\\InteriorFanS_11,SupplySpeed.S11,BCX9th,InteriorFanS_11,S11-SupplySpeed,S11,,Supply Fan Speed Command,%,100.00%
+Rudin345Park\\BCX9th\\InteriorFanS_12,SupplySpeed.S12,BCX9th,InteriorFanS_12,S12-SupplySpeed,S12,,Supply Fan Speed Command,%,100.00%
+Rudin345Park\\BCXCellar\\InteriorFanS_13,SupplySpeed.S13,BCXCellar,InteriorFanS_13,S13-SupplySpeed,S13,,Supply Fan Speed Command,%,100.00%
+Rudin345Park\\BCXCellar\\InteriorFanS_14,SupplySpeed.S14,BCXCellar,InteriorFanS_14,S14-SupplySpeed,S14,,Supply Fan Speed Command,%,100.00%
+Rudin345Park\\BCXCellar\\InteriorFanS_15,SupplySpeed.S15,BCXCellar,InteriorFanS_15,S15-SupplySpeed,S15,,Supply Fan Speed Command,%,100.00%
+Rudin345Park\\BCXCellar\\InteriorFanS_16,SupplySpeed.S16,BCXCellar,InteriorFanS_16,S16-SupplySpeed,S16,,Supply Fan Speed Command,%,100.00%
+Rudin345Park\\BCXCellar\\InteriorFanS_17,SupplySpeed.S17,BCXCellar,InteriorFanS_17,S17-SupplySpeed,S17,,Supply Fan Speed Command,%,100.00%
+Rudin345Park\\BCXCellar\\InteriorFanS_18,SupplySpeed.S18,BCXCellar,InteriorFanS_18,S18-SupplySpeed,S18,,Supply Fan Speed Command,%,100.00%
+Rudin345Park\\BCXCellar\\InteriorFanS_19,SupplySpeed.S19,BCXCellar,InteriorFanS_19,S19-SupplySpeed,S19,,Supply Fan Speed Command,%,100.00%
+Rudin345Park\\BCX34th\\PrimaryFanS_2.1,SupplySpeed.S2,BCX34th,PrimaryFanS_2.1,S2-SupplySpeed,S2,,Supply Fan Speed Command,%,100.00%
+Rudin345Park\\BCXCellar\\InteriorFanS_20,SupplySpeed.S20,BCXCellar,InteriorFanS_20,S20-SupplySpeed,S20,,Supply Fan Speed Command,%,100.00%
+Rudin345Park\\BCXCellar\\InteriorFanS_22,SupplySpeed.S22,BCXCellar,InteriorFanS_22,S22-SupplySpeed,S22,,Supply Fan Speed Command,%,100.00%
+Rudin345Park\\BCX34th\\InteriorFanS_3,SupplySpeed.S3,BCX34th,InteriorFanS_3,S3-SupplySpeed,S3,,Supply Fan Speed Command,%,100.00%
+Rudin345Park\\BCX34th\\InteriorFanS_4.1,SupplySpeed.S4,BCX34th,InteriorFanS_4.1,S4-SupplySpeed,S4,,Supply Fan Speed Command,%,100.00%
+Rudin345Park\\BCX34th\\InteriorFanS_5,SupplySpeed.S5,BCX34th,InteriorFanS_5,S5-SupplySpeed,S5,,Supply Fan Speed Command,%,100.00%
+Rudin345Park\\BCX34th\\InteriorFanS_6.1,SupplySpeed.S6,BCX34th,InteriorFanS_6.1,S6-SupplySpeed,S6,,Supply Fan Speed Command,%,100.00%
+Rudin345Park\\BCX9th\\PrimaryFanS_7.1,SupplySpeed.S7,BCX9th,PrimaryFanS_7.1,S7-SupplySpeed,S7,,Supply Fan Speed Command,%,82.00%
+Rudin345Park\\BCX9th\\PrimaryFanS_8.1,SupplySpeed.S8,BCX9th,PrimaryFanS_8.1,S8-SupplySpeed,S8,,Supply Fan Speed Command,%,100.00%
+Rudin345Park\\BCX9th\\InteriorFanS_9,SupplySpeed.S9,BCX9th,InteriorFanS_9,S9-SupplySpeed,S9,,Supply Fan Speed Command,%,100.00%
+Rudin345Park\\BCX34th\\PrimaryFanS_2.1,CO2Mode,BCX34th,PrimaryFanS_2.1,S1-CO2Mode,S1,,CO2 Mode for Unit S1,None,Off
+Rudin345Park\\BCX34th\\InteriorFanS_5,CO2Mode,BCX34th,InteriorFanS_5,S10-CO2Mode,S10,,CO2 Mode for Unit S10,None,Off
+Rudin345Park\\BCX34th\\InteriorFanS_4.1,CO2Mode,BCX34th,InteriorFanS_4.1,S11-CO2Mode,S11,,CO2 Mode for Unit S11,None,Off
+Rudin345Park\\BCX34th\\InteriorFanS_3,CO2Mode,BCX34th,InteriorFanS_3,S12-CO2Mode,S12,,CO2 Mode for Unit S12,None,Off
+Rudin345Park\\BCX34th\\InteriorFanS_6.1,CO2Mode,BCX34th,InteriorFanS_6.1,S13-CO2Mode,S13,,CO2 Mode for Unit S13,None,Off
+Rudin345Park\\BCX34th\\PrimaryFanS_1.1,CO2Mode,BCX34th,PrimaryFanS_1.1,S14-CO2Mode,S14,,CO2 Mode for Unit S14,None,Off
+Rudin345Park\\BCX9th\\InteriorFanS_10,CO2Mode,BCX9th,InteriorFanS_10,S15-CO2Mode,S15,,CO2 Mode for Unit S15,None,Off
+Rudin345Park\\BCX9th\\InteriorFanS_11,CO2Mode,BCX9th,InteriorFanS_11,S16-CO2Mode,S16,,CO2 Mode for Unit S16,None,Off
+Rudin345Park\\BCX9th\\InteriorFanS_12,CO2Mode,BCX9th,InteriorFanS_12,S17-CO2Mode,S17,,CO2 Mode for Unit S17,None,Off
+Rudin345Park\\BCX9th\\InteriorFanS_9,CO2Mode,BCX9th,InteriorFanS_9,S18-CO2Mode,S18,,CO2 Mode for Unit S18,None,Off
+Rudin345Park\\BCXCellar\\InteriorFanS_13,CO2Mode,BCXCellar,InteriorFanS_13,S19-CO2Mode,S19,,CO2 Mode for Unit S19,None,Off
+Rudin345Park\\BCXCellar\\InteriorFanS_14,CO2Mode,BCXCellar,InteriorFanS_14,S2-CO2Mode,S2,,CO2 Mode for Unit S2,None,Off
+Rudin345Park\\BCXCellar\\InteriorFanS_15,CO2Mode,BCXCellar,InteriorFanS_15,S20-CO2Mode,S20,,CO2 Mode for Unit S20,None,Off
+Rudin345Park\\BCXCellar\\InteriorFanS_16,CO2Mode,BCXCellar,InteriorFanS_16,S21-CO2Mode,S21,,CO2 Mode for Unit S21,None,Off
+Rudin345Park\\BCXCellar\\InteriorFanS_17,CO2Mode,BCXCellar,InteriorFanS_17,S22-CO2Mode,S22,,CO2 Mode for Unit S22,None,Off
+Rudin345Park\\BCXCellar\\InteriorFanS_18,CO2Mode,BCXCellar,InteriorFanS_18,S3-CO2Mode,S3,,CO2 Mode for Unit S3,None,Off
+Rudin345Park\\BCXCellar\\InteriorFanS_19,CO2Mode,BCXCellar,InteriorFanS_19,S4-CO2Mode,S4,,CO2 Mode for Unit S4,None,Off
+Rudin345Park\\BCXCellar\\InteriorFanS_20,CO2Mode,BCXCellar,InteriorFanS_20,S5-CO2Mode,S5,,CO2 Mode for Unit S5,None,Off
+Rudin345Park\\BCXCellar\\InteriorFanS_21,CO2Mode,BCXCellar,InteriorFanS_21,S6-CO2Mode,S6,,CO2 Mode for Unit S6,None,Off
+Rudin345Park\\BCXCellar\\InteriorFanS_22,CO2Mode,BCXCellar,InteriorFanS_22,S9-CO2Mode,S9,,CO2 Mode for Unit S9,None,Off
+Rudin345Park\\BCXCellar\\ElectricMeters,ElecM1.Demand,BCXCellar,ElectricMeters,Elec-M1Total,Elec,,Electric Meter 1 Demand ,KW,1096
+Rudin345Park\\BCXCellar\\ElectricMeters,ElecM2.Demand,BCXCellar,ElectricMeters,Elec-M2Total,Elec,,Electric Meter 2 Demand ,KW,1196
+Rudin345Park\\BCXCellar\\ElectricMeters,ElecM3.Demand,BCXCellar,ElectricMeters,Elec-M3Total,Elec,,Electric Meter 3 Demand ,KW,1068
+Rudin345Park\\BCXCellar\\ElectricMeters,ElecM4.Demand,BCXCellar,ElectricMeters,Elec-M4Total,Elec,,Electric Meter 4 Demand ,KW,1472
+Rudin345Park\\BCXCellar\\ElectricMeters,ElecM5.Demand,BCXCellar,ElectricMeters,Elec-M5Total,Elec,,Electric Meter 5 Demand ,KW,1068
+Rudin345Park\\BCXCellar\\ElectricMeters,ElecM6.Demand,BCXCellar,ElectricMeters,Elec-M6Total,Elec,,Electric Meter 6 Demand ,KW,660
+Rudin345Park\\BCX9thModbus,F10_FanFdbck,BCX9thModbus,,F10-FanFdbck,S9,,Fan VFD Speed Feedback,Hz,60
+Rudin345Park\\BCX9thModbus,F11_FanFdbck,BCX9thModbus,,F11-FanFdbck,S8,,Fan VFD Speed Feedback,Hz,0
+Rudin345Park\\BCX9thModbus,F12_FanFdbck,BCX9thModbus,,F12-FanFdbck,S7,,Fan VFD Speed Feedback,Hz,55.3
+Rudin345Park\\BCXCellar,F17_FanFdbck,BCXCellar,,F17-FanFdbck,S13,,Fan VFD Speed Feedback,Hz,0
+Rudin345Park\\BCXCellar,F18_FanFdbck,BCXCellar,,F18-FanFdbck,S14,,Fan VFD Speed Feedback,Hz,60
+Rudin345Park\\BCXCellar,F19_FanFdbck,BCXCellar,,F19-FanFdbck,S15,,Fan VFD Speed Feedback,Hz,0
+Rudin345Park\\BCX34th,F1_FanFdbck,BCX34th,,F1-FanFdbck,S4,,Fan VFD Speed Feedback,Hz,0
+Rudin345Park\\BCXCellar,F20_FanFdbck,BCXCellar,,F20-FanFdbck,S16,,Fan VFD Speed Feedback,Hz,60
+Rudin345Park\\BCXCellar,F21_FanFdbck,BCXCellar,,F21-FanFdbck,S17,,Fan VFD Speed Feedback,Hz,0
+Rudin345Park\\BCXCellar,F22_FanFdbck,BCXCellar,,F22-FanFdbck,S18,,Fan VFD Speed Feedback,Hz,56.3
+Rudin345Park\\BCXCellar,F23_FanFdbck,BCXCellar,,F23-FanFdbck,S19,,Fan VFD Speed Feedback,Hz,60
+Rudin345Park\\BCXCellar,F24_FanFdbck,BCXCellar,,F24-FanFdbck,S20,,Fan VFD Speed Feedback,Hz,0
+Rudin345Park\\BCXCellar,F26_FanFdbck,BCXCellar,,F26-FanFdbck,S22,,Fan VFD Speed Feedback,Hz,51.4
+Rudin345Park\\BCX34th,F2_FanFdbck,BCX34th,,F2-FanFdbck,S3,,Fan VFD Speed Feedback,Hz,60
+Rudin345Park\\BCX34th,F3_FanFdbck,BCX34th,,F3-FanFdbck,S5,,Fan VFD Speed Feedback,Hz,0
+Rudin345Park\\BCX34th,F4_FanFdbck,BCX34th,,F4-FanFdbck,S6,,Fan VFD Speed Feedback,Hz,60
+Rudin345Park\\BCX9thModbus,F9_FanFdbck,BCX9thModbus,,F9-FanFdbck,S10,,Fan VFD Speed Feedback,Hz,0
+Rudin345Park\\BCXCellar\\PerimeterHeating,HWSupplyStptCalc,BCXCellar,PerimeterHeating,HWSupplyStpt,CWPerRH,,HW Supply Setpoint C Level Perimeter,Fahrenheit,125
+Rudin345Park\\BCXCellar\\InteriorReheatC,HWSupplyStptCalc,BCXCellar,InteriorReheatC,HWSupplyStpt,CWIntRH,,HW Supply Setpoint C Level Interior,Fahrenheit,120
+Rudin345Park\\BCX9th\\InteriorReheat9,HWSupplyStptCalc,BCX9th,InteriorReheat9,HWSupplyStpt,9WIntRH,,HW Supply Setpoint 9th Fl Interior,Fahrenheit,120
+Rudin345Park\\BCX34th\\InteriorReheat34,HWSupplyStptCalc,BCX34th,InteriorReheat34,HWSupplyStpt,34WIntRH,,HW Supply Setpoint 34th Fl Interior,Fahrenheit,120
+Rudin345Park\\BCX34th\\MainCoolingTower,LowLevelMCT1,BCX34th,MainCoolingTower,MCT1-LowLevelAlarm,MCW,Main Chilled Water,Low Level Alarm Main Cooling Tower 1,None,Off
+Rudin345Park\\BCX34th\\MainCoolingTower,LowLevelMCT2,BCX34th,MainCoolingTower,MCT2-LowLevelAlarm,MCW,Main Chilled Water,Low Level Alarm Main Cooling Tower 2,None,Off
+Rudin345Park\\BCX34th\\MainCoolingTower,LowLevelMCT3,BCX34th,MainCoolingTower,MCT3-LowLevelAlarm,MCW,Main Chilled Water,Low Level Alarm Main Cooling Tower 3,None,Off
+Rudin345Park\\BCX34th\\MainCoolingTower,LowLevelMCT4,BCX34th,MainCoolingTower,MCT4-LowLevelAlarm,MCW,Main Chilled Water,Low Level Alarm Main Cooling Tower 4,None,Off
+Rudin345Park\\BCX34th\\MainCoolingTower,LowLevelStpt,BCX34th,MainCoolingTower,MCT-LowLevelStpt,MCW,Main Chilled Water,Low Level Setpoint Main Cooling Tower,None,4
+Rudin345Park\\BCX34th\\MainCoolingTower,MCT.HighTemp,BCX34th,MainCoolingTower,MCT-HighTemp,MCW,Main Chilled Water,Main Cooling Tower High CW Temp,None,Off
+Rudin345Park\\BCX34th\\NWSecWater,NWSupplyStptCalc,BCX34th,NWSecWater,SupplyWaterTempStpt,9NW2WS,,NW Secondary Water Supply Stpt 9th Floor,Fahrenheit,56
+Rudin345Park\\BCX9th\\NWSecWater9th,NWSupplyStptCalc,BCX9th,NWSecWater9th,SupplyWaterTempStpt,34NW2WS,,NW Secondary Water Supply Stpt 34th Floor,Fahrenheit,56
+Rudin345Park\\BCX34th,OAH_Avg,BCX34th,,Humidity-Avg,OA,,Outdoor Air Humidity Average,%RH,44.20%
+Rudin345Park\\BCX34th,OAT_Avg,BCX34th,,Temperature-Avg,OA,,Outdoor Air Temp Average,Fahrenheit,83.4
+Rudin345Park\\BCX34th,OA_CO2_Avg,BCX34th,,C02-Avg,OA,,Outdoor Air CO2 Average,PPM,532.9
+Rudin345Park\\BCX34th\\InteriorReheat34,PumpFail.12,BCX34th,InteriorReheat34,P12-PumpFail,34WIntRH,,Pump Failure Alarm,None,Off
+Rudin345Park\\BCX34th\\InteriorReheat34,PumpFail.13,BCX34th,InteriorReheat34,P13-PumpFail,34WIntRH,,Pump Failure Alarm,None,Off
+Rudin345Park\\BCX9th\\InteriorReheat9,PumpFail.19,BCX9th,InteriorReheat9,P19-PumpFail,9WintRH,,Pump Failure Alarm,None,Off
+Rudin345Park\\BCX9th\\InteriorReheat9,PumpFail.20,BCX9th,InteriorReheat9,P20-PumpFail,9WIntRH,,Pump Failure Alarm,None,Off
+Rudin345Park\\BCXCellar\\InteriorReheatC,PumpFail.23,BCXCellar,InteriorReheatC,P23-PumpFail,CWIntRH,,Pump Failure Alarm,None,Off
+Rudin345Park\\BCXCellar\\InteriorReheatC,PumpFail.24,BCXCellar,InteriorReheatC,P24-PumpFail,CWIntRH,,Pump Failure Alarm,None,Off
+Rudin345Park\\BCXCellar\\PerimeterHeating,PumpFail.25,BCXCellar,PerimeterHeating,P25-PumpFail,CWPerRH,,Pump Failure Alarm,None,Off
+Rudin345Park\\BCXCellar\\PerimeterHeating,PumpFail.26,BCXCellar,PerimeterHeating,P26-PumpFail,CWPerRH,,Pump Failure Alarm,None,Off
+Rudin345Park\\BCX34th\\MainChilledWater,PumpFail.CHWP,BCX34th,MainChilledWater,PCHWPPumpFail,MCW,Main Chilled Water,Pump Failure Alarm,None,Off
+Rudin345Park\\BCX34th\\MCC_34th_CWPumps,PumpFail.CWP,BCX34th,MCC_34th_CWPumps,PCWPPumpFail,Misc,,Pump Failure Alarm,None,Off
+Rudin345Park\\BCX34th\\MCC_34th_CWPumps,PumpFail.P1,BCX34th,MCC_34th_CWPumps,P1-PumpFail,Misc,,Pump Failure Alarm,None,Off
+Rudin345Park\\BCX34th\\SESecondaryWater,PumpFail.P10,BCX34th,SESecondaryWater,P10-PumpFail,Misc,,Pump Failure Alarm,None,Off
+Rudin345Park\\BCX34th\\NWSecWater,PumpFail.P11,BCX34th,NWSecWater,P11-PumpFail,34NW2WS,,Pump Failure Alarm,None,Off
+Rudin345Park\\BCX9th\\SESecWater9th,PumpFail.P16,BCX9th,SESecWater9th,P16-PumpFail,9SE2WS,,Pump Failure Alarm,None,Off
+Rudin345Park\\BCX9th\\NWSecWater9th,PumpFail.P17,BCX9th,NWSecWater9th,P17-PumpFail,Misc,,Pump Failure Alarm,None,Off
+Rudin345Park\\BCX9th\\NWSecWater9th,PumpFail.P18,BCX9th,NWSecWater9th,P18-PumpFail,9NW2WS,,Pump Failure Alarm,None,Off
+Rudin345Park\\BCX34th\\MCC_34th_CWPumps,PumpFail.P2,BCX34th,MCC_34th_CWPumps,P2-PumpFail,MCW,Main Chilled Water,Pump Failure Alarm,None,Off
+Rudin345Park\\BCX34th\\MCC_34th_CWPumps,PumpFail.P3,BCX34th,MCC_34th_CWPumps,P3-PumpFail,MCW,Main Chilled Water,Pump Failure Alarm,None,Off
+Rudin345Park\\BCX34th\\TenantCT1,PumpFail.P33,BCX34th,TenantCT1,P33-PumpFail,TCT1,,Pump Failure Alarm,None,Off
+Rudin345Park\\BCX34th\\TenantCT1,PumpFail.P34,BCX34th,TenantCT1,P34-PumpFail,TCT1,,Pump Failure Alarm,None,Off
+Rudin345Park\\BCX34th\\TenantCT1,PumpFail.P35,BCX34th,TenantCT1,P35-PumpFail,TCT1,,Pump Failure Alarm,None,Off
+Rudin345Park\\BCX34th\\TenantCT1,PumpFail.P36,BCX34th,TenantCT1,P36-PumpFail,TCT1,,Pump Failure Alarm,None,Off
+Rudin345Park\\BCX34th\\TenantCT1,PumpFail.P37,BCX34th,TenantCT1,P37-PumpFail,TCT1,,Pump Failure Alarm,None,Off
+Rudin345Park\\BCX34th\\TenantCT2,PumpFail.P38,BCX34th,TenantCT2,P38-PumpFail,TCT2,,Pump Failure Alarm,None,Off
+Rudin345Park\\BCX34th\\TenantCT2,PumpFail.P39,BCX34th,TenantCT2,P39-PumpFail,TCT2,,Pump Failure Alarm,None,Off
+Rudin345Park\\BCX34th\\MCC_34th_CWPumps,PumpFail.P4,BCX34th,MCC_34th_CWPumps,P4-PumpFail,MCW,Main Chilled Water,Pump Failure Alarm,None,Off
+Rudin345Park\\BCX34th\\TenantCT2,PumpFail.P40,BCX34th,TenantCT2,P40-PumpFail,TCT2,,Pump Failure Alarm,None,Off
+Rudin345Park\\BCX34th\\MainChilledWater,PumpFail.P5,BCX34th,MainChilledWater,P5-PumpFail,MCW,,Pump Failure Alarm,None,Off
+Rudin345Park\\BCX34th\\MainChilledWater,PumpFail.P6,BCX34th,MainChilledWater,P6-PumpFail,MCW,Main Chilled Water,Pump Failure Alarm,None,Off
+Rudin345Park\\BCX34th\\MainChilledWater,PumpFail.P7,BCX34th,MainChilledWater,P7-PumpFail,MCW,Main Chilled Water,Pump Failure Alarm,None,Off
+Rudin345Park\\BCX34th\\MainChilledWater,PumpFail.P8,BCX34th,MainChilledWater,P8-PumpFail,MCW,Main Chilled Water,Pump Failure Alarm,None,Off
+Rudin345Park\\BCX34th\\SESecondaryWater,PumpFail.P9,BCX34th,SESecondaryWater,P9-PumpFail,34SE2WS,,Pump Failure Alarm,None,Off
+Rudin345Park\\BCX9th\\PrimaryFanS_7.2,RHCStptEast,BCX9th,PrimaryFanS_7.2,S7-ReHeatStpt^E,S7,,Reheat Setpoint East S7,Fahrenheit,45
+Rudin345Park\\BCX34th\\PrimaryFanS_1.2,RHCStptEast,BCX34th,PrimaryFanS_1.2,S1-ReHeatStpt^E,S1,,Reheat Setpoint East S8,Fahrenheit,45
+Rudin345Park\\BCX34th\\PrimaryFanS_2.2,RHCStptNorth,BCX34th,PrimaryFanS_2.2,S2-ReHeatStpt^N,S2,,Reheat Setpoint East S9,Fahrenheit,45
+Rudin345Park\\BCX9th\\PrimaryFanS_8.2,RHCStptNorth,BCX9th,PrimaryFanS_8.2,S8-ReHeatStpt^N,S8,,Reheat Setpoint East S10,Fahrenheit,45
+Rudin345Park\\BCX9th\\PrimaryFanS_7.2,RHCStptSouth,BCX9th,PrimaryFanS_7.2,S7-ReHeatStpt^S,S7,,Reheat Setpoint East S11,Fahrenheit,45
+Rudin345Park\\BCX34th\\PrimaryFanS_1.2,RHCStptSouth,BCX34th,PrimaryFanS_1.2,S1-ReHeatStpt^S,S1,,Reheat Setpoint East S12,Fahrenheit,45
+Rudin345Park\\BCX34th\\PrimaryFanS_2.2,RHCStptWest,BCX34th,PrimaryFanS_2.2,S2-ReHeatStpt^W,S2,,Reheat Setpoint East S13,Fahrenheit,45
+Rudin345Park\\BCX9th\\PrimaryFanS_8.2,RHCStptWest,BCX9th,PrimaryFanS_8.2,S8-ReHeatStpt^W,S8,,Reheat Setpoint East S14,Fahrenheit,45
+Rudin345Park\\BCX9thModbus,S10_FanFdbck,BCX9thModbus,,S10-FanFdbck,S10,,Fan VFD Speed Feedback,Hz,60
+Rudin345Park\\BCX9thModbus,S11_FanFdbck,BCX9thModbus,,S11-FanFdbck,S11,,Fan VFD Speed Feedback,Hz,60
+Rudin345Park\\BCX9thModbus,S12_FanFdbck,BCX9thModbus,,S12-FanFdbck,S12,,Fan VFD Speed Feedback,Hz,60
+Rudin345Park\\BCXCellar,S13_FanFdbck,BCXCellar,,S13-FanFdbck,S13,,Fan VFD Speed Feedback,Hz,60
+Rudin345Park\\BCXCellar,S14_FanFdbck,BCXCellar,,S14-FanFdbck,S14,,Fan VFD Speed Feedback,Hz,60
+Rudin345Park\\BCXCellar,S15_FanFdbck,BCXCellar,,S15-FanFdbck,S15,,Fan VFD Speed Feedback,Hz,60
+Rudin345Park\\BCXCellar,S16_FanFdbck,BCXCellar,,S16-FanFdbck,S16,,Fan VFD Speed Feedback,Hz,55.4
+Rudin345Park\\BCXCellar,S17_FanFdbck,BCXCellar,,S17-FanFdbck,S17,,Fan VFD Speed Feedback,Hz,60
+Rudin345Park\\BCXCellar,S18_FanFdbck,BCXCellar,,S18-FanFdbck,S18,,Fan VFD Speed Feedback,Hz,60
+Rudin345Park\\BCXCellar,S19_FanFdbck,BCXCellar,,S19-FanFdbck,S19,,Fan VFD Speed Feedback,Hz,57
+Rudin345Park\\BCX34th,S1_FanFdbck,BCX34th,,S1-FanFdbck,S1,,Fan VFD Speed Feedback,Hz,47.5
+Rudin345Park\\BCXCellar,S20_FanFdbck,BCXCellar,,S20-FanFdbck,S20,,Fan VFD Speed Feedback,Hz,60
+Rudin345Park\\BCXCellar,S22_FanFdbck,BCXCellar,,S22-FanFdbck,S22,,Fan VFD Speed Feedback,Hz,54
+Rudin345Park\\BCX34th,S2_FanFdbck,BCX34th,,S2-FanFdbck,S2,,Fan VFD Speed Feedback,Hz,51.1
+Rudin345Park\\BCX34th,S3_FanFdbck,BCX34th,,S3-FanFdbck,S3,,Fan VFD Speed Feedback,Hz,60
+Rudin345Park\\BCX34th,S4_FanFdbck,BCX34th,,S4-FanFdbck,S4,,Fan VFD Speed Feedback,Hz,60
+Rudin345Park\\BCX34th,S5_FanFdbck,BCX34th,,S5-FanFdbck,S5,,Fan VFD Speed Feedback,Hz,60
+Rudin345Park\\BCX34th,S6_FanFdbck,BCX34th,,S6-FanFdbck,S6,,Fan VFD Speed Feedback,Hz,60
+Rudin345Park\\BCX9thModbus,S7_FanFdbck,BCX9thModbus,,S7-FanFdbck,S7,,Fan VFD Speed Feedback,Hz,50.1
+Rudin345Park\\BCX9thModbus,S8_FanFdbck,BCX9thModbus,,S8-FanFdbck,S8,,Fan VFD Speed Feedback,Hz,60
+Rudin345Park\\BCX9thModbus,S9_FanFdbck,BCX9thModbus,,S9-FanFdbck,S9,,Fan VFD Speed Feedback,Hz,60
+Rudin345Park\\BCX34th\\SESecondaryWater,SESupplyStptCalc,BCX34th,SESecondaryWater,SupplyWaterTempStpt,34SE2WS,,SE Secondary Water Supply Stpt 34th Floor,Fahrenheit,56
+Rudin345Park\\BCX9th\\SESecWater9th,SESupplyStptCalc,BCX9th,SESecWater9th,SupplyWaterTempStpt,9SE2WS,,SE Secondary Water Supply Stpt 9th Floor,Fahrenheit,56
+Rudin345Park\\BCXCellar\\SteamStation,Steam.Momentary,BCXCellar,SteamStation,TotalInstant,Steam,Steam Demand,Steam Total Momentary Demand ,Mlbs per hour,55.2
+Rudin345Park\\BCXCellar\\SteamStation,SteamTempHiBoth,BCXCellar,SteamStation,HighTempAlarm,Steam,Steam Demand,High Temp Alarm Steam Room C Level,None,Off
+Rudin345Park\\BCXCellar\\SteamStation,StmHi.Momentary,BCXCellar,SteamStation,HiInstant,Steam,Steam Demand,Steam High Pressure Momentary Demand ,Mlbs per hour,0
+Rudin345Park\\BCXCellar\\SteamStation,StmLow.Momentary,BCXCellar,SteamStation,LowInstant,Steam,Steam Demand,Steam Low Pressure Momentary Demand ,Mlbs per hour,20.4
+Rudin345Park\\BCXCellar\\SteamStation,StmMed.Momentary,BCXCellar,SteamStation,MedInstant,Steam,Steam Demand,Steam Medium Pressure Momentary Demand ,Mlbs per hour,34.8
+Rudin345Park\\BCX34th\\TenantCT1,TCT1.HighTemp,BCX34th,TenantCT1,TowerHighTempAlarm,TCT1,Tenant Cooling Tower 1,Tennant Cooling Tower 1 High CW Temp Alarm,None,Off
+Rudin345Park\\BCX34th\\TenantCT2,TCT2.HighTemp,BCX34th,TenantCT2,TowerHighTempAlarm,TCT2,Tenant Cooling Tower 2,Tennant Cooling Tower 2 High CW Temp Alarm,None,Off
+Rudin345Park\\BCXCellar\\ElectricMeters,Total.Demand,BCXCellar,ElectricMeters,Total,Elec,Electricity Demand,Total Electric Demand,KW,6356
+Rudin345Park\\BCXCellar\\InteriorFanS_13,Water.TodayCF,BCXCellar,InteriorFanS_13,TodayCFA,Water,Building Water,Watre Used Today A Level ,Cubic Feet,5868
+Rudin345Park\\BCXCellar\\A_LevelMisc,Water.TodayCF,BCXCellar,A_LevelMisc,TodayCFC,Water,Building Water,Watre Used Today C Level ,Cubic Feet,12762
+Rudin345Park\\BCXCellar\\A_LevelMisc,Water.TodayG,BCXCellar,A_LevelMisc,LevelAToday,Water,Building Water,Watre Used Today A Level ,Gallons,95481.4
+Rudin345Park\\BCXCellar\\InteriorFanS_13,Water.TodayG,BCXCellar,InteriorFanS_13,LevelCToday,Water,Building Water,Watre Used Today C Level ,Gallons,43902.9

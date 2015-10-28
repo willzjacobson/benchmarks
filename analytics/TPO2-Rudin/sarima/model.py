@@ -143,9 +143,9 @@ def start_time(ts, date="2013-06-06 7:00:00"):
     endog_temp = ts[ts.index.date < date.date()]
 
     weather = pd.read_hdf(
-        'data/weather.h5', 'history')
+        '/data/weather.h5', 'history')
 
-    forecast = pd.read_hdf('data/weather.h5', 'forecast')
+    forecast = pd.read_hdf('/data/weather.h5', 'forecast')
 
     weather_all = pd.concat([weather, forecast])
 

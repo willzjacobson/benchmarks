@@ -8,13 +8,16 @@ var Promise = require("bluebird"),
     child_process = require('child-process-promise').spawn,
     shellCommand = child_process(config.command, config.args, {capture: ['stdout', 'stderr']}),
     cloudPush = require('../AWS_KINESIS/producer_app.js').cloudPush,
-    leveldown = require('leveldown')
+    leveldown = require('leveldown'),
+    path = require('path'),
+    excel = require('excel');
 
-  
 
-var poll = function(){
-     return shellCommand
+
+var poll = function(deviceID){
+     return child_process(config.command, [config.args[0], deviceID], {capture: ['stdout', 'stderr']})
      .then(function(result){
+            fs.appendFile(process.env.bacnetoutpath, result.stdout, function(err){console.log(err)});
         console.log(result.stdout)
         return {data: result.stdout};
         })
@@ -34,7 +37,7 @@ var store = function(obj){
 
 
 var push = function(obj){
-    obj.partitionkey = process.env.BACNETBOX
+    obj.partitionkey = process.env.BACNETBOX || 'BACNET_345PARK'
     cloudPush(obj);
 }
 
@@ -54,6 +57,9 @@ var dump = function() {
             })
         })
 }
+
+/* root@192.168.98.145 "../data/protocol_drivers/bacnet-stack-0.8.2/demo/epics/bacepics -v */
+//2933673
 
 // poll()
 // var rmDir = function(dirPath, removeSelf) { //remove dir recursively (synchronous), call rmDir('path/to/dir', false) to remove all inside but not dir itself

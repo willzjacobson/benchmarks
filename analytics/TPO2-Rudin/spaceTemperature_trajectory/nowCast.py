@@ -152,7 +152,5 @@ if __name__ == '__main__':
 			config_key = 'Rudin_WHI'
 		if building == 'Rudin_641':
 			config_key = 'Rudin_641LE'
-		
-		forecast.forecast("C:\\Rudin\\config_master.json", config_key)
 
-    
+    forecast.forecast("C:\\Rudin\\config_master.py", config_key)

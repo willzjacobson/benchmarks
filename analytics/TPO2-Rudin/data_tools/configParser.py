@@ -281,7 +281,7 @@ class paramConfigParser:
  #DEBUGING PURPOSE 
 		
 print "TESTING 345 PARK"
-p = paramConfigParser('config_master.json', '345_Park')
+p = paramConfigParser('config_master.py', '345_Park')
 print p.floorList()
 print p.floorListKeyFloor()
 print p.quadrantKeyFloor()
@@ -314,7 +314,7 @@ print p.outputRampDownTable()
 print p.outputSpaceTempTrajectoryTable()		
 			
 print "TESTING 560 LEXINGTON"
-p = paramConfigParser('config_master.json', '560_Lex')
+p = paramConfigParser('config_master.py', '560_Lex')
 print p.floorList()
 print p.floorListKeyFloor()
 #print p.quadrantKeyFloor()
@@ -346,4 +346,3 @@ print p.outputStartUpTable()
 print p.outputRampDownTable()
 print p.outputSpaceTempTrajectoryTable()
 '''
-

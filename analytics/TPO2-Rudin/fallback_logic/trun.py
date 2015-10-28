@@ -7,7 +7,7 @@ date_str = date_str.replace(':', '-')
 
 file = open(date_str+"_log.txt", 'w')
 
-configFile = 'config_master.json'
+configFile = 'config_master.py'
 failover.fall_back(configFile, '345_Park', 'startup', file)
 failover.fall_back(configFile, '345_Park', 'rampdown', file)
 

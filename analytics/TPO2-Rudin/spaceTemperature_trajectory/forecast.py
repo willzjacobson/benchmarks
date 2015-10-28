@@ -259,12 +259,9 @@ def forecast(config_file, config_key):
 
 	commit(F, Name, config_file, config_key)
 
-
-#forecast('C:\\Rudin\\config_master.json', 'Rudin_345Park')
-#forecast('C:\\Rudin\\config_master.json', 'Rudin_560Lexington')
-#forecast('C:\\Rudin\\config_master.json', 'Rudin_40E52')
-#forecast('C:\\Rudin\\config_master.json', 'Rudin_1BP')
-#forecast('C:\\Rudin\\config_master.json', 'Rudin_641LE')
-#forecast('C:\\Rudin\\config_master.json', 'Rudin_WHI')
-
-
+# forecast('C:\\Rudin\\config_master.py', 'Rudin_345Park')
+# forecast('C:\\Rudin\\config_master.py', 'Rudin_560Lexington')
+# forecast('C:\\Rudin\\config_master.py', 'Rudin_40E52')
+# forecast('C:\\Rudin\\config_master.py', 'Rudin_1BP')
+# forecast('C:\\Rudin\\config_master.py', 'Rudin_641LE')
+# forecast('C:\\Rudin\\config_master.py', 'Rudin_WHI')
