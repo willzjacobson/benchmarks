@@ -12,7 +12,16 @@ from joblib import Parallel, delayed
 HDF5_file = '/data/park345_1a_1b.h5'
 GROUPS_PICKLE_file = '/home/ashishgagneja/misc/groups.pickle'
 
+
 groups = None
+
+
+def process_key(key):
+    ctrlr, sub_cntrlr, pt_nm = key
+    #print('%s:%s:%s\n' % (ctrlr, sub_cntrlr, pt_nm ))
+    tmp_df = df[(df.Controller == ctrlr) & (df.Subcontroller == sub_cntrlr) & (df.PointName == pt_nm)]
+    return [key, tmp_df.size]
+
 
 # if not os.path.exists(GROUPS_PICKLE_file):
 #
@@ -36,17 +45,20 @@ pointname_list = np.delete(pointname_list, np.nan)
 
 cross_product = itertools.product(controller_list, subcontroller_list, pointname_list)
 
-valid_keys = {}
-for key in cross_product:
-    ctrlr, sub_cntrlr, pt_nm = key
-    print('%s:%s:%s\n' % (ctrlr, sub_cntrlr, pt_nm ))
-    #tmp_dt = df[(df.Controller == ctrlr) & (df.Subcontroller == sub_cntrlr) & (df.PointName == pt_nm)]
-    #if tmp_dt.size:
-    #    valid_keys[key] = tmp_dt.size
+valid_keys = []
+
+valid_keys = Parallel(n_jobs=-1)(delayed(process_key)(i) for i in cross_product)
+
+#for key in cross_product:
+#    ctrlr, sub_cntrlr, pt_nm = key
+#    print('%s:%s:%s\n' % (ctrlr, sub_cntrlr, pt_nm ))
+#     tmp_dt = df[(df.Controller == ctrlr) & (df.Subcontroller == sub_cntrlr) & (df.PointName == pt_nm)]
+#     if tmp_dt.size:
+#         valid_keys[key] = tmp_dt.size
 
 
-with open('/home/ashishgagneja/misc/valid_keys.json', 'wb+') as f:
-    json.dump(valid_keys, f)
+with open('/home/ashishgagneja/misc/valid_keys.pickle', 'wb+') as f:
+    pickle.dump(valid_keys, f)
 
 store.close()
 
