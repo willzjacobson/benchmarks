@@ -7,7 +7,12 @@ david = dict(default={
     "wund_url": "http://api.wunderground.com/api/bab4ba5bcbc2dbec/",
     "table": "/data/weather.h5",
     "history": "history",
-    "forecast": "forecast"
+    "forecast": "forecast",
+    "city": "New_York",
+    "state": "NY",
+    "history": "history",
+    "forecast": "forecast",
+    "cap": 9
 }, sampling={
     "forecast_granularity": 15,
     "forecast_length": 24
