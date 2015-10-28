@@ -6,6 +6,7 @@ import os
 import json
 import itertools
 import numpy as np
+from joblib import Parallel, delayed
 
 
 HDF5_file = '/data/park345_1a_1b.h5'
@@ -38,9 +39,10 @@ cross_product = itertools.product(controller_list, subcontroller_list, pointname
 valid_keys = {}
 for key in cross_product:
     ctrlr, sub_cntrlr, pt_nm = key
-    tmp_dt = df[(df.Controller == ctrlr) & (df.Subcontroller == sub_cntrlr) & (df.PointName == pt_nm)]
-    if tmp_dt.size:
-        valid_keys[key] = tmp_dt.size
+    print('%s:%s:%s\n' % (ctrlr, sub_cntrlr, pt_nm ))
+    #tmp_dt = df[(df.Controller == ctrlr) & (df.Subcontroller == sub_cntrlr) & (df.PointName == pt_nm)]
+    #if tmp_dt.size:
+    #    valid_keys[key] = tmp_dt.size
 
 
 with open('/home/ashishgagneja/misc/valid_keys.json', 'wb+') as f:
