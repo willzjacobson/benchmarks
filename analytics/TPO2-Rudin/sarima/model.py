@@ -157,11 +157,12 @@ def start_time(cfg, ts, date="2013-06-06 7:00:00"):
 
     # resample exog
 
-    sarima_order = tuple(cfg['sarima']['order'])
+    sarima_order = (cfg['sarima']['order'],)[0]
+    enf_stationarity = cfg['sarima']['enforce_stationarity']
     mod = statsmodels.tsa.statespace.sarimax.SARIMAX(endog=endog,
                                                      exog=exog,
                                                      order=sarima_order,
-                                                     enforce_stationarity=False)
+                                                     enforce_stationarity=enf_stationarity)
     fit_res = mod.fit()
 
     # new model with same parameters, but different endog and exog data
@@ -191,7 +192,7 @@ def start_time(cfg, ts, date="2013-06-06 7:00:00"):
         endog_new,
         exog_new,
         order=sarima_order,
-        enforce_stationarity=False)
+        enforce_stationarity=enf_stationarity)
     res = mod_new.filter(np.array(fit_res.params))
 
     # moment of truth: prediction
