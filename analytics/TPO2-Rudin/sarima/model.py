@@ -120,9 +120,9 @@ def start_time(cfg, ts, date="2013-06-06 7:00:00"):
     # p = _number_ar_terms(ts)
     # d = _number_diff(ts)
 
-    p = 1
-    d = 1
-    q = 0
+    # p = 1
+    # d = 1
+    # q = 0
 
     # sp = p
     # sd = d
@@ -143,9 +143,9 @@ def start_time(cfg, ts, date="2013-06-06 7:00:00"):
     endog_temp = ts[ts.index.date < date.date()]
 
     weather = pd.read_hdf(
-        cfg['weather']['table'], 'history')
+        cfg['weather']['table'], cfg['weather']['history'])
 
-    forecast = pd.read_hdf(cfg['weather']['table'], 'forecast')
+    forecast = pd.read_hdf(cfg['weather']['table'], cfg['weather']['forecast'])
 
     weather_all = pd.concat([weather, forecast])
 
@@ -159,7 +159,7 @@ def start_time(cfg, ts, date="2013-06-06 7:00:00"):
 
     mod = statsmodels.tsa.statespace.sarimax.SARIMAX(endog=endog,
                                                      exog=exog,
-                                                     order=(p, d, q),
+                                                     order=cfg['sarima']['order'],
                                                      enforce_stationarity=False)
     fit_res = mod.fit()
 
@@ -189,7 +189,7 @@ def start_time(cfg, ts, date="2013-06-06 7:00:00"):
     mod_new = statsmodels.tsa.statespace.sarimax.SARIMAX(
         endog_new,
         exog_new,
-        order=(p, d, q),
+        order=cfg['sarima']['order'],
         enforce_stationarity=False)
     res = mod_new.filter(np.array(fit_res.params))
 
