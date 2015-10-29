@@ -23,13 +23,22 @@ var mapper = function(pointArr) {
 };
 
 
-mapper(['HouseTank45High', 345]).then(function(data){
-	console.log(data)
-})
+// mapper(['HouseTank45High', 345]).then(function(data){
+// 	console.log(data)
+// })
 
 
+var regexTest = function(){
+	var pattern = /\b(List of Objects in Test Device:)\b/mgi
+	fs.readFile('345_Master_Points.txt', function(err,data){
+		// console.log(data.toString())
+		var match = pattern.exec(data.toString());
+		console.log(match);
+	})
+}
 
-
+regexTest();
 // module.exports = {
 // 	mapper: mapper
 // };
+
