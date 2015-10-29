@@ -157,9 +157,10 @@ def start_time(cfg, ts, date="2013-06-06 7:00:00"):
 
     # resample exog
 
+    sarima_order = cfg['sarima']['order'].str()
     mod = statsmodels.tsa.statespace.sarimax.SARIMAX(endog=endog,
                                                      exog=exog,
-                                                     order=cfg['sarima']['order'],
+                                                     order=sarima_order,
                                                      enforce_stationarity=False)
     fit_res = mod.fit()
 
@@ -189,7 +190,7 @@ def start_time(cfg, ts, date="2013-06-06 7:00:00"):
     mod_new = statsmodels.tsa.statespace.sarimax.SARIMAX(
         endog_new,
         exog_new,
-        order=cfg['sarima']['order'],
+        order=sarima_order,
         enforce_stationarity=False)
     res = mod_new.filter(np.array(fit_res.params))
 
