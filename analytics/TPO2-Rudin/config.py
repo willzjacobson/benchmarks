@@ -35,7 +35,7 @@ david = dict(default={
 ashish = dict(
 
     default = {
-        "base_dir": "/home/davidkarapetyan/Documents/workspace/Adirondack/analytics",
+        "base_dir": "/home/ashishgagneja/Adirondack/analytics/TPO2-Rudin",
         "python_prog": "/home/davidkarapetyan/anaconda3/bin/python",
         "data_sources": "/data",
         "log_dir": "/var/log"

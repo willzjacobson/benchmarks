@@ -4,11 +4,11 @@
 import pandas as pd
 import weather
 import json
-
+import os
 
 # load configuration
 config = None
-with open('config.py') as f:
+with open('/home/ashishgagneja/Adirondack/analytics/TPO2-Rudin/config.py') as f:
     config = json.load(f)
 
 if config is None:
