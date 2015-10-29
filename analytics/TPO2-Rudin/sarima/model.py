@@ -97,7 +97,7 @@ def _benchmark_ts(ts, datetime):
     return ts_filt[ts_filt.index.date == benchmark_date]
 
 
-def start_time(ts, date="2013-06-06 7:00:00"):
+def start_time(ts, weather_params, sarima_params, granularity, date="2013-06-06 7:00:00"):
     """ Identify optimal start-up time
 
     Fits a SARIMA model to the input time series, then
@@ -107,6 +107,16 @@ def start_time(ts, date="2013-06-06 7:00:00"):
     :param ts: pandas.core.series.Series
     Numbers 0-6, denoting "Monday"-"Sunday", respectively
     Specifies time by which building must be at desired_temp
+
+    weather_params: dict
+    weather configuration from main config file
+
+    sarima_params: dict
+    sarima model parameters from the main config file
+
+    granularity: int
+    sampling frequency of input data and forecast data
+
     :return: datetime.datetime
     """
     date = pd.datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
@@ -120,9 +130,9 @@ def start_time(ts, date="2013-06-06 7:00:00"):
     # p = _number_ar_terms(ts)
     # d = _number_diff(ts)
 
-    p = 1
-    d = 1
-    q = 0
+    # p = 1
+    # d = 1
+    # q = 0
 
     # sp = p
     # sd = d
@@ -143,9 +153,9 @@ def start_time(ts, date="2013-06-06 7:00:00"):
     endog_temp = ts[ts.index.date < date.date()]
 
     weather = pd.read_hdf(
-        '/data/weather.h5', 'history')
+        weather_params['table'], weather_params['history'])
 
-    forecast = pd.read_hdf('/data/weather.h5', 'forecast')
+    forecast = pd.read_hdf(weather_params['table'], weather_params['forecast'])
 
     weather_all = pd.concat([weather, forecast])
 
@@ -157,10 +167,12 @@ def start_time(ts, date="2013-06-06 7:00:00"):
 
     # resample exog
 
+    sarima_order = tuple(map(int, sarima_params['order'][1:-1].split(',')))
+    enf_stationarity = sarima_params['enforce_stationarity']
     mod = statsmodels.tsa.statespace.sarimax.SARIMAX(endog=endog,
                                                      exog=exog,
-                                                     order=(p, d, q),
-                                                     enforce_stationarity=False)
+                                                     order=sarima_order,
+                                                     enforce_stationarity=enf_stationarity)
     fit_res = mod.fit()
 
     # new model with same parameters, but different endog and exog data
@@ -168,7 +180,7 @@ def start_time(ts, date="2013-06-06 7:00:00"):
     end = start + relativedelta(days=1)
 
     # rng should not include 00:00:00 time in next day
-    rng = pd.date_range(start, end, freq='15Min')[:-1]
+    rng = pd.date_range(start, end, freq="%dMin" % granularity)[:-1]
     endog_addition = pd.Series(index=rng)
 
     # create new endog variable by filling day for prediction
@@ -189,8 +201,8 @@ def start_time(ts, date="2013-06-06 7:00:00"):
     mod_new = statsmodels.tsa.statespace.sarimax.SARIMAX(
         endog_new,
         exog_new,
-        order=(p, d, q),
-        enforce_stationarity=False)
+        order=sarima_order,
+        enforce_stationarity=enf_stationarity)
     res = mod_new.filter(np.array(fit_res.params))
 
     # moment of truth: prediction
