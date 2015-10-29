@@ -3,10 +3,16 @@
 # rc=Client()
 import pandas as pd
 import weather
+import json
 
 
+# load configuration
+config = None
+with open('config.py') as f:
+    config = json.load(f)
 
-
+if config is None:
+    raise Exception('configuration load failed')
 
 # for wide terminal display of pandas dataframes
 # pd.options.display.width = 120
@@ -19,17 +25,18 @@ import weather
 
 # plt.rcParams['figure.figsize'] = 14, 6
 
-directory = '/home/davidkarapetyan/Documents/workspace/data_analysis/'
-csv_file = 'data/oa_temp.csv'
-title = 'Accumulated Steam Usage'
+# directory = '/home/davidkarapetyan/Documents/workspace/data_analysis/'
+# csv_file = 'data/oa_temp.csv'
+# title = 'Accumulated Steam Usage'
 
 # load dataframe, and subset out relevant columns
-park_data = pd.read_csv(directory + csv_file, error_bad_lines=False)
-park_data.columns = ['ID', 'TIMESTAMP',
-                     'TRENDFLAGS', 'STATUS',
-                     'VALUE', 'TRENDFLAGS_TAG',
-                     'STATUS_TAG']
-park_data = park_data.sort('TIMESTAMP')
+# park_data = pd.read_csv(directory + csv_file, error_bad_lines=False)
+# park_data.columns = ['ID', 'TIMESTAMP',
+#                      'TRENDFLAGS', 'STATUS',
+#                      'VALUE', 'TRENDFLAGS_TAG',
+#                      'STATUS_TAG']
+# park_data = park_data.sort('TIMESTAMP')
+park_data = pd.read_hfd(config.park345.steam_data, config.park345.steam_data_group)
 
 # TODO Note that lags necessary for season stationarity>100 w-out log transform
 # is over 100 for non-log-ratio transformed original data, and 0
