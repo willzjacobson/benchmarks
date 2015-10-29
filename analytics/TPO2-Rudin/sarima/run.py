@@ -39,7 +39,7 @@ cfg = config.ashish
 #                      'VALUE', 'TRENDFLAGS_TAG',
 #                      'STATUS_TAG']
 # park_data = park_data.sort('TIMESTAMP')
-park_data = pd.read_hfd(cfg.park345.steam_data, cfg.park345.steam_data_group)
+park_data = pd.read_hdf(cfg.park345.steam_data, cfg.park345.steam_data_group)
 
 # TODO Note that lags necessary for season stationarity>100 w-out log transform
 # is over 100 for non-log-ratio transformed original data, and 0
