@@ -5,14 +5,17 @@ import pandas as pd
 import weather
 import json
 import os
+import config
 
 # load configuration
-config = None
-with open('/home/ashishgagneja/Adirondack/analytics/TPO2-Rudin/config.py') as f:
-    config = json.load(f)
+# config = None
+# with open('/home/ashishgagneja/Adirondack/analytics/TPO2-Rudin/config.py') as f:
+#     config = json.load(f)
+#
+# if config is None:
+#     raise Exception('configuration load failed')
 
-if config is None:
-    raise Exception('configuration load failed')
+cfg = config.ashish
 
 # for wide terminal display of pandas dataframes
 # pd.options.display.width = 120
@@ -36,7 +39,7 @@ if config is None:
 #                      'VALUE', 'TRENDFLAGS_TAG',
 #                      'STATUS_TAG']
 # park_data = park_data.sort('TIMESTAMP')
-park_data = pd.read_hfd(config.park345.steam_data, config.park345.steam_data_group)
+park_data = pd.read_hfd(cfg.park345.steam_data, cfg.park345.steam_data_group)
 
 # TODO Note that lags necessary for season stationarity>100 w-out log transform
 # is over 100 for non-log-ratio transformed original data, and 0
