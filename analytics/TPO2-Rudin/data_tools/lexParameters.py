@@ -102,7 +102,7 @@ def initializeParametersLex(configFile, configKey):
     occupancyParams = singleTypeParameterObject()
     occupancyParams.tableName = cParser.occupancyTableName()
 
-    ''' build parameter object '''
+    ''' _build parameter object '''
     
     paramObj = parameterObjectLex('Lex', floorList, sptPredictionParams, sptParams, satParams, ratParams,
                                 electricityPredictionParams, startupParams, rampdownParams, sptTrajectoryParams)

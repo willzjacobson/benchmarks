@@ -8,7 +8,7 @@ __author__ = 'SuperCell93'
 # forecast date is the actual day being forecasted for
 # there are overlaps--> each forecast pulls data for 36 hours
 # write a function. Given the minimum things you need. Separately write the script
-# to get started, we have code connected If access to joule or ferante, inside C\Rudin\common_rudin there's weather.py which is already created
+# to get started, we have code connected If access to joule or ferante, inside C\Rudin\common_rudin there's helpers.py which is already created
 # code will also connect to the database.
 
 # NOAA formula using the Arden Buck Equation to find the water vapor mixing ratios

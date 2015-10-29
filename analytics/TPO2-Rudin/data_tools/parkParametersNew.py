@@ -68,7 +68,7 @@ def initializeParametersPark():
     sptTrajectoryParams.tableName = "spaceTemperature_trajectory"
     sptTrajectoryParams.tableFloorDesignator = "Floor"
 
-    ''' build parameter object '''
+    ''' _build parameter object '''
     
     paramObj = parameterObject('Park', floorList, sptPredictionParams, sptParams, satParams, satSPParams,
                                steamPredictionParams,electricityPredictionParams, startupParams, rampdownParams,

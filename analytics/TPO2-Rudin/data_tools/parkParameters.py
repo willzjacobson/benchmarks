@@ -107,7 +107,7 @@ def initializeParametersPark(configFile, configKey):
     occupancyParams = singleTypeParameterObject()
     occupancyParams.tableName = cParser.occupancyTableName()
 
-    ''' build parameter object '''
+    ''' _build parameter object '''
     
     paramObj = parameterObject('Park', floorList, sptPredictionParams, sptParams, satParams, satSPParams,
                                steamPredictionParams,electricityPredictionParams, startupParams, rampdownParams,

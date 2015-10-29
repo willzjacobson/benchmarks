@@ -8,7 +8,7 @@ class dummy():
 class configObject():
         
         def __init__(self, ConfigFileName, ConfigFileKey):
-                # these are the default build instructions for TPO BETA release 2's recommendation layer.  All Buildings should buil their config files
+                # these are the default _build instructions for TPO BETA release 2's recommendation layer.  All Buildings should buil their config files
                 # to be consistent with the formatting paradigm implied by this builder
                 self.cparser = cfgparse.ConfigParser()
                 self.cparser.add_file(ConfigFileName)

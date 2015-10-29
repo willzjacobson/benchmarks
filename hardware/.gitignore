@@ -4,6 +4,6 @@
 # Log files.
 *.log
 
-# Don't push node_modules - we want the build server to install these.
+# Don't push node_modules - we want the _build server to install these.
 node_modules/
 

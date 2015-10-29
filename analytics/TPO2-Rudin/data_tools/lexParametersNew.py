@@ -66,7 +66,7 @@ def initializeParametersLex():
     sptTrajectoryParams.tableName = "spaceTemperature_trajectory"
     sptTrajectoryParams.tableFloorDesignator = "Floor"
 
-    ''' build parameter object '''
+    ''' _build parameter object '''
     
     paramObj = parameterObjectLex('Lex', floorList, sptPredictionParams, sptParams, satParams, ratParams,
                                 electricityPredictionParams, startupParams, rampdownParams, sptTrajectoryParams)

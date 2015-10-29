@@ -1,14 +1,12 @@
 __author__ = 'davidkarapetyan'
 
-import sklearn
+import sklearn.svm
 from dateutil.relativedelta import relativedelta
 import pandas as pd
-import config
+import numpy as np
 
 
-def model_build(endog,
-                weather_archive,
-                params=config.david["svm"]):
+def _build(endog, weather_archive, params, discrete=True):
     """SVM Model Instantiation and Training
 
     :param endog: Series. Endogenous variable to be forecasted
@@ -21,37 +19,42 @@ def model_build(endog,
     # get weather and endogenous
     # into appropriate format for input to python svm model
 
-    number_points = 60 / params.sampling.forecast_granularity * 24
+    if discrete is True:
+        frame = endog.append(weather_archive)
 
-    x = weather_archive.temp.reshape(1, number_points)
-    y = list(endog)
+        x = weather_archive.temp.reshape(len(weather_archive), 1)
+        y = list(endog)
 
-    clf = sklearn.svm.SVC()
-    return clf.fit(x, y, *params)
+        clf = sklearn.svm.SVC(**params)
+
+    return clf.fit(x, y)
 
 
-def model_predict(endog,
-                  weather_archive,
-                  weather_forecast,
-                  params=config.david["svm"]):
+def predict(endog, weather_archive, weather_forecast,
+            params, granularity):
     """SVM Model Instantiation and Training
 
     :param endog: Series. Endogenous variable to be forecasted
     :param weather_archive: Dataframe. Built from weather underground data
     :param weather_forecast: Dataframe. Built from weather underground data
     :param params: Dictionary of SVM model parameters
-    :return: Time Series
+    :param granularity: Frequency (in minutes) of endog
+    :return: Series
     """
 
-    model = model_build(endog=endog, weather_archive=weather_archive,
-                        params=params)
-    number_points = 60 / params.sampling.forecast_granularity * 24
-    x = weather_forecast.temp.reshape(1, number_points)
+    model = _build(endog=endog, weather_archive=weather_archive,
+                   params=params)
+    number_points = 60 / granularity * 24
 
-    times_forecast = pd.date_range(endog.index[-1] + relativedelta('15min'),
+    features = weather_forecast.temp.reshape(1, number_points)
+
+    gran_string = str(granularity) + "min"
+
+    times_forecast = pd.date_range(endog.index[-1] + relativedelta(gran_string),
                                    endog.index[-1].date() + relativedelta(
                                        days=1),
-                                   freq='15min')
+                                   freq=gran_string)
 
-    predicted_series = pd.Series(data=model.predict(x), index=times_forecast)
+    predicted_series = pd.Series(data=model.predict(features),
+                                 index=times_forecast)
     return predicted_series

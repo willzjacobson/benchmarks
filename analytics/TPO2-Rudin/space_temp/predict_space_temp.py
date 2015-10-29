@@ -108,7 +108,7 @@ def main(argv):
 		holidays_obj = Holidays(options, lgr)
 
 		zone = None
-		# build a model for each quadrant, floor pair
+		# _build a model for each quadrant, floor pair
 		for floor_idx, bldg_floor in enumerate(bldg_floors):
 
 			floor_quadrant = floor_quadrants[floor_idx]
@@ -169,7 +169,7 @@ def main(argv):
 						lgr.info('optimal C: %g, optimal gamma: %g' % (
 							opt_c, opt_gamma))
 
-						# build model
+						# _build model
 						model_obj = Build_Model(train_covr_obj.covariates_file, opt_c,
 							opt_gamma, options, lgr)
 

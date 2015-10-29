@@ -125,7 +125,7 @@ def main(argv):
 				if opt_c and opt_gamma:
 					lgr.info('optimal C: %g, optimal gamma: %g' % (opt_c, opt_gamma))
 
-				# build model
+				# _build model
 				model_obj = Build_Model(train_covr_obj.covariates_file, opt_c,
 					opt_gamma, options, lgr)
 
