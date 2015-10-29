@@ -1,1 +1,0 @@
-forfiles /p "..\temp" /d -5 /c "cmd /c del @path"
