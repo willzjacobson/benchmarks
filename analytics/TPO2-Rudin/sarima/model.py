@@ -97,7 +97,7 @@ def _benchmark_ts(ts, datetime):
     return ts_filt[ts_filt.index.date == benchmark_date]
 
 
-def start_time(ts, date="2013-06-06 7:00:00"):
+def start_time(cfg, ts, date="2013-06-06 7:00:00"):
     """ Identify optimal start-up time
 
     Fits a SARIMA model to the input time series, then
@@ -143,9 +143,9 @@ def start_time(ts, date="2013-06-06 7:00:00"):
     endog_temp = ts[ts.index.date < date.date()]
 
     weather = pd.read_hdf(
-        '/data/weather.h5', 'history')
+        cfg['weather']['table'], 'history')
 
-    forecast = pd.read_hdf('/data/weather.h5', 'forecast')
+    forecast = pd.read_hdf(cfg['weather']['table'], 'forecast')
 
     weather_all = pd.concat([weather, forecast])
 
