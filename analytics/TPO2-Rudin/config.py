@@ -32,16 +32,16 @@ david = dict(default={
 })
 
 
-ashish = dict(
+ashish = dict{
 
-    default = {
+    'default': {
         "base_dir": "/home/ashishgagneja/Adirondack/analytics/TPO2-Rudin",
         "python_prog": "/home/davidkarapetyan/anaconda3/bin/python",
         "data_sources": "/data",
         "log_dir": "/var/log"
     },
 
-    weather = {
+    'weather': {
         "wund_url": "http://api.wunderground.com/api/bab4ba5bcbc2dbec/",
         "table": "/data/weather.h5",
         "history": "history",
@@ -51,12 +51,12 @@ ashish = dict(
         "cap": 9
     },
 
-    sampling = {
+    'sampling': {
         "forecast_granularity": 15,
         "forecast_length": 24
     },
 
-    svm = {
+    'svm': {
         "gamma": 1,
         "C": 1,
         "cache_size": 10000,
@@ -69,16 +69,16 @@ ashish = dict(
         "verbose": "False"
     },
 
-    sarima = {
+    'sarima': {
         "order": "(1, 1, 0)",
         "seasonal_order": "(1,1,3)",
         "enforce_stationarity": "False"
     },
 
-    park345 = {
+    'park345': {
         'steam_data': '/home/davidkarapetyan/data_analysis/data/park345.h5',
         'steam_data_group': 'oa_temp',
-    },
-)
+    }
+}
 
 master = None
