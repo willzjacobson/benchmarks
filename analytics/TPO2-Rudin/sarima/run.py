@@ -30,7 +30,7 @@ cfg = config.ashish
 
 # directory = '/home/davidkarapetyan/Documents/workspace/data_analysis/'
 # csv_file = 'data/oa_temp.csv'
-# title = 'Accumulated Steam Usage'
+title = 'Accumulated Steam Usage'
 
 # load dataframe, and subset out relevant columns
 # park_data = pd.read_csv(directory + csv_file, error_bad_lines=False)
