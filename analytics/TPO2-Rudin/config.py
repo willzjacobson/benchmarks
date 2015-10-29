@@ -32,7 +32,7 @@ david = dict(default={
 })
 
 
-ashish = dict{
+ashish = {
 
     'default': {
         "base_dir": "/home/ashishgagneja/Adirondack/analytics/TPO2-Rudin",
