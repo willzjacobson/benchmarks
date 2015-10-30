@@ -1,4 +1,7 @@
+__author__ = "David Karapetyan"
+
 import pandas as pd
+import config
 
 from urllib.request import urlopen
 import json
@@ -6,6 +9,8 @@ import codecs
 from joblib import Parallel, delayed
 from dateutil.relativedelta import relativedelta
 
+
+# TODO Resample weather to match granularity in config
 
 def _dtype_conv(df, weather_type):
     if weather_type == 'forecast':
@@ -89,8 +94,14 @@ def pull(date=pd.datetime.today(), city="New_York", state="NY"):
                          'windchilli': 'windchill', 'wspdi': 'wspd'}
     observations = observations.rename(columns=column_trans_dict)
     observations = observations.set_index(dateindex)
+    # first, resample to round hourly timestamps
     observations = observations.resample("60Min", how="last", closed="right",
                                          loffset="60Min")
+    # next, resample so we have observations matching granularity in config
+    observations = observations.resample(
+        config.david["resampling"]["granularity"])
+
+    # TODO fill na by interp for non-text fields,  padding for text fields
     observations = observations.fillna(method="pad")
     return _dtype_conv(observations, "history")
 
