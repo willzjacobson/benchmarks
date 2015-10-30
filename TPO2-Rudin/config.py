@@ -18,7 +18,10 @@ david = {
     },
     "sampling": {
         "granularity": 15,  # units are minutes
-        "forecast_length": 24
+        "forecast_length": 24,
+        "nary_thresh": 100
+        # upper bound for number of unique points before time
+        # series is classed as n-ary instead of continuous
     },
     "svm": {
         "gamma": 1,
