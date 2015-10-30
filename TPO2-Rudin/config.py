@@ -8,6 +8,8 @@ david = {
     "weather": {
         "h5file": "/data/weather.h5",
         "wund_url": "http://api.wunderground.com/api/bab4ba5bcbc2dbec/",
+        "cov": ["hum", "hail", "pressure", "rain", "snow", "temp", "tornado",
+                "thunder"],
         "history": "history",
         "forecast": "forecast",
         "city": "New_York",
@@ -35,7 +37,6 @@ david = {
         "seasonal_order": "(1,1,3)",
         "enforce_stationarity": "False"
     }}
-
 
 ashish = {
 
