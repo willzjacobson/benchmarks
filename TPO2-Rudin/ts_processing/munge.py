@@ -16,7 +16,7 @@ def _find_longest_gap(diff_index, granularity):
     # adding 1 more minute take care of second differences which we ignore
     td = np.timedelta64(granularity + 1, 'm')
 
-    for ts in diff_sorted:
+    for ts in diff_index:
 
         if prev_ts:
 
@@ -54,11 +54,11 @@ def _is_resamplable(ts_index, granularity, max_gap):
     """
 
     ideal_index = pd.DatetimeIndex(freq=granularity, start=ts_index[0], end=ts_index[-1])
-    diff - ideal_index.difference(ts_index)
+    diff = ideal_index.difference(ts_index)
     diff_sorted = diff.order()
 
     longest_allowed_gap = np.timedelta64(max_gap, 'h')
-    if _find_longest_gap(diff_sorted, freq) > longest_allowed_gap:
+    if _find_longest_gap(diff_sorted, granularity) > longest_allowed_gap:
         return False
 
     return True
