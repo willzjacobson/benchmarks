@@ -1,64 +1,48 @@
 __author__ = 'davidkarapetyan'
 
 import pandas as pd
-import config
-import numpy as np
+import pandas.tseries.offsets as offsets
 
-def _find_longest_gap(diff_index, granularity):
+import config
+
+
+def _find_longest_gap(index):
     """ Find longest gap length in hours
-    :param diff_index: pandas.DatetimeIndex
-        contains missing indices
-    ;param granularity: int
-    :return: numpy.timedelta64
+    :param index: pandas.DatetimeIndex
+        contains all available indices
+    :return: pandas.tslib.Timedelta
     """
 
-    prev_ts, gap_begin, max_gap_duration = None, None, np.timedelta64()
-    # adding 1 more minute take care of second differences which we ignore
-    td = np.timedelta64(granularity + 1, 'm')
+    prev_ts, max_gap_duration = None, pd.Timedelta(offsets.Second(0))
 
-    for ts in diff_index:
+    for ts in index:
 
         if prev_ts:
 
-            # start of a new gap
-            if ts - prev_ts > td:
-
-                # if we are already in a gap, save duration and reset gap beginning
-                if gap_begin:
-
-                    tmp_gap_dur = prev_ts - gap_begin
-                    if tmp_gap_dur > max_gap_duration:
-                        max_gap_duration = tmp_gap_dur
-
-                gap_begin = ts
-
-        else: # first gap
-            gap_begin = ts
+            tmp_gap = ts - prev_ts
+            if tmp_gap > max_gap_duration:
+                print('gap found: %s - %s' % (prev_ts, ts))
+                max_gap_duration = tmp_gap
 
         prev_ts = ts
 
     return max_gap_duration
 
 
-def _is_resamplable(ts_index, granularity, max_gap):
+
+def _is_resamplable(ts_index, max_gap):
     """ Determines if a timeseries is missing too much data for resampling to be counter-productive
         Gaps longer than a few hours cause modelling problems
 
     ;param ts_index: pandas.tseries.index.DatetimeIndex
         timestamp index of available data
-    ;param granularity: int
-        time series frequency
     ;param max_gap: int
         length, in hours, of the longest allowed hour
     :return: bool
     """
 
-    ideal_index = pd.DatetimeIndex(freq=granularity, start=ts_index[0], end=ts_index[-1])
-    diff = ideal_index.difference(ts_index)
-    diff_sorted = diff.order()
-
-    longest_allowed_gap = np.timedelta64(max_gap, 'h')
-    if _find_longest_gap(diff_sorted, granularity) > longest_allowed_gap:
+    longest_allowed_gap = pd.Timedelta(offsets.Hour(max_gap))
+    if _find_longest_gap(ts_index) > longest_allowed_gap:
         return False
 
     return True
@@ -83,7 +67,7 @@ def munge(data, title=None):
 
     # TODO: dropping duplicates based on timestamp alone could result in lost data if the data has readings from
     # more than one meter/equipment
-    if not _is_resamplable(ts.keys(), int(gran), config.ashish["sampling"]["max_gap"]):
+    if not _is_resamplable(ts.keys(), config.ashish["sampling"]["max_gap"]):
         raise Exception("data gap longer than threshold encountered")
 
     ts = ts.drop_duplicates(subset="TIMESTAMP").resample(gran)

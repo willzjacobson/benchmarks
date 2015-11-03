@@ -61,7 +61,7 @@ ashish = {
     },
 
     'sampling': {
-        "forecast_granularity": 15,
+        "granularity": 15,
         "forecast_length": 24,
         "nary_thresh": 100,
         # upper bound for number of unique points before time
