@@ -13,21 +13,9 @@ def _find_longest_gap(index):
     :return: pandas.tslib.Timedelta
     """
 
-    prev_ts, max_gap_duration = None, pd.Timedelta(offsets.Second(0))
-
-    for ts in index:
-
-        if prev_ts:
-
-            tmp_gap = ts - prev_ts
-            if tmp_gap > max_gap_duration:
-                print('gap found: %s - %s' % (prev_ts, ts))
-                max_gap_duration = tmp_gap
-
-        prev_ts = ts
-
-    return max_gap_duration
-
+    df = pd.DataFrame(data=index, columns=['ts'])
+    df['diff'] = (df['ts'] - df['ts'].shift()).fillna(0)
+    return df.max(axis=0)['diff']
 
 
 def _is_resamplable(ts_index, max_gap):
