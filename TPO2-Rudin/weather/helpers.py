@@ -1,42 +1,42 @@
 __author__ = "David Karapetyan"
 
 import pandas as pd
+import numpy as np
 import config
-
 from urllib.request import urlopen
 import json
 import codecs
-from joblib import Parallel, delayed
+# from joblib import Parallel, delayed
 from dateutil.relativedelta import relativedelta
 
+stringcols = ['conds', 'wdire']
 
-# TODO Resample weather to match granularity in config
 
-def _dtype_conv(df, weather_type):
-    if weather_type == 'forecast':
-        floats = ['hum', 'snow', 'temp', 'windchill', 'wspd', 'wdird']
-        strings = ['conds', 'wdire']
-    elif weather_type == 'history':
-        floats = ['fog', 'hail', 'heatindex', 'hum', 'precip',
-                  'pressure', 'rain', 'snow', 'temp', 'thunder', 'tornado',
-                  'wdird', 'wgust', 'windchill', 'wspd']
-        strings = ['conds', 'wdire']
+def _dtype_conv(df=pd.DataFrame()):
+    """
+    :param df: DataFrame
+    :return: DataFrame
+    """
+    # next, convert each column to appropriate data type, so that interpolation
+    # works properly (will work on type float, but not on generic object
 
-    else:
-        raise ValueError("You must enter in an appropriate weather type")
-
+    # fill done different for text vs float columns
+    floatcols = df.columns[df.columns.isin(stringcols) == False]
     # convert each column label to appropriate dtype
-    for stringcol in strings:
+    for stringcol in stringcols:
         df[stringcol] = df[stringcol].apply(
-            lambda x: str(x) if x != 'N/A' else 'nan')
-    for floatcol in floats:
+            lambda x: str(x) if x != 'N/A' else np.nan)
+    for floatcol in floatcols:
         df[floatcol] = df[floatcol].apply(
-            lambda x: float(x) if x != 'N/A' else 'nan')
+            lambda x: float(x) if x != 'N/A' else np.nan)
 
     return df
 
 
-def pull(date=pd.datetime.today(), city="New_York", state="NY"):
+def _history_pull(date=pd.datetime.today(),
+                  city=config.david["weather"]["city"],
+                  state=config.david["weather"]["state"],
+                  account=config.david["weather"]["wund_url"]):
     """Pull weather information
 
     Weather information is pulled from weather underground at specified
@@ -58,11 +58,9 @@ def pull(date=pd.datetime.today(), city="New_York", state="NY"):
                                     date.strftime('%d'))
 
     city_path = '%s/%s' % (state, city)
-    # url = 'http://api.wunderground.com/' \
-    #       'api/bab4ba5bcbc2dbec/%s/q/%s.json' % (date_path, city_path)
 
-    url = 'http://api.wunderground.com/' \
-          'api/08d25f404214f50b/%s/q/%s.json' % (date_path, city_path)
+    url = account + \
+          "%s/q/%s.json" % (date_path, city_path)
 
     reader = codecs.getreader('utf-8')
     f = urlopen(url)
@@ -74,8 +72,12 @@ def pull(date=pd.datetime.today(), city="New_York", state="NY"):
 
     observations = pd.DataFrame.from_dict(observations)
 
+    return observations
+
+
+def _history_munge(df):
     # convert date column to datetimeindex
-    dateindex = observations.date.apply(
+    dateindex = df.date.apply(
         lambda x: pd.datetime(int(x['year']), int(x['mon']), int(x['mday']),
                               int(x['hour']), int(x['min'])))
 
@@ -87,57 +89,43 @@ def pull(date=pd.datetime.today(), city="New_York", state="NY"):
     metric = ['dewptm', 'heatindexm', 'precipm', 'pressurem', 'tempm',
               'vism', 'wgustm',
               'windchillm', 'wspdm']
-    observations = observations.drop(dates + misc + british + metric, axis=1)
+    df = df.drop(dates + misc + british + metric, axis=1)
     column_trans_dict = {'heatindexi': 'heatindex', 'precipi': 'precip',
                          'pressurei': 'pressure', 'tempi': 'temp',
                          'wgusti': 'wgust',
                          'windchilli': 'windchill', 'wspdi': 'wspd'}
-    observations = observations.rename(columns=column_trans_dict)
-    observations = observations.set_index(dateindex)
-    # first, resample to round hourly timestamps
-    observations = observations.resample("60Min", how="last", closed="right",
-                                         loffset="60Min")
-    # next, resample so we have observations matching granularity in config
-    observations = observations.resample(
-        config.david["resampling"]["granularity"])
-
-    # TODO fill na by interp for non-text fields,  padding for text fields
-    observations = observations.fillna(method="pad")
-    return _dtype_conv(observations, "history")
+    df = df.rename(columns=column_trans_dict)
+    df = df.set_index(dateindex)
+    df = _dtype_conv(df)
 
 
-def forecast(city="New_York", state="NY"):
-    """Returns forecasts from now until end of day
+    # next, convert each column to appropriate data type, so that interpolation
+    # works properly (will work on type float, but not on generic object
 
-     Parameters
-     ----------
+    # fill done different for text vs float columns
+    floatcols = df.columns[df.columns.isin(stringcols) == False]
+    gran = config.david["sampling"]["granularity"]
+    df = df.resample(gran, how="last")
+    df[floatcols] = df[floatcols].interpolate()
 
-     city: string
-     state: string
+    # extend df with all dates we want, taking into account 2 hour gap
+    # in weather underground data
+    temp = pd.DataFrame(index=pd.date_range(
+        df.index[0].date(), df.index[-1],
+        freq=gran), columns=df.columns)
+    temp[df.index[0]:df.index[-1]] = df
+    df = temp
 
-     Returns
-     -------
+    # interpolate won't work on very first entries with NaN's, so
+    # backfill these
+    df = df.fillna(method="bfill")
+    df = df.fillna(method="ffill")
 
-     w: dataframe of weather parameters, indexed by hour
-    """
+    return df
 
-    city_path = '%s/%s' % (state, city)
-    url = 'http://api.wunderground.com/' \
-          'api/bab4ba5bcbc2dbec/hourly/q/%s.json' % city_path
-    # url = 'http://api.wunderground.com/' \
-    #       'api/08d25f404214f50b/hourly/q/%s.json' % city_path
-    reader = codecs.getreader('utf-8')
-    f = urlopen(url)
-    parsed_json = json.load(reader(f))
-    f.close()
-    df = parsed_json['hourly_forecast']
 
-    # convert to dataframes for easy presentation and manipulation
-
-    df = pd.DataFrame.from_dict(df)
-
+def _forecast_munge(df):
     # toss out metric system in favor of english system
-
     for column in ['windchill', 'wspd', 'temp', 'qpf', 'snow', 'mslp',
                    'heatindex', 'dewpoint', 'feelslike']:
         df[column] = df[column].apply(
@@ -159,30 +147,86 @@ def forecast(city="New_York", state="NY"):
 
     # drop what we don't need anymore, and set df index
     df = df.drop(
-        ['FCTTIME', 'fctcode', 'feelslike', 'dewpoint', 'pop',
+        ['FCTTIME', 'fctcode', 'feelslike', 'dewpoint',
          'icon', 'icon_url',
-         'wx', 'wdir', 'uvi', 'mslp', 'qpf', 'sky',
-         'heatindex'],
+         'wx', 'wdir', 'uvi', 'mslp', 'qpf', 'sky'],
         axis=1)
-    column_trans_dict = {'humidity': 'hum', 'condition': 'conds'}
+    column_trans_dict = {'humidity': 'hum', 'condition': 'conds', 'pop': 'rain'}
     df = df.rename(columns=column_trans_dict)
     df = df.set_index(dateindex)
+    df = _dtype_conv(df)
 
-    # just need 1 day of forecasts
-    df = df[pd.datetime.today().strftime('%Y%m%d')]
-    df = df.resample("60Min", how="last", closed="right",
-                     loffset="60Min")
+    # wunderground history data is 51 minutes on the hour, every hour.
+    # wunderground forecast pull is on the hour, every hour.
+    # resamples down to top of hour minus granularity minute mark
+    # hence, there will be a granularity amount of time gap between
+    # forecast and historical data in our database, which is what we want
+    gran = config.david["sampling"]["granularity"]
+    floatcols = df.columns[df.columns.isin(stringcols) == False]
 
-    df = _dtype_conv(df, "forecast")
+    if pd.datetime.today().time().minute > 51:
+        df = df.resample(gran, how="last")
+    else:
+        df = df.resample(gran, how="last", loffset="-1H")
 
-    df = df.fillna(method="pad")
+    # interpolate won't work on very first entries with NaN's, so
+    # backfill these
+    df[floatcols] = df[floatcols].interpolate()
+    df = df.fillna(method="bfill")
+    df = df.fillna(method="ffill")
 
     return df
 
 
-def archive_update(city="New_York", state="NY",
-                   archive_location='../data/weather.h5', df='history',
-                   cap=100000000):
+def _forecast_pull(city=config.david["weather"]["city"],
+                   state=config.david["weather"]["state"],
+                   account=config.david["weather"]["wund_url"]):
+    """Returns forecasts from now until end of day
+
+     Parameters
+     ----------
+
+     city: string
+     state: string
+
+     Returns
+     -------
+
+     w: dataframe of weather parameters, indexed by hour
+    """
+
+    city_path = '%s/%s' % (state, city)
+    url = account + "hourly/q/%s.json" % city_path
+    reader = codecs.getreader('utf-8')
+    f = urlopen(url)
+    parsed_json = json.load(reader(f))
+    f.close()
+    df = parsed_json['hourly_forecast']
+
+    # convert to dataframes for easy presentation and manipulation
+
+    df = pd.DataFrame.from_dict(df)
+    return df
+
+
+def forecast_munged(city=config.david["weather"]["city"],
+                    state=config.david["weather"]["state"],
+                    account=config.david["weather"]["wund_url"]):
+    return _forecast_munge(_forecast_pull(city, state, account))
+
+
+def history_munged(date=pd.datetime.today(),
+                   city=config.david["weather"]["city"],
+                   state=config.david["weather"]["state"],
+                   account=config.david["weather"]["wund_url"]):
+    return _history_munge(_history_pull(date, city, state, account))
+
+
+def archive_update(city="New_York",
+                   state="NY",
+                   archive_location=config.david["weather"]["h5file"],
+                   df=config.david["weather"]["history"],
+                   cap=config.david["weather"]["cap"]):
     """Pull archived weather information
 
     Weather information is pulled from weather underground from end of
@@ -214,14 +258,15 @@ def archive_update(city="New_York", state="NY",
     else:
         start = weather_data.index[-1].date()
 
-    end = pd.datetime.today()
+    end = pd.datetime.today().date()
+
     interval = pd.date_range(start, end)
     wdata_days_comp = weather_data[:start]
 
-    frames = (Parallel(n_jobs=-1)(delayed(pull)(x, city, state)
-                                  for x in interval[:cap]))
+    # frames = (Parallel(n_jobs=-1)(delayed(pull)(x, city, state)
+    #                               for x in interval[:cap]))
 
-    frames = [_dtype_conv(df, "history") for df in frames]
+    frames = [history_munged(x, city, state) for x in interval[:cap]]
 
     weather_update = pd.concat(frames)
     archive = pd.concat([wdata_days_comp, weather_update])
@@ -230,5 +275,7 @@ def archive_update(city="New_York", state="NY",
     # all except one. Unfortunately, drop_duplicates works only for column
     # entries, not timestamp row indices, so...
 
-    return archive.reset_index().drop_duplicates('date').set_index(
-        'date')
+    archive = archive.reset_index().drop_duplicates('index').set_index(
+        'index')
+
+    return archive

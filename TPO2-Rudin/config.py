@@ -7,9 +7,10 @@ david = {
     },
     "weather": {
         "h5file": "/data/weather.h5",
-        "wund_url": "http://api.wunderground.com/api/bab4ba5bcbc2dbec/",
-        "cov": ["hum", "hail", "pressure", "rain", "snow", "temp", "tornado",
-                "thunder"],
+        "wund_url": "http://api.wunderground.com/api/08d25f404214f50b/",
+        # "wund_url": "http://api.wunderground.com/api/bab4ba5bcbc2dbec/",
+        "cov": ["conds", "hum", "rain", "snow", "temp", "tornado", "thunder"],
+        "today_history": "today_history",
         "history": "history",
         "forecast": "forecast",
         "city": "New_York",
@@ -17,7 +18,7 @@ david = {
         "cap": 9
     },
     "sampling": {
-        "granularity": 15,  # units are minutes
+        "granularity": "15min",
         "forecast_length": 24,
         "nary_thresh": 100
         # upper bound for number of unique points before time
