@@ -62,8 +62,13 @@ ashish = {
     },
 
     'sampling': {
-        "forecast_granularity": 15,
-        "forecast_length": 24
+        "granularity": 15,
+        "forecast_length": 24,
+        "nary_thresh": 100,
+        # upper bound for number of unique points before time
+        # series is classed as n-ary instead of continuous
+        "max_gap": 2,
+        # largest allowed gap in data in hours
     },
 
     'svm': {
