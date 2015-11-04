@@ -10,12 +10,13 @@ david = {
         "wund_url": "http://api.wunderground.com/api/08d25f404214f50b/",
         # "wund_url": "http://api.wunderground.com/api/bab4ba5bcbc2dbec/",
         "cov": ["conds", "hum", "rain", "snow", "temp", "tornado", "thunder"],
-        "today_history": "today_history",
+        "history_orig": "history_orig",
         "history": "history",
+        "forecast_orig": "forecast_orig",
         "forecast": "forecast",
         "city": "New_York",
         "state": "NY",
-        "cap": 9
+        "cap": 90000000
     },
     "sampling": {
         "granularity": "15min",
@@ -40,7 +41,11 @@ david = {
         "order": "(1, 1, 0)",
         "seasonal_order": "(1,1,3)",
         "enforce_stationarity": "False"
-    }}
+    },
+    "parallel": {
+        "processors": 24
+    }
+}
 
 ashish = {
 

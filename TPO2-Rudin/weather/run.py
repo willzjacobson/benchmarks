@@ -1,22 +1,40 @@
 import weather.helpers
 import config
+import multiprocessing
+import pandas as pd
 
 if __name__ == "__main__":
+    # pool=None
+    pool = multiprocessing.Pool(
+        processes=config.david["parallel"]["processors"])
     city = config.david["weather"]["city"]
     state = config.david["weather"]["state"]
     archive_location = config.david["weather"]["h5file"]
-    df_history = config.david["weather"]["history"]
-    df_forecast = config.david["weather"]["forecast"]
-    df_today_history = config.david["weather"]["today_history"]
+    history_name = config.david["weather"]["history"]
+    forecast_name = config.david["weather"]["forecast"]
+    history_orig_name = config.david["weather"]["history_orig"]
+    forecast_orig_name = config.david["weather"]["forecast_orig"]
     cap = config.david["weather"]["cap"]
+    gran = config.david["sampling"]["granularity"]
+    account = config.david["weather"]["wund_url"]
 
-    weather_history = weather.helpers.archive_update(city,
-                                                     state,
-                                                     archive_location,
-                                                     df_history,
-                                                     cap)
-    latest_forecast = weather.helpers.forecast_munged(city, state)
-    today_history = weather.helpers.history_munged()
-    # weather_history.to_hdf(archive_location, df_history)
-    latest_forecast.to_hdf(archive_location, df_forecast)
-    today_history.to_hdf(archive_location, df_today_history)
+    whist_noresamp = weather.helpers.archive_update(city, state,
+                                                    archive_location,
+                                                    history_orig_name, cap,
+                                                    pool)
+    whist_resamp = weather.helpers._history_resample(whist_noresamp, gran)
+
+    forecast_noresamp = weather.helpers._forecast_munge(
+        weather.helpers._forecast_pull(city, state, account))
+    forecast_resamp = weather.helpers.forecast_update(
+        city, state, account)
+
+
+    # store resampled and nonresampled data in database, for debugging
+    store = pd.HDFStore(archive_location)
+    store[forecast_name] = forecast_resamp
+    store[forecast_orig_name] = forecast_noresamp
+
+    store[history_name] = whist_resamp
+    store[history_orig_name] = whist_noresamp
+    store.close()

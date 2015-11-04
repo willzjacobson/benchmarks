@@ -5,8 +5,8 @@ import numpy as np
 import config
 from urllib.request import urlopen
 import json
+import functools
 import codecs
-# from joblib import Parallel, delayed
 from dateutil.relativedelta import relativedelta
 
 stringcols = ['conds', 'wdire']
@@ -70,17 +70,21 @@ def _history_pull(date=pd.datetime.today(),
 
     # convert to dataframes for easy presentation and manipulation
 
-    observations = pd.DataFrame.from_dict(observations)
-
-    return observations
+    df = pd.DataFrame.from_dict(observations)
 
 
-def _history_munge(df):
     # convert date column to datetimeindex
     dateindex = df.date.apply(
         lambda x: pd.datetime(int(x['year']), int(x['mon']), int(x['mday']),
                               int(x['hour']), int(x['min'])))
 
+    dateindex.name = None
+    df = df.set_index(dateindex)
+
+    return df
+
+
+def _history_munge(df):
     # drop what we don't need anymore, and set df index
     # dropping anything with metric system
     dates = ['date', 'utcdate']
@@ -95,31 +99,14 @@ def _history_munge(df):
                          'wgusti': 'wgust',
                          'windchilli': 'windchill', 'wspdi': 'wspd'}
     df = df.rename(columns=column_trans_dict)
-    df = df.set_index(dateindex)
     df = _dtype_conv(df)
 
+    return df
 
-    # next, convert each column to appropriate data type, so that interpolation
-    # works properly (will work on type float, but not on generic object
 
-    # fill done different for text vs float columns
-    floatcols = df.columns[df.columns.isin(stringcols) == False]
-    gran = config.david["sampling"]["granularity"]
+def _history_resample(df, gran):
     df = df.resample(gran, how="last")
-    df[floatcols] = df[floatcols].interpolate()
-
-    # extend df with all dates we want, taking into account 2 hour gap
-    # in weather underground data
-    temp = pd.DataFrame(index=pd.date_range(
-        df.index[0].date(), df.index[-1],
-        freq=gran), columns=df.columns)
-    temp[df.index[0]:df.index[-1]] = df
-    df = temp
-
-    # interpolate won't work on very first entries with NaN's, so
-    # backfill these
     df = df.fillna(method="bfill")
-    df = df.fillna(method="ffill")
 
     return df
 
@@ -140,10 +127,7 @@ def _forecast_munge(df):
         df['wdire'] = df['wdir'].apply(
             lambda x: x['dir'])
 
-    dateindex = df.FCTTIME.apply(
-        lambda x: pd.datetime(int(x['year']), int(x['mon']), int(x['mday']),
-                              int(x['hour']), int(x['min'])))
-    dateindex.name = None
+
 
     # drop what we don't need anymore, and set df index
     df = df.drop(
@@ -153,27 +137,24 @@ def _forecast_munge(df):
         axis=1)
     column_trans_dict = {'humidity': 'hum', 'condition': 'conds', 'pop': 'rain'}
     df = df.rename(columns=column_trans_dict)
-    df = df.set_index(dateindex)
     df = _dtype_conv(df)
+    return df
 
+
+def _forecast_resample(df):
     # wunderground history data is 51 minutes on the hour, every hour.
     # wunderground forecast pull is on the hour, every hour.
     # resamples down to top of hour minus granularity minute mark
     # hence, there will be a granularity amount of time gap between
     # forecast and historical data in our database, which is what we want
     gran = config.david["sampling"]["granularity"]
-    floatcols = df.columns[df.columns.isin(stringcols) == False]
 
     if pd.datetime.today().time().minute > 51:
         df = df.resample(gran, how="last")
     else:
         df = df.resample(gran, how="last", loffset="-1H")
 
-    # interpolate won't work on very first entries with NaN's, so
-    # backfill these
-    df[floatcols] = df[floatcols].interpolate()
     df = df.fillna(method="bfill")
-    df = df.fillna(method="ffill")
 
     return df
 
@@ -206,27 +187,33 @@ def _forecast_pull(city=config.david["weather"]["city"],
     # convert to dataframes for easy presentation and manipulation
 
     df = pd.DataFrame.from_dict(df)
+    dateindex = df.FCTTIME.apply(
+        lambda x: pd.datetime(int(x['year']), int(x['mon']), int(x['mday']),
+                              int(x['hour']), int(x['min'])))
+    dateindex.name = None
+    df = df.set_index(dateindex)
     return df
 
 
-def forecast_munged(city=config.david["weather"]["city"],
+def forecast_update(city=config.david["weather"]["city"],
                     state=config.david["weather"]["state"],
                     account=config.david["weather"]["wund_url"]):
-    return _forecast_munge(_forecast_pull(city, state, account))
+    return _forecast_resample(
+        _forecast_munge(_forecast_pull(city, state, account)))
 
 
-def history_munged(date=pd.datetime.today(),
-                   city=config.david["weather"]["city"],
-                   state=config.david["weather"]["state"],
-                   account=config.david["weather"]["wund_url"]):
-    return _history_munge(_history_pull(date, city, state, account))
+# helper function for archive_update. Would include inside function body
+# but pickling limitations of python with pool processes prevents this
+def comp(date, city, state):
+    return _history_munge(_history_pull(date, city, state))
 
 
 def archive_update(city="New_York",
                    state="NY",
                    archive_location=config.david["weather"]["h5file"],
-                   df=config.david["weather"]["history"],
-                   cap=config.david["weather"]["cap"]):
+                   df=config.david["weather"]["history_orig"],
+                   cap=config.david["weather"]["cap"],
+                   pool=None):
     """Pull archived weather information
 
     Weather information is pulled from weather underground from end of
@@ -241,20 +228,31 @@ def archive_update(city="New_York",
     df: string. Name of weather dataframe in archive_location HDFS store
     cap: int. Cap for number of WUnderground pulls, due to membership
     restrictions
+    pool: Object of Pool class. For running function in parallel
 
 
     Returns
     -------
     w: dataframe of weather parameters, indexed by hour
     """
-    weather_data = pd.read_hdf(archive_location, df)
+
+    # error handling built in, better than read_hdf
+    # will just create store and entry
+    # if they don't exist
+
+    store = pd.HDFStore(archive_location)
+    if ("/" + df) not in store.keys():
+        store[df] = pd.DataFrame()
+    weather_data = store[df]
+    store.close()
+
     # start is beginning of day for last entry in weather_data
     # we toss out any times already existing between start and end of
     # day in archive weather_data, in order for concat below to run without
     # indices clashing
 
     if len(weather_data.index) == 0:
-        start = pd.datetime.today().date() - relativedelta(years=10)
+        start = pd.datetime.today().date() - relativedelta(years=4)
     else:
         start = weather_data.index[-1].date()
 
@@ -263,10 +261,11 @@ def archive_update(city="New_York",
     interval = pd.date_range(start, end)
     wdata_days_comp = weather_data[:start]
 
-    # frames = (Parallel(n_jobs=-1)(delayed(pull)(x, city, state)
-    #                               for x in interval[:cap]))
-
-    frames = [history_munged(x, city, state) for x in interval[:cap]]
+    if pool:
+        frames = pool.map(functools.partial(comp, city=city, state=state),
+                          interval[:cap])
+    else:
+        frames = [comp(date, city, state) for date in interval[:cap]]
 
     weather_update = pd.concat(frames)
     archive = pd.concat([wdata_days_comp, weather_update])
@@ -274,7 +273,6 @@ def archive_update(city="New_York",
     # check for duplicate entries from weather underground, and delete
     # all except one. Unfortunately, drop_duplicates works only for column
     # entries, not timestamp row indices, so...
-
     archive = archive.reset_index().drop_duplicates('index').set_index(
         'index')
 
