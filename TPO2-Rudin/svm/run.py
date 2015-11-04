@@ -4,16 +4,22 @@ import pandas as pd
 
 import svm.model
 import config
+from datetime import datetime
 
 if __name__ == "__main__":
     # set variables
+    params = config.david["svm"]["params"]
+    cov = config.david["weather"]["cov"]
+    h5file = config.david["weather"]["h5file"]
+    history_name = config.david["weather"]["history"]
+    forecast_name = config.david["weather"]["forecast"]
+    store = pd.HDFStore(h5file)
+    weather_history = store[history_name]
+    weather_forecast = store[forecast_name]
+    store.close()
 
-    weather_history = pd.read_hdf(config.david["weather"]["h5file"],
-                                  config.david["weather"]["history"])
-    weather_forecast = pd.read_hdf(config.david["weather"]["h5file"],
-                                   config.david["weather"]["forecast"])
-    params = config.david["svm"]
     granularity = config.david["sampling"]["granularity"]
+
     fandata = pd.HDFStore(
         config.david["default"]["data_sources"] + "/lex560.h5").bms_hva_fan
     cleandata = fandata[fandata.FLOOR == 'F09'].drop_duplicates(
@@ -21,10 +27,14 @@ if __name__ == "__main__":
 
     # construct endogenous variable to run predictions on
 
-    ts = pd.Series(data=list(cleandata.VALUE),
-                   index=cleandata.TIMESTAMP)
+    date_objects = [datetime.strptime(x, "%Y-%m-%d %H:%M:%S") for x in
+                    cleandata.TIMESTAMP]
 
-    prediction = svm.model.predict(ts,
-                                   weather_history,
-                                   weather_forecast,
-                                   params, granularity)
+    ts = pd.Series(data=list(cleandata.VALUE),
+                   index=date_objects)
+    ts = ts.resample(granularity).fillna(method="bfill")
+
+    prediction = svm.model.predict(endog=ts,
+                                   weather_history=weather_history,
+                                   weather_forecast=weather_forecast,
+                                   cov=cov, params=params)
