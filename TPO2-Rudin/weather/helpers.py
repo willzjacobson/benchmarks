@@ -5,11 +5,8 @@ import numpy as np
 import config
 from urllib.request import urlopen
 import json
-import functools
 import codecs
-# import concurrent.futures
 from dateutil.relativedelta import relativedelta
-# import dill
 from joblib import Parallel, delayed
 
 stringcols = ['conds', 'wdire']
@@ -29,23 +26,27 @@ def _dtype_conv(df=pd.DataFrame(),
     floatcols = df.columns[df.columns.isin(stringcols) == False]
     # convert each column label to appropriate dtype
     for stringcol in stringcols:
-        df[stringcol] = df[stringcol].apply(
-            lambda x: str(x) if x != 'N/A' else np.nan)
+        if stringcol in df.columns:
+            df[stringcol] = df[stringcol].apply(
+                lambda x: str(x) if x != 'N/A' else np.nan)
     for floatcol in floatcols:
-        df[floatcol] = df[floatcol].apply(
-            lambda x: float(x) if x != 'N/A' else np.nan)
+        if floatcol in df.columns:
+            df[floatcol] = df[floatcol].apply(
+                lambda x: float(x) if x != 'N/A' else np.nan)
 
     # map conditions to uniformly spaced, unique integer values for processing
-    # in models. conds reflects historical conditions, so bottom
+    # in models, with basic error checking.
+    # conds reflects historical conditions, so bottom
     # code will make forecast conds be identical to history conds
-    df['conds'] = df['conds'].apply(
-        lambda x: conds_mapping[x] if x in conds_mapping.keys()
-        else np.nan)
-    df['wdire'] = df['wdire'].apply(
-        lambda x: wdire_mapping[x] if x in wdire_mapping.keys()
-        else np.nan)
-    df[['conds', 'wdire']].fillna(method="bfill")
-
+    if 'conds' in df.columns:
+        df['conds'] = df['conds'].apply(
+            lambda x: conds_mapping[x] if x in conds_mapping.keys()
+            else np.nan)
+    if 'wdire' in df.columns:
+        df['wdire'] = df['wdire'].apply(
+            lambda x: wdire_mapping[x] if x in wdire_mapping.keys()
+            else np.nan)
+        df[['conds', 'wdire']].fillna(method="bfill")
     return df
 
 
@@ -100,7 +101,7 @@ def _history_pull(date=pd.datetime.today(),
     return df
 
 
-def _history_munge(df, gran):
+def _history_munge(df, cov, gran):
     # drop what we don't need anymore, and set df index
     # dropping anything with metric system
     dates = ['date', 'utcdate']
@@ -116,6 +117,9 @@ def _history_munge(df, gran):
                          'windchilli': 'windchill', 'wspdi': 'wspd'}
     df = df.rename(columns=column_trans_dict)
     df = _dtype_conv(df)
+    # drop what we don't need anymore. Keeping only identified
+    # covariates in config
+    df = df[list(set(df.columns) & set(cov))]
 
     # resampling portion
     df = df.resample(gran, how="last")
@@ -124,7 +128,7 @@ def _history_munge(df, gran):
     return df
 
 
-def _forecast_munge(df, gran):
+def _forecast_munge(df, cov, gran):
     # toss out metric system in favor of english system
     for column in ['windchill', 'wspd', 'temp', 'qpf', 'snow', 'mslp',
                    'heatindex', 'dewpoint', 'feelslike']:
@@ -142,14 +146,13 @@ def _forecast_munge(df, gran):
 
 
 
-    # drop what we don't need anymore, and set df index
-    df = df.drop(
-        ['FCTTIME', 'fctcode', 'feelslike', 'dewpoint',
-         'icon', 'icon_url',
-         'wx', 'wdir', 'uvi', 'mslp', 'qpf', 'sky'],
-        axis=1)
+    # rename to have name mappings of identical entries in historical and
+    # forecast dataframes be the same
     column_trans_dict = {'humidity': 'hum', 'condition': 'conds', 'pop': 'rain'}
     df = df.rename(columns=column_trans_dict)
+
+    # then drop what we don't need anymore, and set df index
+    df = df[list(set(df.columns) & set(cov))]
     df = _dtype_conv(df)
 
     # resampling portion
@@ -203,27 +206,27 @@ def _forecast_pull(city=config.david["weather"]["city"],
     return df
 
 
-def forecast_update(city, state, account, gran=None, munged=False):
+def forecast_update(city, state, account, cov, gran=None, munged=False):
     if munged:
         if gran is None:
             raise ValueError("Please supply a resampling granularity")
-        return _forecast_munge(_forecast_pull(city, state, account), gran)
+        return _forecast_munge(_forecast_pull(city, state, account), cov, gran)
     else:
         return _forecast_pull(city, state, account)
 
 
-# helper function for history_update. Would include inside function body
-# but pickling limitations of python with pool processes prevents this
-def comp(date, city, state, gran=None, munged=True):
+# helper function for history_update.
+def comp(date, city, state, cov, gran=None, munged=True):
     if munged:
         if gran is None:
             raise ValueError("Please supply a resampling granularity")
-        return _history_munge(_history_pull(date, city, state), gran)
+        return _history_munge(_history_pull(date, city, state), cov, gran)
     else:
         return _history_pull(date, city, state)
 
 
-def history_update(city, state, archive_location, df, cap, parallel, gran=None,
+def history_update(city, state, archive_location, df, cap, parallel, cov,
+                   gran=None,
                    munged=False):
     """Pull archived weather information
 
@@ -264,7 +267,7 @@ def history_update(city, state, archive_location, df, cap, parallel, gran=None,
     # indices clashing
 
     if len(weather_data.index) == 0:
-        start = pd.datetime.today().date() - relativedelta(months=4)
+        start = pd.datetime.today().date() - relativedelta(years=4)
     else:
         start = weather_data.index[-1].date()
 
@@ -275,16 +278,10 @@ def history_update(city, state, archive_location, df, cap, parallel, gran=None,
 
     if parallel:
         frames = Parallel(n_jobs=config.david["parallel"]["processors"])(
-            delayed(comp)(date, city, state, gran, munged)
+            delayed(comp)(date, city, state, cov, gran, munged)
             for date in interval[:cap])
-        # with concurrent.futures.ThreadPoolExecutor(
-        #         max_workers=config.david["parallel"][
-        #             "processors"]) as executor:
-        #     frames = executor.map(
-        #         functools.partial(comp, city, state, gran, munged),
-        #         interval[:cap])
     else:
-        frames = [comp(date, city, state, gran, munged) for date in
+        frames = [comp(date, city, state, cov, gran, munged) for date in
                   interval[:cap]]
 
     weather_update = pd.concat(frames)

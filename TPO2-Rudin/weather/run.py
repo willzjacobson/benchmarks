@@ -3,12 +3,10 @@ import config
 import pandas as pd
 
 if __name__ == "__main__":
-    # # pool=None
-    # pool = multiprocessing.Pool(
-    #     processes=config.david["parallel"]["processors"])
     city = config.david["weather"]["city"]
     state = config.david["weather"]["state"]
     archive_location = config.david["weather"]["h5file"]
+    cov = config.david["weather"]["cov"]
     history_munged_name = config.david["weather"]["history"]
     forecast_munged_name = config.david["weather"]["forecast"]
     history_orig_name = config.david["weather"]["history_orig"]
@@ -20,20 +18,21 @@ if __name__ == "__main__":
     whist_orig = weather.helpers.history_update(city, state,
                                                 archive_location,
                                                 history_orig_name, cap,
-                                                parallel=True, munged=False)
+                                                parallel=True, cov=cov,
+                                                munged=False)
     whist_munged = weather.helpers.history_update(city, state,
                                                   archive_location,
                                                   history_munged_name, cap,
-                                                  parallel=True, gran=gran,
+                                                  parallel=True, cov=cov,
+                                                  gran=gran,
                                                   munged=True)
 
     forecast_orig = weather.helpers.forecast_update(city, state, account,
-                                                    munged=False)
+                                                    cov=cov, munged=False)
     forecast_munged = weather.helpers.forecast_update(city, state, account,
-                                                      gran=gran, munged=True)
-    #
-    #
-    # # store resampled and nonresampled data in database, for debugging
+                                                      cov=cov, gran=gran,
+                                                      munged=True)
+    # store munged and pure data in database, for debugging
     store = pd.HDFStore(archive_location)
     store[forecast_munged_name] = forecast_munged
     store[forecast_orig_name] = forecast_orig
