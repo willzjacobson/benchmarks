@@ -7,12 +7,17 @@ from urllib.request import urlopen
 import json
 import functools
 import codecs
+# import concurrent.futures
 from dateutil.relativedelta import relativedelta
+# import dill
+from joblib import Parallel, delayed
 
 stringcols = ['conds', 'wdire']
 
 
-def _dtype_conv(df=pd.DataFrame()):
+def _dtype_conv(df=pd.DataFrame(),
+                conds_mapping=config.david["weather"]["conds_mapping"],
+                wdire_mapping=config.david["weather"]["wdire_mapping"]):
     """
     :param df: DataFrame
     :return: DataFrame
@@ -29,6 +34,17 @@ def _dtype_conv(df=pd.DataFrame()):
     for floatcol in floatcols:
         df[floatcol] = df[floatcol].apply(
             lambda x: float(x) if x != 'N/A' else np.nan)
+
+    # map conditions to uniformly spaced, unique integer values for processing
+    # in models. conds reflects historical conditions, so bottom
+    # code will make forecast conds be identical to history conds
+    df['conds'] = df['conds'].apply(
+        lambda x: conds_mapping[x] if x in conds_mapping.keys()
+        else np.nan)
+    df['wdire'] = df['wdire'].apply(
+        lambda x: wdire_mapping[x] if x in wdire_mapping.keys()
+        else np.nan)
+    df[['conds', 'wdire']].fillna(method="bfill")
 
     return df
 
@@ -84,7 +100,7 @@ def _history_pull(date=pd.datetime.today(),
     return df
 
 
-def _history_munge(df):
+def _history_munge(df, gran):
     # drop what we don't need anymore, and set df index
     # dropping anything with metric system
     dates = ['date', 'utcdate']
@@ -101,17 +117,14 @@ def _history_munge(df):
     df = df.rename(columns=column_trans_dict)
     df = _dtype_conv(df)
 
-    return df
-
-
-def _history_resample(df, gran):
+    # resampling portion
     df = df.resample(gran, how="last")
     df = df.fillna(method="bfill")
 
     return df
 
 
-def _forecast_munge(df):
+def _forecast_munge(df, gran):
     # toss out metric system in favor of english system
     for column in ['windchill', 'wspd', 'temp', 'qpf', 'snow', 'mslp',
                    'heatindex', 'dewpoint', 'feelslike']:
@@ -138,24 +151,19 @@ def _forecast_munge(df):
     column_trans_dict = {'humidity': 'hum', 'condition': 'conds', 'pop': 'rain'}
     df = df.rename(columns=column_trans_dict)
     df = _dtype_conv(df)
-    return df
 
-
-def _forecast_resample(df):
+    # resampling portion
     # wunderground history data is 51 minutes on the hour, every hour.
     # wunderground forecast pull is on the hour, every hour.
     # resamples down to top of hour minus granularity minute mark
     # hence, there will be a granularity amount of time gap between
     # forecast and historical data in our database, which is what we want
-    gran = config.david["sampling"]["granularity"]
-
     if pd.datetime.today().time().minute > 51:
         df = df.resample(gran, how="last")
     else:
         df = df.resample(gran, how="last", loffset="-1H")
 
     df = df.fillna(method="bfill")
-
     return df
 
 
@@ -195,25 +203,28 @@ def _forecast_pull(city=config.david["weather"]["city"],
     return df
 
 
-def forecast_update(city=config.david["weather"]["city"],
-                    state=config.david["weather"]["state"],
-                    account=config.david["weather"]["wund_url"]):
-    return _forecast_resample(
-        _forecast_munge(_forecast_pull(city, state, account)))
+def forecast_update(city, state, account, gran=None, munged=False):
+    if munged:
+        if gran is None:
+            raise ValueError("Please supply a resampling granularity")
+        return _forecast_munge(_forecast_pull(city, state, account), gran)
+    else:
+        return _forecast_pull(city, state, account)
 
 
-# helper function for archive_update. Would include inside function body
+# helper function for history_update. Would include inside function body
 # but pickling limitations of python with pool processes prevents this
-def comp(date, city, state):
-    return _history_munge(_history_pull(date, city, state))
+def comp(date, city, state, gran=None, munged=True):
+    if munged:
+        if gran is None:
+            raise ValueError("Please supply a resampling granularity")
+        return _history_munge(_history_pull(date, city, state), gran)
+    else:
+        return _history_pull(date, city, state)
 
 
-def archive_update(city="New_York",
-                   state="NY",
-                   archive_location=config.david["weather"]["h5file"],
-                   df=config.david["weather"]["history_orig"],
-                   cap=config.david["weather"]["cap"],
-                   pool=None):
+def history_update(city, state, archive_location, df, cap, parallel, gran=None,
+                   munged=False):
     """Pull archived weather information
 
     Weather information is pulled from weather underground from end of
@@ -228,7 +239,8 @@ def archive_update(city="New_York",
     df: string. Name of weather dataframe in archive_location HDFS store
     cap: int. Cap for number of WUnderground pulls, due to membership
     restrictions
-    pool: Object of Pool class. For running function in parallel
+    parallel: Boolean. Whether to process in parallel
+    munged: Boolean. Whether or not to munge wunderground pulled data
 
 
     Returns
@@ -252,7 +264,7 @@ def archive_update(city="New_York",
     # indices clashing
 
     if len(weather_data.index) == 0:
-        start = pd.datetime.today().date() - relativedelta(years=4)
+        start = pd.datetime.today().date() - relativedelta(months=4)
     else:
         start = weather_data.index[-1].date()
 
@@ -261,11 +273,19 @@ def archive_update(city="New_York",
     interval = pd.date_range(start, end)
     wdata_days_comp = weather_data[:start]
 
-    if pool:
-        frames = pool.map(functools.partial(comp, city=city, state=state),
-                          interval[:cap])
+    if parallel:
+        frames = Parallel(n_jobs=config.david["parallel"]["processors"])(
+            delayed(comp)(date, city, state, gran, munged)
+            for date in interval[:cap])
+        # with concurrent.futures.ThreadPoolExecutor(
+        #         max_workers=config.david["parallel"][
+        #             "processors"]) as executor:
+        #     frames = executor.map(
+        #         functools.partial(comp, city, state, gran, munged),
+        #         interval[:cap])
     else:
-        frames = [comp(date, city, state) for date in interval[:cap]]
+        frames = [comp(date, city, state, gran, munged) for date in
+                  interval[:cap]]
 
     weather_update = pd.concat(frames)
     archive = pd.concat([wdata_days_comp, weather_update])

@@ -26,6 +26,23 @@ david = {
                           'Scattered Clouds': 1,
                           'Snow': 12,
                           'Unknown': 10},
+        "wdire_mapping": {'ENE': 6,
+                          'ESE': 12,
+                          'East': 15,
+                          'NE': 5,
+                          'NNE': 3,
+                          'NNW': 4,
+                          'NW': 16,
+                          'North': 1,
+                          'SE': 10,
+                          'SSE': 11,
+                          'SSW': 13,
+                          'SW': 8,
+                          'South': 14,
+                          'Variable': 0,
+                          'WNW': 9,
+                          'WSW': 7,
+                          'West': 2},
         "history_orig": "history_orig",
         "history": "history",
         "forecast_orig": "forecast_orig",
@@ -61,7 +78,7 @@ david = {
         "enforce_stationarity": "False"
     },
     "parallel": {
-        "processors": 24
+        "processors": 22
     }
 }
 
