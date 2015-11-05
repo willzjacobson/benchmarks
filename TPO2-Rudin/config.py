@@ -116,6 +116,14 @@ ashish = {
     'park345': {
         'steam_data': '/home/davidkarapetyan/data_analysis/data/park345.h5',
         'steam_data_group': 'oa_temp',
+
+        # database for input data
+        'db_server_input': '52.91.89.104',
+        'db_user_input': 'ec2-user',
+        'db_password_input': None,
+        'pem_file_input': '/home/ashishgagneja/database.pem',
+        'db_name_input': 'skynet',
+        'collection_name_input': 'devicetimeseries',
     }
 }
 
