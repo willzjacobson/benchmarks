@@ -9,9 +9,10 @@ david = {
         "h5file": "/data/weather.h5",
         # "wund_url": "http://api.wunderground.com/api/08d25f404214f50b/",
         "wund_url": "http://api.wunderground.com/api/bab4ba5bcbc2dbec/",
-        "cov": ["conds", "hum", "rain", "snow", "temp", "tornado", "thunder"],
+        "cov": ["conds", "hum", "rain", "snow", "temp"],
         # cov choice is constrained by column entries in wund forecast, which is
-        # sparser than those in history data from wund
+        # sparser than those in history data from wund. For example, no
+        # tornado or thunder seen so far in forecasts
         "conds_mapping": {'Clear': 0,
                           'Fog': 9,
                           'Haze': 3,
