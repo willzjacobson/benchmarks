@@ -12,7 +12,7 @@ if __name__ == "__main__":
     cov = config.david["weather"]["cov"]
     gran = config.david["sampling"]["granularity"]
     h5file = config.david["weather"]["h5file"]
-    history_orig_name = config.david["weather"]["history"]
+    history_orig_name = config.david["weather"]["history_orig"]
     forecast_name = config.david["weather"]["forecast"]
     store = pd.HDFStore(h5file)
     weather_history = store[history_orig_name]

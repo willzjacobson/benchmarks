@@ -34,11 +34,18 @@ def _build(endog, weather_orig, cov, gran, params, discrete=True):
         # master = weather_cond.insert(loc=0, column=endog.name,
         #                             value=endog)
 
-        features = weather_cond.reset_index()
-        features['index'] = features['index'].astype(int)
+        # only include dates (as integers)that are both in features and endog in training
+        # of model
+        dates = list(set(endog.index) & set(weather_cond.index))
 
-        x = np.array(features)
-        y = np.array(endog)
+        # TODO don't use set logic, use pandas built in intersection
+        # set logic gives back unsorted timestamps, and is slow
+        endog_filt = endog[dates]
+        features_filt = weather_cond[dates].reset_index()
+        features_filt['index'] = features_filt['index'].astype(int)
+
+        x = np.array(features_filt)
+        y = np.array(endog_filt)
         # x = weather_orig.temp.reshape(len(weather_orig), 1)
 
         clf = sklearn.svm.SVC(**params)
