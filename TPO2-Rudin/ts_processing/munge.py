@@ -19,8 +19,9 @@ def _find_longest_gap(index):
 
 
 def _is_resamplable(ts_index, max_gap):
-    """ Determines if a timeseries is missing too much data for resampling to be counter-productive
-        Gaps longer than a few hours cause modelling problems
+    """ Determines if a timeseries is missing too much data for resampling to
+        be counter-productive. Gaps longer than a few hours cause modelling
+        problems
 
     ;param ts_index: pandas.tseries.index.DatetimeIndex
         timestamp index of available data
@@ -53,8 +54,8 @@ def munge(data, title=None):
                    name=title)
     gran = str(config.david["sampling"]["granularity"]) + "min"
 
-    # TODO: dropping duplicates based on timestamp alone could result in lost data if the data has readings from
-    # more than one meter/equipment
+    # TODO: dropping duplicates based on timestamp alone could result in lost
+    # data if the data has readings from more than one meter/equipment
     if not _is_resamplable(ts.keys(), config.ashish["sampling"]["max_gap"]):
         raise Exception("data gap longer than threshold encountered")
 
