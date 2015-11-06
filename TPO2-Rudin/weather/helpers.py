@@ -101,7 +101,7 @@ def _history_pull(date=pd.datetime.today(),
     return df
 
 
-def _history_munge(df, cov, gran):
+def history_munge(df, cov, gran):
     # drop what we don't need anymore, and set df index
     # dropping anything with metric system
     dates = ['date', 'utcdate']
@@ -128,7 +128,7 @@ def _history_munge(df, cov, gran):
     return df
 
 
-def _forecast_munge(df, cov, gran):
+def forecast_munge(df, cov, gran):
     # toss out metric system in favor of english system
     for column in ['windchill', 'wspd', 'temp', 'qpf', 'snow', 'mslp',
                    'heatindex', 'dewpoint', 'feelslike']:
@@ -210,7 +210,7 @@ def forecast_update(city, state, account, cov, gran=None, munged=False):
     if munged:
         if gran is None:
             raise ValueError("Please supply a resampling granularity")
-        return _forecast_munge(_forecast_pull(city, state, account), cov, gran)
+        return forecast_munge(_forecast_pull(city, state, account), cov, gran)
     else:
         return _forecast_pull(city, state, account)
 
@@ -220,7 +220,7 @@ def comp(date, city, state, cov, gran=None, munged=True):
     if munged:
         if gran is None:
             raise ValueError("Please supply a resampling granularity")
-        return _history_munge(_history_pull(date, city, state), cov, gran)
+        return history_munge(_history_pull(date, city, state), cov, gran)
     else:
         return _history_pull(date, city, state)
 
