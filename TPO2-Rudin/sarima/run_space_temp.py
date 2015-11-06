@@ -1,25 +1,22 @@
 __author__ = 'ashishgagneja'
 
 """
-driver for generating start-time using a sarima model built using space temperature data
+driver for generating start-time using a SARIMA model for space
+temperature data
 """
 
-import utils.connect as connect
 import config
+import space_temp.utils as utils
+
 
 cfg = config.ashish
-bldg_params = cfg["park345"]
+
+buildings = cfg['default']['buildings']
+# iterate over all buildings
+for building in buildings:
+
+    bldg_params = cfg[building]
+    utils._process_building(building, bldg_params, cfg['weather'],
+                            cfg['sarima'], cfg['sampling'])
 
 
-# connect to database
-db = connect.connect(bldg_params['db_server_input'], bldg_params['db_user_input'],
-                    pem_file=bldg_params['pem_file_input'])
-
-
-# query data
-
-# invoke model
-
-# TODO: save results
-
-db.close()

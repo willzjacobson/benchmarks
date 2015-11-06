@@ -71,7 +71,10 @@ ashish = {
         "base_dir": "/home/ashishgagneja/Adirondack/analytics/TPO2-Rudin",
         "python_prog": "/home/davidkarapetyan/anaconda3/bin/python",
         "data_sources": "/data",
-        "log_dir": "/var/log"
+        "log_dir": "/var/log",
+        # list of building ids. There should be a key corresponding to each
+        # name on this list elsewhere in this configuration spec.
+        "buildings": ['345_Park',],
     },
 
     'weather': {
@@ -113,17 +116,18 @@ ashish = {
         "enforce_stationarity": "False"
     },
 
-    'park345': {
+    '345_Park': {
         'steam_data': '/home/davidkarapetyan/data_analysis/data/park345.h5',
         'steam_data_group': 'oa_temp',
 
         # database for input data
         'db_server_input': '52.91.89.104',
-        'db_user_input': 'ec2-user',
+        'db_user_input': None,
         'db_password_input': None,
-        'pem_file_input': '/home/ashishgagneja/database.pem',
         'db_name_input': 'skynet',
         'collection_name_input': 'devicetimeseries',
+
+        'floor_quadrants': (("24", "NW"), ("24", "NE"))
     }
 }
 

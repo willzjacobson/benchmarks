@@ -211,11 +211,11 @@ def start_time(ts, weather_params, sarima_params, granularity, date="2013-06-06 
 
     offset = endog.shape[0] - 1
     prediction = res.predict(dynamic=offset, full_results=True)
-    # predict = prediction.forecasts
+    predict = prediction.forecasts
 
     # # construct time series with predictions. Have to drop first p terms,
     # as first p terms are needed to forecast forward
-    # ts_fit = pd.Series(data=predict.flatten()[p:],
-    #                    index=res.data.dates[p:])
+    ts_fit = pd.Series(data=predict.flatten()[p:],
+                       index=res.data.dates[p:])
 
     return prediction
