@@ -35,7 +35,7 @@ if __name__ == "__main__":
                    index=date_objects)
     ts = ts.resample(granularity).fillna(method="bfill")
 
-    prediction = svm.model.predict(endog=ts,
+    prediction = svm.model.predict(endog=ts[ts.index.weekday == 2],
                                    weather_history=weather_history,
                                    weather_forecast=weather_forecast,
                                    cov=cov, gran=gran, params=params)

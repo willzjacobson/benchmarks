@@ -119,7 +119,7 @@ def history_munge(df, cov, gran):
     df = _dtype_conv(df)
     # drop what we don't need anymore. Keeping only identified
     # covariates in config
-    df = df[list(set(df.columns) & set(cov))]
+    df = df[df.columns.intersection(cov)]
 
     # resampling portion
     df = df.resample(gran, how="last")
@@ -148,11 +148,12 @@ def forecast_munge(df, cov, gran):
 
     # rename to have name mappings of identical entries in historical and
     # forecast dataframes be the same
-    column_trans_dict = {'humidity': 'hum', 'condition': 'conds', 'pop': 'rain'}
+    column_trans_dict = {'condition': 'conds', 'humidity': 'hum', 'pop': 'rain'}
     df = df.rename(columns=column_trans_dict)
 
     # then drop what we don't need anymore, and set df index
-    df = df[list(set(df.columns) & set(cov))]
+    # df['conds'] = df['wx']
+    df = df[df.columns.intersection(cov)]
     df = _dtype_conv(df)
 
     # resampling portion
@@ -161,10 +162,10 @@ def forecast_munge(df, cov, gran):
     # resamples down to top of hour minus granularity minute mark
     # hence, there will be a granularity amount of time gap between
     # forecast and historical data in our database, which is what we want
-    if pd.datetime.today().time().minute > 51:
-        df = df.resample(gran, how="last")
-    else:
-        df = df.resample(gran, how="last", loffset="-1H")
+    # if pd.datetime.today().time().minute > 51:
+    #     df = df.resample(gran, how="last")
+    # else:
+    #     df = df.resample(gran, how="last", loffset="-1H")
 
     df = df.fillna(method="bfill")
     return df

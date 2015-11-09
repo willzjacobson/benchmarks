@@ -18,12 +18,12 @@ if __name__ == "__main__":
     whist_orig = weather.helpers.history_update(city, state,
                                                 archive_location,
                                                 history_orig_name, cap,
-                                                parallel=True, cov=cov,
+                                                parallel=False, cov=cov,
                                                 munged=False)
     whist_munged = weather.helpers.history_update(city, state,
                                                   archive_location,
                                                   history_munged_name, cap,
-                                                  parallel=True, cov=cov,
+                                                  parallel=False, cov=cov,
                                                   gran=gran,
                                                   munged=True)
 

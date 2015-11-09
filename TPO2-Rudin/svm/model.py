@@ -36,12 +36,11 @@ def _build(endog, weather_orig, cov, gran, params, discrete=True):
 
         # only include dates (as integers)that are both in features and endog in training
         # of model
-        dates = list(set(endog.index) & set(weather_cond.index))
+        dates = endog.index.intersection(weather_cond.index)
 
-        # TODO don't use set logic, use pandas built in intersection
         # set logic gives back unsorted timestamps, and is slow
         endog_filt = endog[dates]
-        features_filt = weather_cond[dates].reset_index()
+        features_filt = weather_cond.loc[dates].reset_index()
         features_filt['index'] = features_filt['index'].astype(int)
 
         x = np.array(features_filt)
