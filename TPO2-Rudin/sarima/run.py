@@ -4,7 +4,7 @@
 import pandas as pd
 
 import config
-import model
+import sarima.model
 
 
 # load configuration
@@ -39,7 +39,8 @@ title = 'Accumulated Steam Usage'
 #                      'VALUE', 'TRENDFLAGS_TAG',
 #                      'STATUS_TAG']
 # park_data = park_data.sort('TIMESTAMP')
-park_data = pd.read_hdf(cfg['park345']['steam_data'], cfg['park345']['steam_data_group'])
+park_data = pd.read_hdf(cfg['park345']['steam_data'],
+                        cfg['park345']['steam_data_group'])
 
 # TODO Note that lags necessary for season stationarity>100 w-out log transform
 # is over 100 for non-log-ratio transformed original data, and 0
@@ -58,7 +59,8 @@ park_ts = pd.Series(list(park_data.VALUE),
 
 park_ts = park_ts.resample('%dMin' % cfg['sampling']['forecast_granularity'])
 
-prediction = model.start_time(park_ts, cfg['weather'], cfg['sarima'], cfg['sampling']['forecast_granularity'])
+prediction = sarima.model.start_time(park_ts, cfg['weather'], cfg['sarima'],
+                                     cfg['sampling']['forecast_granularity'])
 # park_ts = park_ts['2013-04-01': '2013-07-01']
 # start_up._benchmark_ts(park_ts, datetime="2013-06-06 7:00:00")
 # weather_all = weather.history_update()

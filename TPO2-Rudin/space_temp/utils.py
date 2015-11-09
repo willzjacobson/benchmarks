@@ -7,9 +7,10 @@ temperature data
 
 import db.connect as connect
 import pandas as pd
-import dateutil as du
-import sarima.model as model
+import dateutil.parser
+import sarima.model
 import dateutil.relativedelta as relativedelta
+
 
 def get_space_temp_ts(db, collection_name, bldg, floor, quad, granularity):
     """ retrieve all available space temperature data for floor-quad of
@@ -34,17 +35,17 @@ def get_space_temp_ts(db, collection_name, bldg, floor, quad, granularity):
                                  "_id.quad": quad}):
         readings = data['readings']
         for reading in readings:
-            ts_list.append(du.parser.parse(reading['time'], ignoretz=True))
+            ts_list.append(
+                dateutil.parser.parse(reading['time'], ignoretz=True))
             value_list.append(float(reading['value']))
 
     gran = "%dmin" % granularity
     return pd.Series(data=value_list, index=pd.DatetimeIndex(ts_list)
-                   ).sort_index().resample(gran)
-
+                     ).sort_index().resample(gran)
 
 
 def process_building(building_id, bldg_params, weather_params, sarima_params,
-                      sampling_params):
+                     sampling_params):
     """ Generate startup time using SARIMA model for each floor-quadrant
         combination
 
@@ -66,23 +67,23 @@ def process_building(building_id, bldg_params, weather_params, sarima_params,
                            database=bldg_params["db_name_input"])
     db = conn[bldg_params["db_name_input"]]
 
-    predictions =[]
+    predictions = []
     for floor_quadrant in bldg_params['floor_quadrants']:
         floor, quad = floor_quadrant
         print('processing %s:%s' % (floor, quad))
 
         # query data
         ts = get_space_temp_ts(db, bldg_params["collection_name_input"],
-                                building_id, floor, quad,
-                                sampling_params['granularity'])
+                               building_id, floor, quad,
+                               sampling_params['granularity'])
 
-        pred_dt = ts.index[-1] - 2*relativedelta.relativedelta(days=1)
+        pred_dt = ts.index[-1] - 2 * relativedelta.relativedelta(days=1)
 
         # invoke model
-        predictions.append(model.start_time(ts, weather_params, sarima_params,
-                                      sampling_params['granularity'],
-                                      str(pred_dt)))
-
+        predictions.append(
+            sarima.model.start_time(ts, weather_params, sarima_params,
+                                    sampling_params['granularity'],
+                                    str(pred_dt)))
 
     # TODO: save results
     conn.close()

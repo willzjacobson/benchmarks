@@ -4,7 +4,6 @@ import weather.helpers
 import sklearn.svm
 import pandas as pd
 import numpy as np
-import config
 
 def _build(endog, weather_orig, cov, gran, params, discrete=True):
     """SVM Model Instantiation and Training
@@ -19,7 +18,7 @@ def _build(endog, weather_orig, cov, gran, params, discrete=True):
     :return: Object of Class SVC
     """
 
-    seasons = config.david["weather"]["seasons"]
+    # seasons = config.david["weather"]["seasons"]
 
     # get weather and endogenous
     # into appropriate format for input to python svm model
@@ -38,7 +37,6 @@ def _build(endog, weather_orig, cov, gran, params, discrete=True):
         # only include dates (as integers)that are both in features and endog in training
         # of model
         dates = endog.index.intersection(weather_cond.index)
-        season = pd.datetime.today().month
 
         # set logic gives back unsorted timestamps, and is slow
         endog_filt = endog[dates]

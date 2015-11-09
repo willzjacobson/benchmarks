@@ -166,7 +166,7 @@ def forecast_munge(df, cov, gran):
     #     df = df.resample(gran, how="last")
     # else:
     #     df = df.resample(gran, how="last", loffset="-1H")
-
+    df = df.resample(gran, how="last")
     df = df.fillna(method="bfill")
     return df
 

@@ -1,6 +1,6 @@
 __author__ = 'ashishgagneja'
 
-import data_clean
+import data_tools.data_clean
 
 if __name__ == "__main__":
-    data_clean.csv_multicsv_to_hdf('/data/park345_nonempty_tables')
+    data_tools.data_clean.csv_multicsv_to_hdf('/data/park345_nonempty_tables')

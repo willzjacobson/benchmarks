@@ -196,7 +196,7 @@ def start_time(ts, weather_params, sarima_params, granularity,
 
     offset = endog.shape[0] - 1
     prediction = res.predict(dynamic=offset, full_results=True)
-    predict = prediction.forecasts
+    # predict = prediction.forecasts
 
     # # construct time series with predictions. Have to drop first p terms,
     # as first p terms are needed to forecast forward
