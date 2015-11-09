@@ -3,7 +3,7 @@ import statsmodels.tsa.statespace.sarimax
 import statsmodels.tsa.ar_model
 import statsmodels.tsa.stattools
 import pandas as pd
-import ts_processing.munge
+import ts_proc.munge
 from dateutil.relativedelta import relativedelta
 
 
@@ -64,7 +64,7 @@ def _benchmark_ts(ts, date_time):
     w: pandas.core.series.Series
     # """
 
-    ts_filt = ts_processing.munge.filter_day_season(ts, day=date_time.weekday,
+    ts_filt = ts_proc.munge.filter_day_season(ts, day=date_time.weekday,
                                                     month=date_time.month)  # check that we have a complete time series
     if len(ts_filt.at_time('00:00:00')) != 0:
         raise ValueError("Start of day time missing. Complete benchmark Time"

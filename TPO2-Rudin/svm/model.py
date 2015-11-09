@@ -4,6 +4,8 @@ import weather.helpers
 import sklearn.svm
 import pandas as pd
 import numpy as np
+import ts_proc.munge
+
 
 def _build(endog, weather_orig, cov, gran, params, discrete=True):
     """SVM Model Instantiation and Training
@@ -34,12 +36,13 @@ def _build(endog, weather_orig, cov, gran, params, discrete=True):
         # master = weather_cond.insert(loc=0, column=endog.name,
         #                             value=endog)
 
-        # only include dates (as integers)that are both in features and endog in training
+        endog_filt = ts_proc.munge.filter_day_season(endog)
+        # only include dates (as integers)that are both in features and
+        # endog in training
         # of model
-        dates = endog.index.intersection(weather_cond.index)
+        dates = endog_filt.index.intersection(weather_cond.index)
 
-        # set logic gives back unsorted timestamps, and is slow
-        endog_filt = endog[dates]
+        endog_filt = endog_filt[dates]
         features_filt = weather_cond.loc[dates].reset_index()
         features_filt['index'] = features_filt['index'].astype(int)
 
