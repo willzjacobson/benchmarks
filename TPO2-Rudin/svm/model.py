@@ -1,16 +1,18 @@
 __author__ = 'David Karapetyan'
 
+import weather.helpers
 import sklearn.svm
 import pandas as pd
 import numpy as np
 
 
-def _build(endog, weather_history, cov, params, discrete=True):
+def _build(endog, weather_orig, cov, gran, params, discrete=True):
     """SVM Model Instantiation and Training
 
     :param endog: Series. Endogenous variable to be forecasted
-    :param weather_history: DataFrame. Built from weather underground data
+    :param weather_orig: DataFrame. Built from weather underground data
     :param cov: List of covariates.
+    :param gran: Sampling granularity
     :param params: Dictionary of SVM model parameters
     :param discrete: Boolean identifying whether the endogenous variable
     is discrete or takes a continuum of values
@@ -23,7 +25,8 @@ def _build(endog, weather_history, cov, params, discrete=True):
 
     if discrete is True:
         # get only dates from weather data that coincide with endog dates
-        weather_cond = weather_history[cov][endog.index[0]:endog.index[-1]]
+        weather_cond = weather.helpers.history_munge(df=weather_orig, cov=cov,
+                                                     gran=gran)
         # TODO Map Weather Condition to Numbers, to feed into model
         # x is array of arrays. Each entry is a data point from a time series,
         # with its time and weather features
@@ -31,33 +34,42 @@ def _build(endog, weather_history, cov, params, discrete=True):
         # master = weather_cond.insert(loc=0, column=endog.name,
         #                             value=endog)
 
-        features = weather_cond.reset_index()
-        features['index'] = features['index'].astype(int)
+        # only include dates (as integers)that are both in features and endog in training
+        # of model
+        dates = list(set(endog.index) & set(weather_cond.index))
 
-        x = np.array(features)
-        y = np.array(endog)
-        # x = weather_history.temp.reshape(len(weather_history), 1)
+        # TODO don't use set logic, use pandas built in intersection
+        # set logic gives back unsorted timestamps, and is slow
+        endog_filt = endog[dates]
+        features_filt = weather_cond[dates].reset_index()
+        features_filt['index'] = features_filt['index'].astype(int)
+
+        x = np.array(features_filt)
+        y = np.array(endog_filt)
+        # x = weather_orig.temp.reshape(len(weather_orig), 1)
 
         clf = sklearn.svm.SVC(**params)
 
         return clf.fit(x, y)
 
 
-def predict(endog, weather_history, weather_forecast, cov,
+def predict(endog, weather_history, weather_forecast, cov, gran,
             params, discrete=True):
     """SVM Model Instantiation and Training
 
     :param endog: Series. Endogenous variable to be forecasted
     :param weather_history: Dataframe. Built from weather underground data
     :param weather_forecast: Dataframe. Built from weather underground data
+    :param cov: List of covariates
+    :param gran: Int. Sampling granularity
     :param params: Dictionary of SVM model parameters
     :param discrete: Boolean identifying whether the endogenous variable
     is discrete or takes a continuum of values
     :return: Series
     """
     if discrete is True:
-        model = _build(endog=endog, weather_history=weather_history,
-                       cov=cov, params=params)
+        model = _build(endog=endog, weather_orig=weather_history,
+                       cov=cov, gran=gran, params=params)
 
         features = weather_forecast.reset_index()
         features['index'] = features['index'].astype(int)

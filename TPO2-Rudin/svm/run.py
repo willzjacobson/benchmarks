@@ -10,11 +10,12 @@ if __name__ == "__main__":
     # set variables
     params = config.david["svm"]["params"]
     cov = config.david["weather"]["cov"]
+    gran = config.david["sampling"]["granularity"]
     h5file = config.david["weather"]["h5file"]
-    history_name = config.david["weather"]["history"]
+    history_orig_name = config.david["weather"]["history_orig"]
     forecast_name = config.david["weather"]["forecast"]
     store = pd.HDFStore(h5file)
-    weather_history = store[history_name]
+    weather_history = store[history_orig_name]
     weather_forecast = store[forecast_name]
     store.close()
 
@@ -37,4 +38,4 @@ if __name__ == "__main__":
     prediction = svm.model.predict(endog=ts,
                                    weather_history=weather_history,
                                    weather_forecast=weather_forecast,
-                                   cov=cov, params=params)
+                                   cov=cov, gran=gran, params=params)
