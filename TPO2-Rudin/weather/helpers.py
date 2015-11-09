@@ -152,7 +152,7 @@ def forecast_munge(df, cov, gran):
     df = df.rename(columns=column_trans_dict)
 
     # then drop what we don't need anymore, and set df index
-    # df['conds'] = df['wx']
+    df['conds'] = df['wx']
     df = df[df.columns.intersection(cov)]
     df = _dtype_conv(df)
 

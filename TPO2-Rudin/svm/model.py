@@ -70,7 +70,7 @@ def predict(endog, weather_history, weather_forecast, cov, gran,
         model = _build(endog=endog, weather_orig=weather_history,
                        cov=cov, gran=gran, params=params)
 
-        features = weather_forecast.reset_index()
+        features = weather_forecast[cov].reset_index()
         features['index'] = features['index'].astype(int)
 
         # number_points = 60 / granularity * 24
