@@ -5,7 +5,7 @@ driver for generating start-time using a sarima model built using space
 temperature data
 """
 
-import utils.connect as connect
+import db.connect as connect
 import pandas as pd
 import dateutil as du
 import sarima.model as model
