@@ -11,6 +11,8 @@ david :
     wund_url: http://api.wunderground.com/api/bab4ba5bcbc2dbec/
     #cov: [conds, hum, rain, snow, temp]
     cov: [hum, temp]
+    season: {"spring": (3, 6), "summer": (6, 9), "fall": (9, 12),
+               "winter": (12, 3)}
     # cov choice is constrained by column entries in wund forecast which is
     # sparser than those in history data from wund. For example no
     # tornado or thunder seen so far in forecasts

@@ -71,3 +71,24 @@ def munge(data, title=None):
         ts = ts.interpolate(method="linear")
 
     return ts
+
+
+def filter_day_season(ts, day=pd.datetime.today().weekday,
+                      month=pd.datetime.today().month):
+    seasons = config.david["weather"]["seasons"]
+    month_range = (0, 0)
+
+    for value in seasons.values():
+        if value[0] < month <= value[1]:
+            month_range = value
+
+    # filter by day and season
+    ts_filt = pd.Series()
+    for temp_range in [(70, 72), (68, 74), (66, 76), (64, 78), (62, 80)]:
+        ts_filt = ts[((ts.index.weekday == day) &
+                      (ts < temp_range[1]) &
+                      (ts > temp_range[0]) &
+                      (ts.index.month > month_range[0]) &
+                      (ts.index.month <= month_range[1])
+                      )]
+    return ts_filt

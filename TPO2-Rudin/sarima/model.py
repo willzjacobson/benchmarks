@@ -3,7 +3,10 @@ import statsmodels.tsa.statespace.sarimax
 import statsmodels.tsa.ar_model
 import statsmodels.tsa.stattools
 import pandas as pd
+import ts_processing.munge
 from dateutil.relativedelta import relativedelta
+
+
 # from rpy2.robjects.packages import importr
 # import rpy2.robjects as robjects
 
@@ -45,14 +48,14 @@ def _number_diff(ts, upper=10):
         str(upper)))
 
 
-def _benchmark_ts(ts, datetime):
+def _benchmark_ts(ts, date_time):
     """ Identify benchmark time series to feet to start_up module
 
     Parameters
     ----------
 
     ts: pandas.core.series.Series
-    datetime: string
+    date_time: string
     temp_range: tuple
 
     Returns
@@ -61,30 +64,11 @@ def _benchmark_ts(ts, datetime):
     w: pandas.core.series.Series
     # """
 
-    seasons = {"spring": (3, 6), "summer": (6, 9), "fall": (9, 12),
-               "winter": (12, 3)}
-
-    datetime = pd.to_datetime(datetime)
-    month = datetime.month
-    month_range = (0, 0)
-
-    for value in seasons.values():
-        if value[0] < month <= value[1]:
-            month_range = value
-
-    # filter by day and season
-    ts_filt = pd.Series()
-    for temp_range in [(70, 72), (68, 74), (66, 76), (64, 78), (62, 80)]:
-        ts_filt = ts[((ts.index.weekday == datetime.weekday()) &
-                      (ts < temp_range[1]) &
-                      (ts > temp_range[0]) &
-                      (ts.index.month > month_range[0]) &
-                      (ts.index.month <= month_range[1])
-                      )]
-
-        # check that we have a complete time series
-        if len(ts_filt.at_time('00:00:00')) == 0:
-            continue
+    ts_filt = ts_processing.munge.filter_day_season(ts, day=date_time.weekday,
+                                                    month=date_time.month)  # check that we have a complete time series
+    if len(ts_filt.at_time('00:00:00')) != 0:
+        raise ValueError("Start of day time missing. Complete benchmark Time"
+                         "Series could not be found")
 
     if len(ts_filt) == 0:
         raise ValueError("Complete benchmark Time Series could not be found for"
@@ -93,11 +77,12 @@ def _benchmark_ts(ts, datetime):
     # filter by benchmark day given by taking min over
     #  all values at input time
 
-    benchmark_date = ts_filt.at_time(datetime.time()).argmin().date()
+    benchmark_date = ts_filt.at_time(date_time.time()).argmin().date()
     return ts_filt[ts_filt.index.date == benchmark_date]
 
 
-def start_time(ts, weather_params, sarima_params, granularity, date="2013-06-06 7:00:00"):
+def start_time(ts, weather_params, sarima_params, granularity,
+               date="2013-06-06 7:00:00"):
     """ Identify optimal start-up time
 
     Fits a SARIMA model to the input time series, then
@@ -215,7 +200,7 @@ def start_time(ts, weather_params, sarima_params, granularity, date="2013-06-06 
 
     # # construct time series with predictions. Have to drop first p terms,
     # as first p terms are needed to forecast forward
-    ts_fit = pd.Series(data=predict.flatten()[p:],
-                       index=res.data.dates[p:])
+    # ts_fit = pd.Series(data=predict.flatten()[p:],
+    #                    index=res.data.dates[p:])
 
     return prediction
