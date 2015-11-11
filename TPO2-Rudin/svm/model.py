@@ -43,8 +43,15 @@ def _build(endog, weather_orig, cov, gran, params, discrete=True):
         dates = endog_filt.index.intersection(weather_cond.index)
 
         endog_filt = endog_filt[dates]
-        features_filt = weather_cond.loc[dates].reset_index()
-        features_filt['index'] = features_filt['index'].astype(int)
+        features_filt = weather_cond.loc[dates]
+        # add column with datetime information, sans year (just have epoch year
+        # as dummy year placeholder entry)
+        features_filt = features_filt.reset_index()
+        features_filt['index'] = features_filt['index'].apply(
+            lambda date: pd.datetime(1970, date.month, date.day, date.hour,
+                                     date.minute))
+        # convert to epoch
+        features_filt['index'] = features_filt['index'].astype(np.int64)
 
         x = np.array(features_filt)
         y = np.array(endog_filt)
@@ -74,7 +81,9 @@ def predict(endog, weather_history, weather_forecast, cov, gran,
                        cov=cov, gran=gran, params=params)
 
         features = weather_forecast[cov].reset_index()
-        features['index'] = features['index'].astype(int)
+        features['index'] = features['index'].apply(
+            lambda date: pd.datetime(1970, date.month, date.day, date.hour,
+                                     date.minute)).astype(np.int64)
 
         # number_points = 60 / granularity * 24
         # features = weather_forecast.temp.reshape(1, number_points)

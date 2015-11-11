@@ -21,9 +21,11 @@ if __name__ == "__main__":
 
     granularity = config.david["sampling"]["granularity"]
 
-    fandata = pd.HDFStore(
-        config.david["default"]["data_sources"] + "/lex560.h5").bms_hva_fan
-    cleandata = fandata[fandata.FLOOR == 'F09'].drop_duplicates(
+    fandata_store = pd.HDFStore(
+        config.david["default"]["data_sources"] + "/lex560.h5")
+    fandata = fandata_store.bms_hva_fan
+    fandata_store.close()
+    cleandata = fandata[fandata.FLOOR == 'F02'].drop_duplicates(
         subset="TIMESTAMP")
 
     # construct endogenous variable to run predictions on
@@ -35,7 +37,7 @@ if __name__ == "__main__":
                    index=date_objects)
     ts = ts.resample(granularity).fillna(method="bfill")
 
-    prediction = svm.model.predict(endog=ts[ts.index.weekday == 2],
+    prediction = svm.model.predict(endog=ts,
                                    weather_history=weather_history,
                                    weather_forecast=weather_forecast,
                                    cov=cov, gran=gran, params=params)
