@@ -36,6 +36,11 @@ def _build(endog, weather_orig, cov, gran, params, discrete=True):
         features_filt = weather_cond.loc[dates]
         # add column with datetime information, sans year (just have epoch year
         # as dummy year placeholder entry)
+        range = pd.date_range('Jan 01 2014', 'Jan 01 2015', freq='15min',
+                              closed='left').astype(np.int64)
+        rstd = np.std(range)
+        rmean = np.mean(range)
+
         features_filt = features_filt.reset_index()
         features_filt['index'] = features_filt['index'].apply(
             lambda date: pd.datetime(1970, date.month, date.day, date.hour,
@@ -43,10 +48,19 @@ def _build(endog, weather_orig, cov, gran, params, discrete=True):
         # convert to epoch
         features_filt['index'] = features_filt['index'].astype(np.int64)
 
-        scaler = sklearn.preprocessing.StandardScaler().fit(features_filt)
-        features_filt_scaled = scaler.transform(features_filt)
+        features_filt['index'] = (features_filt['index'] - rmean) / rstd
 
-        x = np.array(features_filt_scaled)
+
+        # next, normalize everything else
+
+        ff_noind = features_filt.drop('index', axis=1)
+        scaler = sklearn.preprocessing.StandardScaler().fit(ff_noind)
+        scaled = scaler.transform(ff_noind)
+        features_filt[features_filt.columns.drop('index')] = scaled
+
+        # fit model
+
+        x = np.array(features_filt)
         y = np.array(endog_filt)
 
         clf = sklearn.svm.SVC(**params)
@@ -70,16 +84,30 @@ def predict(endog, weather_history, weather_forecast, cov, gran,
     """
     if discrete is True:
         model, scaler = _build(endog=endog, weather_orig=weather_history,
-                       cov=cov, gran=gran, params=params)
+                               cov=cov, gran=gran, params=params)
 
         features = weather_forecast[cov].reset_index()
         features['index'] = features['index'].apply(
             lambda date: pd.datetime(1970, date.month, date.day, date.hour,
                                      date.minute)).astype(np.int64)
 
-        features_scaled = sklearn.preprocessing.scale(features)
+        range = pd.date_range('Jan 01 2014', 'Jan 01 2015', freq='15min',
+                              closed='left').astype(np.int64)
+        rstd = np.std(range)
+        rmean = np.mean(range)
+
+        # normalize index
+
+        features['index'] = (features['index'] - rmean) / rstd
+
+
+        # next, normalize everything else
+
+        ff_noind = features.drop('index', axis=1)
+        scaled = scaler.transform(ff_noind)
+        features[features.columns.drop('index')] = scaled
 
         predicted_series = pd.Series(
-            data=model.predict(features_scaled),
+            data=model.predict(features),
             index=weather_forecast.index)
         return predicted_series
