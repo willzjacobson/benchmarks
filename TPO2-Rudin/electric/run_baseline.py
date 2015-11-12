@@ -18,4 +18,4 @@ for building in buildings:
 
     bldg_params = cfg[building]
     baseline.process_building(building, bldg_params, cfg['weather'],
-                           cfg['sampling'])
+                           cfg['sampling'], None)
