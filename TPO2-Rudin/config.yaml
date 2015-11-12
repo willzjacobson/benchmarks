@@ -100,7 +100,7 @@ ashish:
     data_sources: /data
     log_dir: /var/log
 
-    # list of building ids. There should be a key corresponding to each
+    # list of building_id ids. There should be a key corresponding to each
     # name on this list elsewhere in this configuration spec.
     buildings: [345_Park, ]
 
@@ -201,6 +201,8 @@ ashish:
     db_password_input: None
     db_name_input: skynet
     collection_name_input: devicetimeseries
+
+    electric_meter_count: 6
 
     floor_quadrants: [[24, NW], [24, NE]]
 

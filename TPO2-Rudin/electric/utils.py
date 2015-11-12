@@ -7,8 +7,6 @@ import dateutil
 
 def _construct_dataframe(ts_lists, value_lists):
 
-
-
     # error checks
     if len(ts_lists) != len(value_lists):
         raise ValueError('array lengths must match')
@@ -62,7 +60,7 @@ def get_electric_ts(db, collection_name, bldg_id, meter_count, granularity):
     :param collection_name: string
         database collection name to query
     :param bldg_id: string
-        database building identifier
+        database building_id identifier
     :param meter_count: int
         number of distinct meters that need to be summed up
     :param granularity: int
@@ -76,7 +74,7 @@ def get_electric_ts(db, collection_name, bldg_id, meter_count, granularity):
     for equipment_id in range(1, meter_count+1):
 
         ts_list, value_list = [], []
-        for data in collection.find({"_id.building": bldg_id,
+        for data in collection.find({"_id.building_id": bldg_id,
                                      "_id.device": "Elec-M%d" % equipment_id,
                                      "_id.system": "SIF_Electric_Demand"}):
 

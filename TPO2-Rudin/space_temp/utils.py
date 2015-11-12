@@ -14,12 +14,12 @@ import dateutil.relativedelta as relativedelta
 
 def get_space_temp_ts(db, collection_name, bldg, floor, quad, granularity):
     """ retrieve all available space temperature data for floor-quad of
-        building bldg
+        building_id bldg
 
     :param db: pymongo database object
         connected database object
     :param bldg: string
-        database building identifier
+        database building_id identifier
     :param floor: string
         floor identifier
     :param quad: string
@@ -29,7 +29,7 @@ def get_space_temp_ts(db, collection_name, bldg, floor, quad, granularity):
 
     ts_list, value_list = [], []
     collection = db[collection_name]
-    for data in collection.find({"_id.building": bldg,
+    for data in collection.find({"_id.building_id": bldg,
                                  "_id.device": "Space_Temp",
                                  "_id.floor": floor,
                                  "_id.quad": quad}):
@@ -50,9 +50,9 @@ def process_building(building_id, bldg_params, weather_params, sarima_params,
         combination
 
     :param building_id: string
-        building identifier
+        building_id identifier
     :param bldg_params: dict
-        configuration settings of the building
+        configuration settings of the building_id
     :param weather_params: dict
         weather configuration
     :param sarima_params: dict

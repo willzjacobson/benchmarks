@@ -13,9 +13,18 @@ import baseline
 cfg = config.ashish
 
 buildings = cfg['default']['buildings']
-# iterate over all buildings
-for building in buildings:
 
-    bldg_params = cfg[building]
-    baseline.process_building(building, bldg_params, cfg['weather'],
-                           cfg['sampling'], None)
+# iterate over all buildings
+for building_id in buildings:
+
+    bldg_params = cfg[building_id]
+    baseline.process_building(building_id,
+                              bldg_params['db_server_input'],
+                              bldg_params['db_name_input'],
+                              bldg_params['collection_name_input'],
+                              bldg_params['electric_meter_count'],
+                              cfg['weather']['h5file'],
+                              cfg['weather']['history_orig'],
+                              cfg['weather']['forecast_orig'],
+                              cfg['sampling']['granularity'],
+                              None)

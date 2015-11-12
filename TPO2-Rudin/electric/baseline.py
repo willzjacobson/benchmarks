@@ -6,14 +6,21 @@ import dateutil.parser
 import electric.utils
 
 
-def _get_weather(params):
+def _get_weather(h5file_name, history_name, forecast_name):
+    """
 
-    h5file = params["h5file"]
-    history_original_name = params["history_orig"]
-    forecast_name = params["forecast"]
-    store = pd.HDFStore(h5file)
+    :param h5file_name: string
+        path to HDF5 file containing weather data
+    :param history_name: string
+        group identifier for historical weather data within the HDF5 file
+    :param forecast_name: string
+        group identifier for weather forecast within the HDF5 file
+    :return:
+    """
 
-    weather_history = store[history_original_name]
+    store = pd.HDFStore(h5file_name)
+
+    weather_history = store[history_name]
     weather_forecast = store[forecast_name]
     store.close()
 
@@ -23,66 +30,44 @@ def _get_weather(params):
 
 
 
-def _get_ts(db, collection_name, bldg, device, granularity):
-    """ retrieve all available data of the specified device type
+def process_building(building_id, db_server, db_name, collection_name,
+                     meter_count, h5file_name, history_name, forecast_name,
+                     granularity, baseline_dt):
 
-    :param db: pymongo database object
-        connected database object
-    :param bldg: string
-        database building identifier
-    :return: pandas Series
-    """
-
-    ts_list, value_list = [], []
-    collection = db[collection_name]
-
-    for data in collection.find({"_id.building": bldg,
-                                 "_id.device": "Space_Temp"}):
-
-        readings = data['readings']
-        for reading in readings:
-            ts_list.append(
-                dateutil.parser.parse(reading['time'], ignoretz=True))
-            value_list.append(float(reading['value']))
-
-    gran = "%dmin" % granularity
-    return pd.Series(data=value_list, index=pd.DatetimeIndex(ts_list)
-                     ).sort_index().resample(gran)
-
-
-
-
-def process_building(building_id, bldg_params, weather_params, sampling_params,
-                     baseline_dt):
-    """ Find baseline electric usage for building
+    """ Find baseline electric usage for building_id
 
     :param building_id: string
-        building identifier
-    :param bldg_params: dict
-        configuration settings of the building
-    :param weather_params: dict
-        weather configuration
-    :param sampling_params: dict
-        sampling-related configuration
+        building_id identifier
+    :param db_server: string
+        database server name or IP-address
+    :param db_name: string
+        name of the database on server
+    :param collection_name: string
+        name of collection in the database
+    :param h5file_name: string
+        path to HDF5 file containing weather data
+    :param history_name: string
+        group identifier for historical weather data within the HDF5 file
+    :param forecast_name: string
+        group identifier for weather forecast within the HDF5 file
+    :param granularity: int
+        expected frequency of observations and forecast in minutes
     :return:
     """
 
     # connect to database
-    conn = connect.connect(bldg_params['db_server_input'],
-                           database=bldg_params["db_name_input"])
-    db = conn[bldg_params["db_name_input"]]
+    conn = connect.connect(db_server, database=db_name)
+    db = conn[db_name]
 
 
     # TODO: query occupancy data
 
     # get weather data
-    _get_weather(weather_params)
+    _get_weather(h5file_name, history_name, forecast_name)
 
-
-    # TODO: query electric data
-    electric.utils.get_electric_ts(db, bldg_params["collection_name_input"],
-                                   building_id, 6,
-                                   sampling_params['granularity'])
+    # query electric data
+    electric.utils.get_electric_ts(db, collection_name, building_id,
+                                   meter_count, granularity)
 
     # find baseline
 

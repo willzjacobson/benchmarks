@@ -91,7 +91,7 @@ def start_time(ts, weather_params, sarima_params, granularity,
 
     :param ts: pandas.core.series.Series
     Numbers 0-6, denoting "Monday"-"Sunday", respectively
-    Specifies time by which building must be at desired_temp
+    Specifies time by which building_id must be at desired_temp
 
     weather_params: dict
     weather configuration from main config file
