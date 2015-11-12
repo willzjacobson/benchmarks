@@ -2,11 +2,11 @@ __author__ = 'ashishgagneja'
 
 import db.connect as connect
 import pandas as pd
-import dateutil.parser
 import electric.utils
+import weather.helpers
 
 
-def _get_weather(h5file_name, history_name, forecast_name):
+def _get_weather(h5file_name, history_name, forecast_name, gran):
     """
 
     :param h5file_name: string
@@ -20,13 +20,17 @@ def _get_weather(h5file_name, history_name, forecast_name):
 
     store = pd.HDFStore(h5file_name)
 
-    weather_history = store[history_name]
-    weather_forecast = store[forecast_name]
+    cov = ['temp', 'hum', 'pressure']
+    weather.helpers.forecast_munge(store[history_name], cov,
+                                   "%dmin" % gran)
+    cov = ['temp', 'dewpoint', 'mslp']
+    munged_forecast = weather.helpers.forecast_munge(store[forecast_name], cov,
+                                                     "%dmin" % gran)
     store.close()
 
-    print("forecast: %s" % weather_forecast)
-    print("history: %s" % weather_history)
-    return [weather_history, weather_forecast]
+    print("forecast: %s" % munged_forecast)
+    print("history: %s" % history)
+    return [history, munged_forecast]
 
 
 
@@ -63,7 +67,7 @@ def process_building(building_id, db_server, db_name, collection_name,
     # TODO: query occupancy data
 
     # get weather data
-    _get_weather(h5file_name, history_name, forecast_name)
+    _get_weather(h5file_name, history_name, forecast_name, granularity)
 
     # query electric data
     electric.utils.get_electric_ts(db, collection_name, building_id,
