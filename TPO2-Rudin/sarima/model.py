@@ -81,8 +81,8 @@ def _benchmark_ts(ts, date_time):
     return ts_filt[ts_filt.index.date == benchmark_date]
 
 
-def start_time(ts, weather_params, sarima_params, granularity,
-               date="2013-06-06 7:00:00"):
+def start_time(ts, h5file_name, history_name, forecast_name, order,
+               enforce_stationarity, granularity, date="2013-06-06 7:00:00"):
     """ Identify optimal start-up time
 
     Fits a SARIMA model to the input time series, then
@@ -93,13 +93,19 @@ def start_time(ts, weather_params, sarima_params, granularity,
     Numbers 0-6, denoting "Monday"-"Sunday", respectively
     Specifies time by which building_id must be at desired_temp
 
-    weather_params: dict
-    weather configuration from main config file
+    :param h5file_name: string
+        path to HDF5 file containing weather data
+    :param history_name: string
+        group identifier for historical weather data within the HDF5 file
+    :param forecast_name: string
+        group identifier for weather forecast within the HDF5 file
 
-    sarima_params: dict
-    sarima model parameters from the main config file
+    :param order: string
+        order params tuple as string for SARIMA model
+    :param enforce_stationarity: boolean
+        whether to enforce stationarity in the SARIMA model
 
-    granularity: int
+    :param granularity: int
     sampling frequency of input data and forecast data
 
     :return: datetime.datetime
@@ -137,10 +143,9 @@ def start_time(ts, weather_params, sarima_params, granularity,
 
     endog_temp = ts[ts.index.date < date.date()]
 
-    weather = pd.read_hdf(
-        weather_params['table'], weather_params['history'])
+    weather = pd.read_hdf(h5file_name, history_name)
 
-    forecast = pd.read_hdf(weather_params['table'], weather_params['forecast'])
+    forecast = pd.read_hdf(h5file_name, forecast_name)
 
     weather_all = pd.concat([weather, forecast])
 
@@ -152,12 +157,12 @@ def start_time(ts, weather_params, sarima_params, granularity,
 
     # resample exog
 
-    sarima_order = tuple(map(int, sarima_params['order'][1:-1].split(',')))
-    enf_stationarity = sarima_params['enforce_stationarity']
+    sarima_order = tuple(map(int, order[1:-1].split(',')))
     mod = statsmodels.tsa.statespace.sarimax.SARIMAX(endog=endog,
                                                      exog=exog,
                                                      order=sarima_order,
-                                                     enforce_stationarity=enf_stationarity)
+                                                     enforce_stationarity=
+                                                     enforce_stationarity)
     fit_res = mod.fit()
 
     # new model with same parameters, but different endog and exog data
@@ -187,7 +192,7 @@ def start_time(ts, weather_params, sarima_params, granularity,
         endog_new,
         exog_new,
         order=sarima_order,
-        enforce_stationarity=enf_stationarity)
+        enforce_stationarity=enforce_stationarity)
     res = mod_new.filter(np.array(fit_res.params))
 
     # moment of truth: prediction
