@@ -149,22 +149,15 @@ def forecast_munge(df, gran):
     column_trans_dict = {'condition': 'conds', 'humidity': 'hum', 'pop': 'rain'}
     df = df.rename(columns=column_trans_dict)
 
-    # set df index
+    # delete redundant columns
     df['conds'] = df['wx']
     df = df.drop(['wx', 'wdir', 'FCTTIME', 'icon', 'icon_url'], axis=1)
 
+    # appropriate data type conversion for columns
     df = _dtype_conv(df)
 
     # resampling portion
-    # wunderground history data is 51 minutes on the hour, every hour.
-    # wunderground forecast pull is on the hour, every hour.
-    # resamples down to top of hour minus granularity minute mark
-    # hence, there will be a granularity amount of time gap between
-    # forecast and historical data in our database, which is what we want
-    # if pd.datetime.today().time().minute > 51:
-    #     df = df.resample(gran, how="last")
-    # else:
-    #     df = df.resample(gran, how="last", loffset="-1H")
+
     df = df.resample(gran, how="last")
     df = df.fillna(method="bfill")
     return df
