@@ -69,7 +69,7 @@ david :
 
   svm:
     params:
-      gamma: 1
+      gamma: 3
       C: 1
       cache_size: 10000
       kernel: rbf

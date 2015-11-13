@@ -6,6 +6,9 @@ import svm.model
 import config
 from datetime import datetime
 
+pd.options.display.max_rows = 10000
+
+
 if __name__ == "__main__":
     # set variables
     params = config.david["svm"]["params"]
@@ -41,3 +44,5 @@ if __name__ == "__main__":
                                    weather_history=weather_history,
                                    weather_forecast=weather_forecast,
                                    cov=cov, gran=gran, params=params)
+
+    print(prediction)

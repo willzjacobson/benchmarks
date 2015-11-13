@@ -4,8 +4,9 @@ import weather.helpers
 import sklearn.svm
 import sklearn.preprocessing
 import pandas as pd
-import numpy as np
 import ts_proc.munge
+import datetime
+import re
 
 
 def _build(endog, weather_orig, cov, gran, params, discrete=True):
@@ -34,16 +35,20 @@ def _build(endog, weather_orig, cov, gran, params, discrete=True):
 
         endog_filt = endog_filt[dates]
         features_filt = weather_cond.loc[dates]
-        # add column with datetime information, sans year (just have epoch year
-        # as dummy year placeholder entry)
+        # add column with datetime information, sans year or day (convert
+        # time since midnight to minutes)
         features_filt = features_filt.reset_index()
-        features_filt['index'] = features_filt['index'].apply(
-            lambda date: pd.datetime(1970, date.month, date.day, date.hour,
-                                     date.minute))
-        # convert to epoch
-        features_filt['index'] = features_filt['index'].astype(np.int64)
 
-        scaler = sklearn.preprocessing.StandardScaler().fit(features_filt)
+        # need granularity as integer, to convert seconds to minutes
+        gran_int = int(re.findall('\d+', gran)[0])
+
+        features_filt['index'] = features_filt['index'].apply(
+            lambda date:
+            datetime.timedelta(hours=date.hour,
+                               minutes=date.minute).total_seconds() / gran_int
+        )
+
+        scaler = sklearn.preprocessing.MinMaxScaler().fit(features_filt)
         features_filt_scaled = scaler.transform(features_filt)
 
         x = features_filt_scaled
@@ -78,11 +83,16 @@ def predict(endog, weather_history, weather_forecast, cov, gran,
         prediction_index = features.index
         features = features.reset_index()
 
-        features['index'] = features['index'].apply(
-            lambda date: pd.datetime(1970, date.month, date.day, date.hour,
-                                     date.minute)).astype(np.int64)
+        # need granularity as integer, to convert seconds to minutes
+        gran_int = int(re.findall('\d+', gran)[0])
 
-        features_scaled = sklearn.preprocessing.scale(features)
+        features['index'] = features['index'].apply(
+            lambda date:
+            datetime.timedelta(hours=date.hour,
+                               minutes=date.minute).total_seconds() / gran_int
+        )
+
+        features_scaled = scaler.transform(features)
 
         predicted_series = pd.Series(
             data=model.predict(features_scaled),
