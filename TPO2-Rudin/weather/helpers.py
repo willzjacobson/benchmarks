@@ -46,7 +46,7 @@ def _dtype_conv(df=pd.DataFrame(),
         df['wdire'] = df['wdire'].apply(
             lambda x: wdire_mapping[x] if x in wdire_mapping.keys()
             else np.nan)
-        df[['conds', 'wdire']].fillna(method="bfill")
+        df[['conds', 'wdire']] = df[['conds', 'wdire']].fillna(method="bfill")
     return df
 
 
@@ -101,7 +101,7 @@ def _history_pull(date=pd.datetime.today(),
     return df
 
 
-def history_munge(df, cov, gran):
+def history_munge(df, gran):
     # drop what we don't need anymore, and set df index
     # dropping anything with metric system
     dates = ['date', 'utcdate']
@@ -117,9 +117,7 @@ def history_munge(df, cov, gran):
                          'windchilli': 'windchill', 'wspdi': 'wspd'}
     df = df.rename(columns=column_trans_dict)
     df = _dtype_conv(df)
-    # drop what we don't need anymore. Keeping only identified
-    # covariates in config
-    df = df[df.columns.intersection(cov)]
+
 
     # resampling portion
     df = df.resample(gran, how="last")
@@ -128,7 +126,7 @@ def history_munge(df, cov, gran):
     return df
 
 
-def forecast_munge(df, cov, gran):
+def forecast_munge(df, gran):
     # toss out metric system in favor of english system
     for column in ['windchill', 'wspd', 'temp', 'qpf', 'snow', 'mslp',
                    'heatindex', 'dewpoint', 'feelslike']:
@@ -151,9 +149,10 @@ def forecast_munge(df, cov, gran):
     column_trans_dict = {'condition': 'conds', 'humidity': 'hum', 'pop': 'rain'}
     df = df.rename(columns=column_trans_dict)
 
-    # then drop what we don't need anymore, and set df index
+    # set df index
     df['conds'] = df['wx']
-    df = df[df.columns.intersection(cov)]
+    df = df.drop(['wx', 'wdir', 'FCTTIME', 'icon', 'icon_url'], axis=1)
+
     df = _dtype_conv(df)
 
     # resampling portion
@@ -207,26 +206,26 @@ def _forecast_pull(city=config.david["weather"]["city"],
     return df
 
 
-def forecast_update(city, state, account, cov, gran=None, munged=False):
+def forecast_update(city, state, account, gran=None, munged=False):
     if munged:
         if gran is None:
             raise ValueError("Please supply a resampling granularity")
-        return forecast_munge(_forecast_pull(city, state, account), cov, gran)
+        return forecast_munge(_forecast_pull(city, state, account), gran)
     else:
         return _forecast_pull(city, state, account)
 
 
 # helper function for history_update.
-def comp(date, city, state, cov, gran=None, munged=True):
+def comp(date, city, state, gran=None, munged=True):
     if munged:
         if gran is None:
             raise ValueError("Please supply a resampling granularity")
-        return history_munge(_history_pull(date, city, state), cov, gran)
+        return history_munge(_history_pull(date, city, state), gran)
     else:
         return _history_pull(date, city, state)
 
 
-def history_update(city, state, archive_location, df, cap, parallel, cov,
+def history_update(city, state, archive_location, df, cap, parallel,
                    gran=None,
                    munged=False):
     """Pull archived weather information
@@ -279,10 +278,10 @@ def history_update(city, state, archive_location, df, cap, parallel, cov,
 
     if parallel:
         frames = Parallel(n_jobs=config.david["parallel"]["processors"])(
-            delayed(comp)(date, city, state, cov, gran, munged)
+            delayed(comp)(date, city, state, gran, munged)
             for date in interval[:cap])
     else:
-        frames = [comp(date, city, state, cov, gran, munged) for date in
+        frames = [comp(date, city, state, gran, munged) for date in
                   interval[:cap]]
 
     weather_update = pd.concat(frames)
