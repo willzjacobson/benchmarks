@@ -18,19 +18,19 @@ if __name__ == "__main__":
     whist_orig = weather.helpers.history_update(city, state,
                                                 archive_location,
                                                 history_orig_name, cap,
-                                                parallel=False, cov=cov,
+                                                parallel=False,
                                                 munged=False)
     whist_munged = weather.helpers.history_update(city, state,
                                                   archive_location,
                                                   history_munged_name, cap,
-                                                  parallel=False, cov=cov,
+                                                  parallel=False,
                                                   gran=gran,
                                                   munged=True)
 
     forecast_orig = weather.helpers.forecast_update(city, state, account,
-                                                    cov=cov, munged=False)
+                                                    munged=False)
     forecast_munged = weather.helpers.forecast_update(city, state, account,
-                                                      cov=cov, gran=gran,
+                                                      gran=gran,
                                                       munged=True)
     # store munged and pure data in database, for debugging
     store = pd.HDFStore(archive_location)

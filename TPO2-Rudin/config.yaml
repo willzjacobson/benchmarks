@@ -31,7 +31,7 @@ david :
       Partly Cloudy: 2
       Rain: 7
       Scattered Clouds: 1
-      Showers: 7 #same as showers, since historical data doesn't have 'showers'
+      Showers: 7 #same as rain, since historical data doesn't have 'showers'
       Snow: 12
       Unknown: 10
     wdire_mapping:
@@ -88,6 +88,14 @@ david :
 
   parallel:
     processors: 24
+
+  database:
+    db_server_input: 52.91.89.104
+    db_user_input: None
+    db_password_input: None
+    db_name_input: skynet
+    collection_name_input: devicetimeseries
+    floor_quadrants: [[24, NW], [24, NE]]
 
 
 
