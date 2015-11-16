@@ -40,6 +40,23 @@ def _construct_dataframe(ts_lists, value_lists):
 
 
 def _convert_datatypes(ts_list, value_list, drop_tz=True):
+    """
+    Parse timestamp and observation data read from database. Timestamps
+    are converted to datetime.datetime ignoring timezone information.
+    Observations are converted to floats
+
+    :param ts_list: list
+        list of timestamps
+    :param value_list: list
+        list of observations
+    :param drop_tz (optional): bool
+        flag to indicate whether to ignore timezone information
+
+    :return: list of lists
+        list containing two lists: parsed timestamps followed by parsed
+        observation data
+
+    """
 
     # parse timestamps to dateime and drop timezone
     ts_list = list(map(lambda x: dateutil.parser.parse(x, ignoretz=drop_tz),
@@ -83,7 +100,7 @@ def get_electric_ts(db, collection_name, bldg_id, meter_count, granularity):
     :param meter_count: int
         number of distinct meters that need to be summed up
     :param granularity: int
-
+        sampling frequency of input data and forecast data
     :return: pandas Dataframe
     """
 

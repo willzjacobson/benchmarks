@@ -106,15 +106,15 @@ def history_munge(df, cov, gran):
     # dropping anything with metric system
     dates = ['date', 'utcdate']
     misc = ['icon', 'metar']
-    british = ['visi', 'dewpti']
     metric = ['dewptm', 'heatindexm', 'precipm', 'pressurem', 'tempm',
               'vism', 'wgustm',
               'windchillm', 'wspdm']
-    df = df.drop(dates + misc + british + metric, axis=1)
+    df = df.drop(dates + misc + metric, axis=1)
     column_trans_dict = {'heatindexi': 'heatindex', 'precipi': 'precip',
                          'pressurei': 'pressure', 'tempi': 'temp',
                          'wgusti': 'wgust',
-                         'windchilli': 'windchill', 'wspdi': 'wspd'}
+                         'windchilli': 'windchill', 'wspdi': 'wspd',
+                         'visi': 'vis', 'dewpti': 'dewpt'}
     df = df.rename(columns=column_trans_dict)
     df = _dtype_conv(df)
     # drop what we don't need anymore. Keeping only identified
