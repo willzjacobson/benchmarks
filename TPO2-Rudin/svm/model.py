@@ -4,8 +4,9 @@ import weather.helpers
 import sklearn.svm
 import sklearn.preprocessing
 import pandas as pd
-import numpy as np
 import ts_proc.munge
+import datetime
+import re
 
 
 def _build(endog, weather_orig, cov, gran, params, discrete=True):
@@ -23,8 +24,8 @@ def _build(endog, weather_orig, cov, gran, params, discrete=True):
 
     if discrete is True:
         # get only dates from weather data that coincide with endog dates
-        weather_cond = weather.helpers.history_munge(df=weather_orig, cov=cov,
-                                                     gran=gran)
+        weather_cond = weather.helpers.history_munge(df=weather_orig,
+                                                     gran=gran)[cov]
 
         endog_filt = ts_proc.munge.filter_day_season(endog)
         # only include dates (as integers)that are both in features and
@@ -34,20 +35,26 @@ def _build(endog, weather_orig, cov, gran, params, discrete=True):
 
         endog_filt = endog_filt[dates]
         features_filt = weather_cond.loc[dates]
-        # add column with datetime information, sans year (just have epoch year
-        # as dummy year placeholder entry)
+        # add column with datetime information, sans year or day (convert
+        # time since midnight to minutes)
         features_filt = features_filt.reset_index()
-        features_filt['index'] = features_filt['index'].apply(
-            lambda date: pd.datetime(1970, date.month, date.day, date.hour,
-                                     date.minute))
-        # convert to epoch
-        features_filt['index'] = features_filt['index'].astype(np.int64)
 
-        scaler = sklearn.preprocessing.StandardScaler().fit(features_filt)
+        # need granularity as integer, to convert seconds to minutes
+        gran_int = int(re.findall('\d+', gran)[0])
+
+        features_filt['index'] = features_filt['index'].apply(
+            lambda date:
+            datetime.timedelta(hours=date.hour,
+                               minutes=date.minute).total_seconds() / gran_int
+        )
+
+        scaler = sklearn.preprocessing.MinMaxScaler().fit(features_filt)
         features_filt_scaled = scaler.transform(features_filt)
 
-        x = np.array(features_filt_scaled)
-        y = np.array(endog_filt)
+        x = features_filt_scaled
+        y = endog_filt.astype(int)
+        # if 0 and 1s are classed as floats
+        # in time series, model will fail
 
         clf = sklearn.svm.SVC(**params)
 
@@ -70,16 +77,24 @@ def predict(endog, weather_history, weather_forecast, cov, gran,
     """
     if discrete is True:
         model, scaler = _build(endog=endog, weather_orig=weather_history,
-                       cov=cov, gran=gran, params=params)
+                               cov=cov, gran=gran, params=params, discrete=True)
 
-        features = weather_forecast[cov].reset_index()
+        features = weather.helpers.forecast_munge(weather_forecast, gran)[cov]
+        prediction_index = features.index
+        features = features.reset_index()
+
+        # need granularity as integer, to convert seconds to minutes
+        gran_int = int(re.findall('\d+', gran)[0])
+
         features['index'] = features['index'].apply(
-            lambda date: pd.datetime(1970, date.month, date.day, date.hour,
-                                     date.minute)).astype(np.int64)
+            lambda date:
+            datetime.timedelta(hours=date.hour,
+                               minutes=date.minute).total_seconds() / gran_int
+        )
 
-        features_scaled = sklearn.preprocessing.scale(features)
+        features_scaled = scaler.transform(features)
 
         predicted_series = pd.Series(
             data=model.predict(features_scaled),
-            index=weather_forecast.index)
+            index=prediction_index)
         return predicted_series

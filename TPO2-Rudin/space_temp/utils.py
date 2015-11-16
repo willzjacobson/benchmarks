@@ -14,16 +14,19 @@ import dateutil.relativedelta as relativedelta
 
 def get_space_temp_ts(db, collection_name, bldg, floor, quad, granularity):
     """ retrieve all available space temperature data for floor-quad of
-        building bldg
+        building_id bldg
 
     :param db: pymongo database object
         connected database object
     :param bldg: string
-        database building identifier
+        database building_id identifier
     :param floor: string
         floor identifier
     :param quad: string
         quadrant identifier
+    :param granularity: int
+    sampling frequency of input data and forecast data
+
     :return: pandas Series
     """
 
@@ -31,7 +34,7 @@ def get_space_temp_ts(db, collection_name, bldg, floor, quad, granularity):
     collection = db[collection_name]
     for data in collection.find({"_id.building": bldg,
                                  "_id.device": "Space_Temp",
-                                 "_id.floor": floor,
+                                 "_id.floor": str(floor),
                                  "_id.quad": quad}):
         readings = data['readings']
         for reading in readings:
@@ -44,46 +47,57 @@ def get_space_temp_ts(db, collection_name, bldg, floor, quad, granularity):
                      ).sort_index().resample(gran)
 
 
-def process_building(building_id, bldg_params, weather_params, sarima_params,
-                     sampling_params):
+def process_building(building_id, db_server, db_name, collection_name,
+                     floor_quadrants, h5file_name, history_name, forecast_name,
+                     order, enforce_stationarity, granularity):
     """ Generate startup time using SARIMA model for each floor-quadrant
         combination
 
     :param building_id: string
-        building identifier
-    :param bldg_params: dict
-        configuration settings of the building
-    :param weather_params: dict
-        weather configuration
-    :param sarima_params: dict
-        configuration for SARIMA model
-    :param sampling_params: dict
-        sampling-related configuration
+        building_id identifier
+    :param db_server: string
+        database server name or IP-address
+    :param db_name: string
+        name of the database on server
+    :param collection_name: string
+        name of collection in the database
+    :param floor_quadrants: list
+        list of floor-quadrants
+    :param h5file_name: string
+        path to HDF5 file containing weather data
+    :param history_name: string
+        group identifier for historical weather data within the HDF5 file
+    :param forecast_name: string
+        group identifier for weather forecast within the HDF5 file
+    :param order: string
+        order params tuple as string for SARIMA model
+    :param enforce_stationarity: boolean
+        whether to enforce stationarity in the SARIMA model
+    :param granularity: int
+        sampling frequency of input data and forecast data
     :return:
     """
 
     # connect to database
-    conn = connect.connect(bldg_params['db_server_input'],
-                           database=bldg_params["db_name_input"])
-    db = conn[bldg_params["db_name_input"]]
+    conn = connect.connect(db_server, database=db_name)
+    db = conn[db_name]
 
     predictions = []
-    for floor_quadrant in bldg_params['floor_quadrants']:
+    for floor_quadrant in floor_quadrants:
         floor, quad = floor_quadrant
         print('processing %s:%s' % (floor, quad))
 
         # query data
-        ts = get_space_temp_ts(db, bldg_params["collection_name_input"],
-                               building_id, floor, quad,
-                               sampling_params['granularity'])
+        ts = get_space_temp_ts(db, collection_name, building_id, floor, quad,
+                               granularity)
 
         pred_dt = ts.index[-1] - 2 * relativedelta.relativedelta(days=1)
 
         # invoke model
         predictions.append(
-            sarima.model.start_time(ts, weather_params, sarima_params,
-                                    sampling_params['granularity'],
-                                    str(pred_dt)))
+            sarima.model.start_time(ts, h5file_name, history_name,
+                                    forecast_name, order, enforce_stationarity,
+                                    granularity, str(pred_dt)))
 
     # TODO: save results
     conn.close()
