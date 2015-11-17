@@ -2,7 +2,7 @@ __author__ = 'ashishgagneja'
 
 
 import pandas as pd
-
+import common.utils
 
 
 def _get_ts(collection, bldg_id, device, system, field):
@@ -27,7 +27,12 @@ def get_occupancy_ts(db, collection_name, bldg_id):
     collection = db[collection_name]
 
     ts_list, val_list = _get_ts(collection, bldg_id, 'Occupancy', 'Occupancy',
-                                'total')
-    return pd.DataFrame(index=ts_list, data=val_list, columns=['occupancy'])
+                                'value')
+    print(ts_list[1:100])
+    ts_list, val_list = common.utils.convert_datatypes(ts_list, val_list,
+                                                       val_type=None)
+    df = pd.DataFrame(index=ts_list, data=val_list,
+                      columns=['occupancy'])
+    return df.dropna().sort()
 
 

@@ -10,6 +10,20 @@ import itertools
 import weather.wet_bulb
 
 
+def _filter_missing_weather_data(weather_df):
+    """
+    Filter rows with missing data like -9999's
+
+    :param weather_df: pandas DataFrame
+
+    :return: pandas DataFrame
+    """
+
+    bad_data = weather_df.where(weather_df < -998).any(axis=1)
+    print('bad_data: %s' % bad_data[bad_data == True].shape)
+    return weather_df.drop(bad_data[bad_data == True].index)
+
+
 def _get_weather(h5file_name, history_name, forecast_name, gran):
     """
 
@@ -24,37 +38,53 @@ def _get_weather(h5file_name, history_name, forecast_name, gran):
 
     with pd.HDFStore(h5file_name) as store:
 
-        cov = ['temp', 'dewpt', 'pressure']
-        print(store[history_name])
-        munged_history = weather.helpers.history_munge(store[history_name], cov,
-                                                   "%dmin" % gran)
-        cov = ['temp', 'dewpoint', 'mslp']
+        # cov = ['temp', 'dewpt', 'pressure']
+        history = store[history_name]
+        # munged_history = weather.helpers.history_munge(store[history_name], cov,
+        munged_history = weather.helpers.history_munge(store[history_name],
+                                                       "%dmin" % gran)
+        # cov = ['temp', 'dewpoint', 'mslp']
+
+        fcst = store[forecast_name]
+        # fcst = fcst[['temp', 'dewpt', 'pressure']]
         munged_forecast = weather.helpers.forecast_munge(store[forecast_name],
-                                                         cov, "%dmin" % gran)
+                                                         "%dmin" % gran)
+                                                         # cov, "%dmin" % gran)
+
+
+    # drop unnecessary columns
+    # TODO: this should be done before munging for efficiency but couldn't make
+    # it to work
+    munged_history = munged_history[['temp', 'dewpt', 'pressure']]
+    munged_forecast = munged_forecast[['temp', 'dewpoint', 'mslp']]
 
     # rename forecast columns to match the corresponding historical columns
     munged_forecast = munged_forecast.rename(columns={'dewpoint': 'dewpt',
                                                       'mslp': 'pressure'})
 
-    print("forecast: %s" % munged_forecast)
-    print("history: %s" % munged_history)
+    # print("forecast: %s" % munged_forecast)
+    # print("history: %s" % munged_history)
     all_weather = pd.concat([munged_history, munged_forecast])
 
-    print(all_weather)
-    return all_weather
+    # print(all_weather)
+    # _filter_missing_weather_data(all_weather)
+    return _filter_missing_weather_data(all_weather)
+    # return _filter_missing_weather_data(all_weather)
 
 
 
 def _get_data_availability_dates(obs_ts, gran):
     """
-    Find dates for which data is available. Dates for which < 85% data
-    is available are dropped. Assumes that the Series has no NA's
+    Find dates for which data is available. Dates for which < threshold % data
+    is available are dropped.
 
+    Assumption: Series has no NA's
+    Assumption: Threshold is 85
 
     :param obs_ts: pandas Series
     :param gran: int
         sampling frequency of input data and forecast data
-    :return:
+    :return: set of dates for which
     """
 
     ts_list = list(map(datetime.datetime.date, obs_ts.index))
@@ -67,9 +97,12 @@ def _get_data_availability_dates(obs_ts, gran):
 
 
 def _get_wet_bulb_ts(weather_df):
-    print(weather_df.apply(weather.wet_bulb.compute_bulb_helper, axis=1))
-    return None
+    return weather_df.apply(weather.wet_bulb.compute_bulb_helper, axis=1)
 
+
+
+def _get_dt_wetbulb(wetbulb_ts):
+    pass
 
 
 
@@ -77,10 +110,11 @@ def _find_benchmark(bench_dt, occ_ts, weather_ts, electric_ts, gran):
 
     # get data availability
     elec_avlblty = _get_data_availability_dates(electric_ts, gran)
-    # occ_avlblty = _get_data_availability_dates(occ_ts, gran)
-    # data_avlblty = occ_avlblty.intersection(elec_avlblty)
+    occ_avlblty = _get_data_availability_dates(occ_ts, gran)
+    data_avlblty = occ_avlblty.intersection(elec_avlblty)
 
     # get weather for bench_dt
+
 
     # find closest weather days for which electric and occupancy data is
     # available
@@ -120,14 +154,15 @@ def process_building(building_id, db_server, db_name, collection_name,
 
 
     # TODO: query occupancy data
-    occ_ts = None
-    # occ_ts = occupancy.utils.get_occupancy_ts(db, collection_name, building_id)
-    # print(occ_ts)
+    occ_ts = occupancy.utils.get_occupancy_ts(db, collection_name, building_id)
+    print(occ_ts)
 
     # get weather data
     weather_df = _get_weather(h5file_name, history_name, forecast_name,
                               granularity)
+    print("weather: %s" % weather_df)
     wet_bulb_ts = _get_wet_bulb_ts(weather_df)
+    print("wetbulb: %s" % wet_bulb_ts)
 
     # query electric data
     elec_ts = electric.utils.get_electric_ts(db, collection_name, building_id,

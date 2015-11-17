@@ -1,7 +1,7 @@
 __author__ = 'ashishgagneja'
 
 import pandas as pd
-import dateutil
+import common.utils
 
 
 def _construct_dataframe(ts_lists, value_lists):
@@ -24,10 +24,11 @@ def _construct_dataframe(ts_lists, value_lists):
     # insert column data
     for i, ts_list in enumerate(ts_lists):
 
-        ts_idx_t, value_list_t = _convert_datatypes(ts_list, value_lists[i])
+        ts_idx_t, value_list_t = common.utils.convert_datatypes(ts_list,
+                                                                value_lists[i])
         master_df = master_df.join(pd.DataFrame(data=value_list_t,
                                                 index=ts_idx_t,
-                                                columns=[str(i+1)]),
+                                                columns=[str(i+1)]).dropna(),
                                    how='outer')
 
     total_df = master_df.sum(axis=1)
@@ -36,36 +37,6 @@ def _construct_dataframe(ts_lists, value_lists):
     # TODO: compute total demand
     print(master_df)
     return total_df
-
-
-
-def _convert_datatypes(ts_list, value_list, drop_tz=True):
-    """
-    Parse timestamp and observation data read from database. Timestamps
-    are converted to datetime.datetime ignoring timezone information.
-    Observations are converted to floats
-
-    :param ts_list: list
-        list of timestamps
-    :param value_list: list
-        list of observations
-    :param drop_tz (optional): bool
-        flag to indicate whether to ignore timezone information
-
-    :return: list of lists
-        list containing two lists: parsed timestamps followed by parsed
-        observation data
-
-    """
-
-    # parse timestamps to dateime and drop timezone
-    ts_list = list(map(lambda x: dateutil.parser.parse(x, ignoretz=drop_tz),
-                       ts_list))
-
-    # convert str to float
-    value_list = list(map(float, value_list))
-
-    return [ts_list, value_list]
 
 
 
