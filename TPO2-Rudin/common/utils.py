@@ -4,6 +4,24 @@ import dateutil.parser
 import numpy
 
 
+
+def find_similar_profile_days(gold_ts, all_ts, k, data_avlblty):
+
+    # find long list of dates
+    all_dates = list(all_ts.index.date)
+
+    # find cutoff date
+    cutoff_dt = gold_ts.index[0].to_datetime().date()
+    print("cutoff date: %s" % cutoff_dt)
+
+    all_dates = [t for t in all_dates if t < cutoff_dt]
+
+    # compute similarity score for each date
+
+    # return the top k scores and corresponding dates
+
+
+
 def convert_datatypes(ts_list, value_list, drop_tz=True, val_type=float):
     """
     Parse timestamp and observation data read from database. Timestamps

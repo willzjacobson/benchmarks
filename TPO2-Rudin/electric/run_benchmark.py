@@ -25,8 +25,8 @@ if arg_count not in [1, 4]:
                     % sys.argv[0])
 
 elif arg_count == 4:
-    int_args = map(int, sys.argv[1:])
-    bench_dt = datetime.datetime(int_args[0], int_args[1], int_args[2])
+    int_args = list(map(int, sys.argv[1:]))
+    bench_dt = datetime.date(int_args[0], int_args[1], int_args[2])
 
 print("computing benchmark for %s" % bench_dt)
 

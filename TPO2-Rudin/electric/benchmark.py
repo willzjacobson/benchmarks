@@ -8,6 +8,8 @@ import datetime
 import occupancy.utils
 import itertools
 import weather.wet_bulb
+import common.utils
+import dateutil.relativedelta
 
 
 def _filter_missing_weather_data(weather_df):
@@ -96,17 +98,28 @@ def _get_data_availability_dates(obs_ts, gran):
 
 
 
-def _get_wet_bulb_ts(weather_df):
+def _get_wetbulb_ts(weather_df):
     return weather_df.apply(weather.wet_bulb.compute_bulb_helper, axis=1)
 
 
 
-def _get_dt_wetbulb(wetbulb_ts):
-    pass
+def _get_dt_wetbulb(dt, wetbulb_ts):
+
+    # zipped = zip(list[wetbulb_ts.index.map(lambda x: x.date())],
+    #              wetbulb_ts.index)
+    # zipped = zip(list[wetbulb_ts.index.date(lambda x: x.date())],
+    #              wetbulb_ts.index)
+    bod_tm = datetime.time(0, 0, 0, 0)
+    start_idx = datetime.datetime.combine(dt, bod_tm)
+    end_idx = datetime.datetime.combine(
+        dt + dateutil.relativedelta.relativedelta(days=1), bod_tm)
+    return wetbulb_ts[str(start_idx) : str(end_idx)]
+
+    # dt_indices = list[map(lambda x, y: y if x == dt else pass, zipped)]
 
 
 
-def _find_benchmark(bench_dt, occ_ts, weather_ts, electric_ts, gran):
+def _find_benchmark(bench_dt, occ_ts, wetbulb_ts, electric_ts, gran):
 
     # get data availability
     elec_avlblty = _get_data_availability_dates(electric_ts, gran)
@@ -114,7 +127,13 @@ def _find_benchmark(bench_dt, occ_ts, weather_ts, electric_ts, gran):
     data_avlblty = occ_avlblty.intersection(elec_avlblty)
 
     # get weather for bench_dt
+    bench_dt_wetbulb = _get_dt_wetbulb(bench_dt, wetbulb_ts)
 
+    # find k most similar wetbulb profile days in the past
+    sim_wetbulb_days = common.utils.find_similar_profile_days(bench_dt_wetbulb,
+                                                              wetbulb_ts,
+                                                              20,
+                                                              data_avlblty)
 
     # find closest weather days for which electric and occupancy data is
     # available
@@ -161,15 +180,15 @@ def process_building(building_id, db_server, db_name, collection_name,
     weather_df = _get_weather(h5file_name, history_name, forecast_name,
                               granularity)
     print("weather: %s" % weather_df)
-    wet_bulb_ts = _get_wet_bulb_ts(weather_df)
-    print("wetbulb: %s" % wet_bulb_ts)
+    wetbulb_ts = _get_wetbulb_ts(weather_df)
+    print("wetbulb: %s" % wetbulb_ts)
 
     # query electric data
     elec_ts = electric.utils.get_electric_ts(db, collection_name, building_id,
                                    meter_count, granularity)
 
     # find baseline
-    _find_benchmark(bench_dt, occ_ts, weather_df, elec_ts, granularity)
+    _find_benchmark(bench_dt, occ_ts, wetbulb_ts, elec_ts, granularity)
 
     # TODO: save results
     conn.close()
