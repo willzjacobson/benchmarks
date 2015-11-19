@@ -9,7 +9,8 @@ import datetime
 import re
 
 
-def _build(endog, weather_orig, cov, gran, params, discrete=True):
+def _build(endog, weather_orig, cov, gran, params, param_grid, n_jobs,
+           discrete=True):
     """SVM Model Instantiation and Training
 
     :param endog: Series. Endogenous variable to be forecasted
@@ -56,13 +57,16 @@ def _build(endog, weather_orig, cov, gran, params, discrete=True):
         # if 0 and 1s are classed as floats
         # in time series, model will fail
 
-        clf = sklearn.svm.SVC(**params)
+        svr = sklearn.svm.SVC(**params)
+        clf = sklearn.grid_search.GridSearchCV(estimator=svr,
+                                               param_grid=param_grid,
+                                               n_jobs=n_jobs)
 
         return [clf.fit(x, y), scaler]
 
 
 def predict(endog, weather_history, weather_forecast, cov, gran,
-            params, discrete=True):
+            params, param_grid, n_jobs, discrete=True):
     """SVM Model Instantiation and Training
 
     :param endog: Series. Endogenous variable to be forecasted
@@ -77,7 +81,9 @@ def predict(endog, weather_history, weather_forecast, cov, gran,
     """
     if discrete is True:
         model, scaler = _build(endog=endog, weather_orig=weather_history,
-                               cov=cov, gran=gran, params=params, discrete=True)
+                               cov=cov, gran=gran, params=params,
+                               param_grid=param_grid, n_jobs=n_jobs,
+                               discrete=discrete)
 
         features = weather.helpers.forecast_munge(weather_forecast, gran)[cov]
         prediction_index = features.index
