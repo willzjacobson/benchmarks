@@ -129,8 +129,10 @@ ashish:
     python_prog: /home/davidkarapetyan/anaconda3/bin/python
     data_sources: /data
     log_dir: /var/log
+    # run mode
+    debug: True
 
-    # list of building_id ids. There should be a key corresponding to each
+    # list of building ids. There should be a key corresponding to each
     # name on this list elsewhere in this configuration spec.
     buildings: [345_Park, ]
 
@@ -141,8 +143,7 @@ ashish:
     wund_url: http://api.wunderground.com/api/bab4ba5bcbc2dbec/
     #cov: [conds, hum, rain, snow, temp]
     cov: [hum, temp]
-    seasons: {"spring": (3, 6), "summer": (6, 9), "fall": (9, 12),
-               "winter": (12, 3)}
+    seasons: {spring: [3, 6], summer: [6, 9], fall: [9, 12], winter: [12, 3]}
     # cov choice is constrained by column entries in wund forecast which is
     # sparser than those in history data from wund. For example no
     # tornado or thunder seen so far in forecasts
@@ -232,9 +233,11 @@ ashish:
     db_name_input: skynet
     collection_name_input: devicetimeseries
 
-    electric_meter_count: 6
 
     floor_quadrants: [[24, NW], [24, NE]]
+
+    # electric
+    electric_meter_count: 6
 
 
 master:

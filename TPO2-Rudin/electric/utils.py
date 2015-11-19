@@ -25,23 +25,38 @@ def _construct_dataframe(ts_lists, value_lists):
     for i, ts_list in enumerate(ts_lists):
 
         ts_idx_t, value_list_t = _convert_datatypes(ts_list, value_lists[i])
-        # print('%s:%s' % (type(ts_idx_t), type(value_list_t)))
-        # df = pd.DataFrame(data=value_list_t, index=ts_idx_t,
-        #                   columns=["%d" % i+1])
-        # tmp_df = pd.DataFrame(data=value_list_t, index=ts_idx_t)
-        # print(tmp_df)
         master_df = master_df.join(pd.DataFrame(data=value_list_t,
                                                 index=ts_idx_t,
                                                 columns=[str(i+1)]),
                                    how='outer')
 
+    total_df = master_df.sum(axis=1)
+    print(total_df)
+
     # TODO: compute total demand
     print(master_df)
-    return master_df
+    return total_df
 
 
 
 def _convert_datatypes(ts_list, value_list, drop_tz=True):
+    """
+    Parse timestamp and observation data read from database. Timestamps
+    are converted to datetime.datetime ignoring timezone information.
+    Observations are converted to floats
+
+    :param ts_list: list
+        list of timestamps
+    :param value_list: list
+        list of observations
+    :param drop_tz (optional): bool
+        flag to indicate whether to ignore timezone information
+
+    :return: list of lists
+        list containing two lists: parsed timestamps followed by parsed
+        observation data
+
+    """
 
     # parse timestamps to dateime and drop timezone
     ts_list = list(map(lambda x: dateutil.parser.parse(x, ignoretz=drop_tz),
@@ -62,11 +77,8 @@ def _get_meter_data(meter_id, bldg_id, collection):
                                  "_id.system": "SIF_Electric_Demand"}):
 
         readings = data['readings']
-        # print(readings)
         zipped = map(lambda x: (x['time'], x['value']), readings)
 
-        # ts_list.extend(map(lambda x: x['time']), readings)
-        # value_list.extend(map(lambda x: x['value']), readings)
         ts_list_t, value_list_t = zip(*zipped)
         ts_list.extend(ts_list_t)
         value_list.extend(value_list_t)
@@ -88,7 +100,7 @@ def get_electric_ts(db, collection_name, bldg_id, meter_count, granularity):
     :param meter_count: int
         number of distinct meters that need to be summed up
     :param granularity: int
-
+        sampling frequency of input data and forecast data
     :return: pandas Dataframe
     """
 
