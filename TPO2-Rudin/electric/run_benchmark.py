@@ -28,7 +28,7 @@ elif arg_count == 4:
     int_args = list(map(int, sys.argv[1:]))
     bench_dt = datetime.date(int_args[0], int_args[1], int_args[2])
 
-print("computing benchmark for %s" % bench_dt)
+print("looking up benchmark for %s" % bench_dt)
 
 # iterate over all buildings
 for building_id in buildings:

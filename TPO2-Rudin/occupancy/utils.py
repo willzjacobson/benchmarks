@@ -42,29 +42,30 @@ def _get_ts(collection, bldg_id, device, system, field, drop_tz=True):
         #                                                    val_type=None)
 
         # save day's data
-        data_dt = dateutil.parser.parse(data['_id']['date'],
-                                        ignoretz=drop_tz).date()
-        daily_dict[data_dt] = _create_day_df(ts_list_t, val_list_t, 'occupancy')
+        # data_dt = dateutil.parser.parse(data['_id']['date'],
+        #                                 ignoretz=drop_tz).date()
+        # daily_dict[data_dt] = _create_day_df(ts_list_t, val_list_t, 'occupancy')
 
-        # ts_list.extend(ts_list_t)
-        ts_list.extend(list(daily_dict[data_dt].index))
-        value_list.extend(daily_dict[data_dt]['occupancy'].tolist())
+        ts_list.extend(ts_list_t)
+        value_list.extend(val_list_t)
+        # ts_list.extend(list(daily_dict[data_dt].index))
+        # value_list.extend(daily_dict[data_dt]['occupancy'].tolist())
 
-    return [ts_list, value_list], daily_dict
+    return ts_list, value_list
 
 
 
 def get_occupancy_ts(db, collection_name, bldg_id):
     collection = db[collection_name]
 
-    [ts_list, val_list], daily_dict = _get_ts(collection, bldg_id, 'Occupancy',
+    ts_list, val_list = _get_ts(collection, bldg_id, 'Occupancy',
                                               'Occupancy', 'value')
     # print(ts_list[1:100])
 
-    # ts_list, val_list = common.utils.convert_datatypes(ts_list, val_list,
-    #                                                    val_type=None)
+    ts_list, val_list = common.utils.convert_datatypes(ts_list, val_list,
+                                                       val_type=None)
     df = pd.DataFrame(index=ts_list, data=val_list,
                       columns=['occupancy'])
-    return df.sort()
+    return df.dropna().sort()
 
 
