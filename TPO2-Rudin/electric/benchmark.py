@@ -22,7 +22,7 @@ def _filter_missing_weather_data(weather_df):
     """
 
     bad_data = weather_df.where(weather_df < -998).any(axis=1)
-    print('bad_data: %s' % bad_data[bad_data == True].shape)
+    print('bad_data: %s' % bad_data[bad_data == True])
     return weather_df.drop(bad_data[bad_data == True].index)
 
 
@@ -40,15 +40,9 @@ def _get_weather(h5file_name, history_name, forecast_name, gran):
 
     with pd.HDFStore(h5file_name) as store:
 
-        # cov = ['temp', 'dewpt', 'pressure']
-        history = store[history_name]
-        # munged_history = weather.helpers.history_munge(store[history_name], cov,
         munged_history = weather.helpers.history_munge(store[history_name],
                                                        "%dmin" % gran)
-        # cov = ['temp', 'dewpoint', 'mslp']
 
-        fcst = store[forecast_name]
-        # fcst = fcst[['temp', 'dewpt', 'pressure']]
         munged_forecast = weather.helpers.forecast_munge(store[forecast_name],
                                                          "%dmin" % gran)
                                                          # cov, "%dmin" % gran)
@@ -56,7 +50,7 @@ def _get_weather(h5file_name, history_name, forecast_name, gran):
 
     # drop unnecessary columns
     # TODO: this should be done before munging for efficiency but couldn't make
-    # it to work
+    # it work
     munged_history = munged_history[['temp', 'dewpt', 'pressure']]
     munged_forecast = munged_forecast[['temp', 'dewpoint', 'mslp']]
 
@@ -64,14 +58,8 @@ def _get_weather(h5file_name, history_name, forecast_name, gran):
     munged_forecast = munged_forecast.rename(columns={'dewpoint': 'dewpt',
                                                       'mslp': 'pressure'})
 
-    # print("forecast: %s" % munged_forecast)
-    # print("history: %s" % munged_history)
     all_weather = pd.concat([munged_history, munged_forecast])
-
-    # print(all_weather)
-    # _filter_missing_weather_data(all_weather)
     return _filter_missing_weather_data(all_weather)
-    # return _filter_missing_weather_data(all_weather)
 
 
 
@@ -129,14 +117,15 @@ def _find_benchmark(bench_dt, occ_ts, wetbulb_ts, electric_ts, gran):
     # get weather for bench_dt
     bench_dt_wetbulb = _get_dt_wetbulb(bench_dt, wetbulb_ts)
 
-    # find k most similar wetbulb profile days in the past
+    # find k closest weather days for which electric and occupancy data is
+    # available
     sim_wetbulb_days = common.utils.find_similar_profile_days(bench_dt_wetbulb,
                                                               wetbulb_ts,
                                                               20,
                                                               data_avlblty)
+    print("sim days: %s" % str(sim_wetbulb_days))
 
-    # find closest weather days for which electric and occupancy data is
-    # available
+
 
 
 
@@ -174,7 +163,7 @@ def process_building(building_id, db_server, db_name, collection_name,
 
     # TODO: query occupancy data
     occ_ts = occupancy.utils.get_occupancy_ts(db, collection_name, building_id)
-    print(occ_ts)
+    print("occupancy: %s" % occ_ts)
 
     # get weather data
     weather_df = _get_weather(h5file_name, history_name, forecast_name,
