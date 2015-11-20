@@ -2,7 +2,8 @@ __author__ = 'ashishgagneja'
 
 import pandas as pd
 import common.utils
-
+import itertools
+import joblib
 
 def _construct_dataframe(ts_lists, value_lists):
 
@@ -32,38 +33,38 @@ def _construct_dataframe(ts_lists, value_lists):
                                    how='outer')
 
     total_df = master_df.sum(axis=1)
-    print(total_df)
-
-    # TODO: compute total demand
     print(master_df)
     return total_df
 
 
+# TODO: this code can be generalized and used everywhere
+# def _get_meter_data(meter_id, bldg_id, collection):
+#
+#     ts_list, value_list = [], []
+#     for data in collection.find({"_id.building": bldg_id,
+#                                  "_id.device": "Elec-M%d" % meter_id,
+#                                  "_id.system": "SIF_Electric_Demand"}):
+#
+#         readings = data['readings']
+#         zipped = map(lambda x: (x['time'], x['value']), readings)
+#
+#         ts_list_t, value_list_t = zip(*zipped)
+#         ts_list.extend(ts_list_t)
+#         value_list.extend(value_list_t)
+#
+#     return [ts_list, value_list]
 
-def _get_meter_data(meter_id, bldg_id, collection):
-
-    ts_list, value_list = [], []
-    for data in collection.find({"_id.building": bldg_id,
-                                 "_id.device": "Elec-M%d" % meter_id,
-                                 "_id.system": "SIF_Electric_Demand"}):
-
-        readings = data['readings']
-        zipped = map(lambda x: (x['time'], x['value']), readings)
-
-        ts_list_t, value_list_t = zip(*zipped)
-        ts_list.extend(ts_list_t)
-        value_list.extend(value_list_t)
-
-    return [ts_list, value_list]
 
 
-
-def get_electric_ts(db, collection_name, bldg_id, meter_count, granularity):
+def get_electric_ts(db_server, db_name, collection_name, bldg_id, meter_count,
+                    granularity):
     """ retrieves all available electric data from all meters and sums up
     to get total electric usage time series
 
-    :param db: pymongo database object
-        connected database object
+    :param db_server: string
+        database server name or IP-address
+    :param db_name: string
+        name of the database on server
     :param collection_name: string
         database collection name to query
     :param bldg_id: string
@@ -75,15 +76,30 @@ def get_electric_ts(db, collection_name, bldg_id, meter_count, granularity):
     :return: pandas Dataframe
     """
 
-    collection = db[collection_name]
+    # collection = db[collection_name]
 
     ts_lists, value_lists = [], []
-    for equipment_id in range(1, meter_count+1):
+    # for equip_id in range(1, meter_count+1):
 
-        ts_list, value_list = _get_meter_data(equipment_id, bldg_id, collection)
+        # ts_list, value_list = _get_meter_data(equipment_id, bldg_id, collection)
+        # ts_list, value_list = common.utils.get_ts(db_server, db_name,
+        #                                            collection_name, bldg_id,
+        #                                            "Elec-M%d" % equip_id,
+        #                                            'SIF_Electric_Demand',
+        #                                            'value')
 
-        ts_lists.append(ts_list)
-        value_lists.append(value_list)
+        # ts_lists.append(ts_list)
+        # value_lists.append(value_list)
+
+
+    results = [joblib.Parallel(n_jobs=-1, verbose=51)(joblib.delayed(common.utils.get_ts)(
+        db_server, db_name, collection_name, bldg_id, "Elec-M%d" % equip_id,
+        'SIF_Electric_Demand', 'value') for equip_id in range(1, meter_count+1))]
+
+    print(len(results[0]))
+    ts_lists, value_lists = zip(*results)
+    ts_lists = list(itertools.chain.from_iterable(ts_lists))
+    value_lists = list(itertools.chain.from_iterable(value_lists))
 
     gran = "%dmin" % granularity
     return _construct_dataframe(ts_lists, value_lists)

@@ -4,26 +4,46 @@ import dateutil.parser
 import numpy
 import datetime
 import pandas as pd
+import db.connect as connect
 
-
-def _drop_series_ix_date(tseries):
+def drop_series_ix_date(tseries):
 
     return pd.Series(data=tseries.data, index=map(lambda x: x.time(),
                                                   tseries.index.to_datetime()))
 
 
-def _compute_profile_similarity_score(gold_ts, other_ts):
 
-    # find index overlapping
-    # gold_time_idx = list(map(lambda x: (x, x.time()), gold_datetimes))
-    # gold_ts_reidx = gold_ts.reindex(list(map(lambda x: x.time(),
-    # gold_ts_reidx = pd.Series(data=gold_ts.data, index=map(
-    #     lambda x: x.time(), gold_ts.index.to_datetime()))
-    # other_ts_reidx = _drop_series_ix_date(other_ts)
+# TODO: this code can be generalized and used everywhere
+def get_ts(db_server, db_name, collection_name, bldg_id, device, system, field):
 
+
+    with connect.connect(db_server, database=db_name) as conn:
+
+        collection = conn[db_name][collection_name]
+
+        ts_list, value_list, daily_dict = [], [], {}
+        for data in collection.find({"_id.building": bldg_id,
+                                     "_id.device": device,
+                                     "_id.system": system}):
+
+            readings = data['readings']
+            zipped = map(lambda x: (x['time'], x[field]), readings)
+
+            ts_list_t, val_list_t = zip(*zipped)
+
+            ts_list.extend(ts_list_t)
+            value_list.extend(val_list_t)
+
+    return ts_list, value_list
+
+
+
+def compute_profile_similarity_score(gold_ts, other_ts):
+
+    # find index overlap
     common_tms = set(gold_ts.index).intersection(set(other_ts.index))
 
-    # print("common tms: %s, %s" % (len(common_tms), common_tms))
+    # if index overlap is less than threshold, do not compute score
     if len(common_tms) < 0.95 * gold_ts.size:
         # print('data overlap below threshold: %s' % other_ts.index[0].date())
         return None
@@ -48,15 +68,15 @@ def find_similar_profile_days(gold_ts, all_ts, k, data_avlblty):
 
     # compute similarity score for each date
     one_day = datetime.timedelta(days=1)
-    gold_ts_nodate = _drop_series_ix_date(gold_ts)
+    gold_ts_nodate = drop_series_ix_date(gold_ts)
     sim_scores = []
     for dt in all_dates:
 
         if dt in data_avlblty:
 
             end_idx = datetime.datetime.combine(dt + one_day, datetime.time.min)
-            score = _compute_profile_similarity_score(gold_ts_nodate,
-                        _drop_series_ix_date(all_ts[dt: end_idx]))
+            score = compute_profile_similarity_score(gold_ts_nodate,
+                        drop_series_ix_date(all_ts[dt: end_idx]))
 
             if score:
                 sim_scores.append([dt, score])
@@ -64,7 +84,6 @@ def find_similar_profile_days(gold_ts, all_ts, k, data_avlblty):
     # return the top k closest dates; smaller scores are better
     keys, _ = zip(*sorted(sim_scores, key=lambda x: x[1]))
     return keys[:k]
-
 
 
 
@@ -100,3 +119,19 @@ def convert_datatypes(ts_list, value_list, drop_tz=True, val_type=float):
         value_list = list(map(val_type, value_list))
 
     return [ts_list, value_list]
+
+
+
+def get_dt_tseries(dt, full_ts):
+
+    # zipped = zip(list[full_ts.index.map(lambda x: x.date())],
+    #              full_ts.index)
+    # zipped = zip(list[full_ts.index.date(lambda x: x.date())],
+    #              full_ts.index)
+    bod_tm = datetime.time(0, 0, 0, 0)
+    start_idx = datetime.datetime.combine(dt, bod_tm)
+    end_idx = datetime.datetime.combine(
+        dt + dateutil.relativedelta.relativedelta(days=1), bod_tm)
+    return full_ts[str(start_idx) : str(end_idx)]
+
+    # dt_indices = list[map(lambda x, y: y if x == dt else pass, zipped)]
