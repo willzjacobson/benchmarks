@@ -6,9 +6,6 @@ import svm.model
 import config
 from datetime import datetime
 
-pd.options.display.max_rows = 10000
-
-
 if __name__ == "__main__":
     # set variables
     params = config.david["svm"]["params"]
@@ -23,6 +20,8 @@ if __name__ == "__main__":
     store.close()
 
     granularity = config.david["sampling"]["granularity"]
+    param_grid = config.david["svm"]["cross_val"]["param_grid"]
+    n_jobs = config.david["svm"]["cross_val"]["n_jobs"]
 
     fandata_store = pd.HDFStore(
         config.david["default"]["data_sources"] + "/lex560.h5")
@@ -43,6 +42,8 @@ if __name__ == "__main__":
     prediction = svm.model.predict(endog=ts,
                                    weather_history=weather_history,
                                    weather_forecast=weather_forecast,
-                                   cov=cov, gran=gran, params=params)
+                                   cov=cov, gran=gran, params=params,
+                                   param_grid=param_grid, n_jobs=n_jobs,
+                                   discrete=True)
 
     print(prediction)
