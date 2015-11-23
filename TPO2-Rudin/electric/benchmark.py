@@ -1,8 +1,6 @@
-from common.utils import get_dt_tseries
 
 __author__ = 'ashishgagneja'
 
-import db.connect as connect
 import pandas as pd
 import electric.utils
 import weather.helpers
@@ -11,25 +9,26 @@ import occupancy.utils
 import itertools
 import weather.wet_bulb
 import common.utils
-import scipy
+import numpy
+import sys
+
 
 
 def _filter_missing_weather_data(weather_df):
     """
-    Filter rows with missing data like -9999's
+    Filter/remove rows with missing data like -9999's
 
     :param weather_df: pandas DataFrame
-
     :return: pandas DataFrame
     """
 
     bad_data = weather_df.where(weather_df < -998).any(axis=1)
-    # print('bad_data: %s' % bad_data[bad_data == True])
     return weather_df.drop(bad_data[bad_data == True].index)
 
 
+
 def _get_weather(h5file_name, history_name, forecast_name, gran):
-    """
+    """ Load all available weather data, clean it and drop unneeded columns
 
     :param h5file_name: string
         path to HDF5 file containing weather data
@@ -37,7 +36,10 @@ def _get_weather(h5file_name, history_name, forecast_name, gran):
         group identifier for historical weather data within the HDF5 file
     :param forecast_name: string
         group identifier for weather forecast within the HDF5 file
-    :return:
+    :param granularity: int
+        sampling frequency of input data and forecast data
+
+    :return: pandas DataFrame
     """
 
     with pd.HDFStore(h5file_name) as store:
@@ -67,16 +69,17 @@ def _get_weather(h5file_name, history_name, forecast_name, gran):
 
 def _get_data_availability_dates(obs_ts, gran):
     """
-    Find dates for which data is available. Dates for which < threshold % data
-    is available are dropped.
+    Find the set of dates for which data is available.
+    Dates for which < THRESHOLD % data is available are dropped.
 
     Assumption: Series has no NA's
-    Assumption: Threshold is 85
+    Assumption: THRESHOLD := 85
 
     :param obs_ts: pandas Series
+        time series object
     :param gran: int
         sampling frequency of input data and forecast data
-    :return: set of dates for which
+    :return: set
     """
 
     ts_list = list(map(datetime.datetime.date, obs_ts.index))
@@ -89,17 +92,40 @@ def _get_data_availability_dates(obs_ts, gran):
 
 
 def _get_wetbulb_ts(weather_df):
+    """
+    Compute wet bulb temperature time series from weather data
+    :param weather_df: pandas DataFrame
+    :return: pandas
+    """
     return weather_df.apply(weather.wet_bulb.compute_bulb_helper, axis=1)
 
 
 
 def find_lowest_electric_usage(date_scores, electric_ts, n):
+    """
+    Finds the day with the lowest total electric usage from among the n most
+    similar occupancy days
+
+    :param date_scores: tuple of tuples
+        Each tuple is datetime.date followed by its L2 norm score compared to
+        the occupancy forecast for the base date
+    :param electric_ts: pandas Series
+        Total electric demand time series
+    :param n: int
+        number of most similar occupancy days to consider
+
+    :return: tuple with benchmark date and pandas Series object with usage data
+        from benchmark date
+    """
 
     dates, sim_scores = zip(*date_scores)
 
-    # total_usage = []
-    min_usage = [dates[0], sys.maxint, None]
-    for dt in enumerate(dates):
+    min_usage = [dates[0], sys.maxsize, None]
+    for i, dt in enumerate(dates):
+
+        if i >= n:
+            break
+
         score = sim_scores[i]
         if score:
 
@@ -107,19 +133,35 @@ def find_lowest_electric_usage(date_scores, electric_ts, n):
             # Assumption: Linear interpolation is a reasonable way to fill gaps
             day_elec_ts = common.utils.drop_series_ix_date(
                 common.utils.get_dt_tseries(dt, electric_ts))
-            res = scipy.integration.cumtrapz(day_elec_ts.data,
-                                             day_elec_ts.index, initial=0)
-            print(res)
-            # total_usage.append((dt, res[-1]))
+            auc = numpy.trapz(day_elec_ts.data, x=list(map(lambda x:
+                                                           x.hour * 3600
+                                                         + x.minute * 60
+                                                         + x.second,
+                                                           day_elec_ts.index)))
+            print("%s, %s" % (dt, auc))
 
-            if res[-1] < min_usage[1]:
-                min_usage = [dt, res[-1], day_elec_ts]
+            if 0 < auc < min_usage[1]:
+                min_usage = [dt, auc, day_elec_ts]
 
     return min_usage[0], min_usage[2]
 
 
 
 def _find_benchmark(base_dt, occ_ts, wetbulb_ts, electric_ts, gran):
+    """
+        Find benchmark electric usage for the given base date. Benchmark
+        electric is defined as the lowest observed total daily electric usage
+        for a similar weather and occupancy day in the past. weather and
+        occupancy forecasts are used to find such a day and its associated
+        electric usage
+
+    :param base_dt:
+    :param occ_ts:
+    :param wetbulb_ts:
+    :param electric_ts:
+    :param gran:
+    :return:
+    """
 
     # get data availability
     elec_avlblty = _get_data_availability_dates(electric_ts, gran)
@@ -138,10 +180,11 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, electric_ts, gran):
     print("sim days: %s" % str(sim_wetbulb_days))
 
     # compute occupancy similarity score for the k most similar weather days
-    occ_scores = occupancy.utils.score_occ_similarity(base_dt, sim_wetbulb_days)
-
+    occ_scores = occupancy.utils.score_occ_similarity(base_dt, sim_wetbulb_days,
+                                                      occ_ts)
+    print(occ_scores)
     # find the date with the lowest electric usage
-    return find_lowest_electric_usage(occ_scores, electric_ts)
+    return find_lowest_electric_usage(occ_scores, electric_ts, 5)
 
 
 
@@ -174,10 +217,7 @@ def process_building(building_id, db_server, db_name, collection_name,
     :return:
     """
 
-    # connect to database
-    # conn = connect.connect(db_server, database=db_name)
-    # db = conn[db_name]
-
+    # get occupancy data
     occ_ts = occupancy.utils.get_occupancy_ts(db_server, db_name,
                                               collection_name, building_id)
     print("occupancy: %s" % occ_ts)
@@ -186,20 +226,17 @@ def process_building(building_id, db_server, db_name, collection_name,
     elec_ts = electric.utils.get_electric_ts(db_server, db_name,
                                              collection_name, building_id,
                                              meter_count, granularity)
-    print(elec_ts)
+    print("electric: %s" % elec_ts)
 
-    # get weather data
+    # get weather
     weather_df = _get_weather(h5file_name, history_name, forecast_name,
                               granularity)
     print("weather: %s" % weather_df)
     wetbulb_ts = _get_wetbulb_ts(weather_df)
     print("wetbulb: %s" % wetbulb_ts)
 
-
-
     # find baseline
     bench_dt, bench_usage = _find_benchmark(base_dt, occ_ts, wetbulb_ts,
                                             elec_ts, granularity)
-
+    print("bench dt: %s, bench usage: %s" % (bench_dt, bench_usage))
     # TODO: save results
-    conn.close()

@@ -5,9 +5,18 @@ import numpy
 import datetime
 import pandas as pd
 import db.connect as connect
+import math
+
+
 
 def drop_series_ix_date(tseries):
+    """
+    Remove dates from Series index
 
+    :param tseries: pandas Series of DataFrame
+        Data set to work on
+    :return: pandas Series
+    """
     return pd.Series(data=tseries.data, index=map(lambda x: x.time(),
                                                   tseries.index.to_datetime()))
 
@@ -32,7 +41,9 @@ def get_ts(db_server, db_name, collection_name, bldg_id, device, system, field):
             ts_list_t, val_list_t = zip(*zipped)
 
             ts_list.extend(ts_list_t)
+            # ts_list.append(ts_list_t)
             value_list.extend(val_list_t)
+            # value_list.append(val_list_t)
 
     return ts_list, value_list
 
@@ -51,7 +62,7 @@ def compute_profile_similarity_score(gold_ts, other_ts):
     norm_ts = gold_ts.loc[common_tms] - other_ts.loc[common_tms]
     # L2 norm is normalized by number of overlapping keys to make sure days with
     # more overlapping data available are not at a disadvantage
-    return (norm_ts**2).sum()/len(common_tms)
+    return math.sqrt((norm_ts**2).sum()/len(common_tms))
 
 
 
@@ -123,15 +134,18 @@ def convert_datatypes(ts_list, value_list, drop_tz=True, val_type=float):
 
 
 def get_dt_tseries(dt, full_ts):
+    """
+    Get time series snippet for the given date
 
-    # zipped = zip(list[full_ts.index.map(lambda x: x.date())],
-    #              full_ts.index)
-    # zipped = zip(list[full_ts.index.date(lambda x: x.date())],
-    #              full_ts.index)
+    :param dt: datetime.date
+        Date for which to get the observation data from
+    :param full_ts: pandas Series or DataFrame
+        complete observation / time series data set
+
+    :return: pandas Series or DataFrame
+    """
     bod_tm = datetime.time(0, 0, 0, 0)
     start_idx = datetime.datetime.combine(dt, bod_tm)
     end_idx = datetime.datetime.combine(
         dt + dateutil.relativedelta.relativedelta(days=1), bod_tm)
     return full_ts[str(start_idx) : str(end_idx)]
-
-    # dt_indices = list[map(lambda x, y: y if x == dt else pass, zipped)]

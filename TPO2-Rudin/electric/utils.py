@@ -2,7 +2,6 @@ __author__ = 'ashishgagneja'
 
 import pandas as pd
 import common.utils
-import itertools
 import joblib
 
 def _construct_dataframe(ts_lists, value_lists):
@@ -12,14 +11,6 @@ def _construct_dataframe(ts_lists, value_lists):
         raise ValueError('array lengths must match')
     if not len(ts_lists):
         return None
-
-    # ts_idx_t, value_list_t = _convert_datatypes(ts_lists[0], value_lists[0])
-    # df = pd.Dataframe(data=value_list_t, index=ts_idx_t)
-
-    # construct a superset of indices
-    # super_index = pd.DatetimeIndex(ts_lists[0])
-    # for ts_list in ts_lists[1:]:
-    #     super_index = super_index.union(ts_list)
 
     master_df = pd.DataFrame()
     # insert column data
@@ -33,8 +24,8 @@ def _construct_dataframe(ts_lists, value_lists):
                                    how='outer')
 
     total_df = master_df.sum(axis=1)
-    print(master_df)
-    return total_df
+    print(type(total_df))
+    return total_df.sort_index()
 
 
 # TODO: this code can be generalized and used everywhere
@@ -92,14 +83,12 @@ def get_electric_ts(db_server, db_name, collection_name, bldg_id, meter_count,
         # value_lists.append(value_list)
 
 
-    results = [joblib.Parallel(n_jobs=-1, verbose=51)(joblib.delayed(common.utils.get_ts)(
-        db_server, db_name, collection_name, bldg_id, "Elec-M%d" % equip_id,
-        'SIF_Electric_Demand', 'value') for equip_id in range(1, meter_count+1))]
+    results = joblib.Parallel(n_jobs=-1, verbose=51)(joblib.delayed(
+        common.utils.get_ts)(db_server, db_name, collection_name, bldg_id,
+                             "Elec-M%d" % equip_id, 'SIF_Electric_Demand',
+                             'value') for equip_id in range(1, meter_count+1))
 
-    print(len(results[0]))
     ts_lists, value_lists = zip(*results)
-    ts_lists = list(itertools.chain.from_iterable(ts_lists))
-    value_lists = list(itertools.chain.from_iterable(value_lists))
 
-    gran = "%dmin" % granularity
+    # gran = "%dmin" % granularity
     return _construct_dataframe(ts_lists, value_lists)

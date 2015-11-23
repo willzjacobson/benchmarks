@@ -60,12 +60,24 @@ def get_occupancy_ts(db_server, db_name, collection_name, bldg_id, drop_tz=True)
     #     if type(x) is not int else numpy.nan)
 
     # drop missing values, set timestamp as the new index and sort by index
-    return occ_df.dropna().set_index('tstamp',
-                                     verify_integrity=True).sort_index()
+    occ_df = occ_df.dropna().set_index('tstamp',
+                                       verify_integrity=True).sort_index()
+    return occ_df['occupancy']
+
 
 
 
 def score_occ_similarity(base_dt, date_shortlist, occ_ts):
+    """
+    Score occupancy profile similarity between occupancy predicted for base date
+    and that observed on the the short list of dates provided
+
+    :param base_dt: datetime.date
+        date for w
+    :param date_shortlist:
+    :param occ_ts:
+    :return:
+    """
 
     # TODO: when we have occupancy forecast, use that to obtain expected
     # occupancy. For now, use actual
@@ -82,4 +94,5 @@ def score_occ_similarity(base_dt, date_shortlist, occ_ts):
                     common.utils.drop_series_ix_date(occ_ts[dt_t: end_idx]))
         scores.append((dt_t, score))
 
-    return scores.sort(key=lambda x: x if x else sys.maxint)
+    scores.sort(key=lambda x: x[1] if x[1] else sys.maxsize)
+    return scores
