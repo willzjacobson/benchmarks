@@ -6,26 +6,6 @@ import datetime
 import sys
 
 
-# TODO: this code can be generalized and used everywhere
-# def _get_ts(collection, bldg_id, device, system, field):
-#
-#     ts_list, value_list, daily_dict = [], [], {}
-#
-#     for data in collection.find({"_id.building": bldg_id,
-#                                  "_id.device": device,
-#                                  "_id.system": system}):
-#
-#         readings = data['readings']
-#         zipped = map(lambda x: (x['time'], x[field]), readings)
-#
-#         ts_list_t, val_list_t = zip(*zipped)
-#
-#         ts_list.extend(ts_list_t)
-#         value_list.extend(val_list_t)
-#
-#     return ts_list, value_list
-
-
 
 def get_occupancy_ts(db_server, db_name, collection_name, bldg_id, drop_tz=True):
     """Fetch all available occupancy data from database

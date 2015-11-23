@@ -149,18 +149,25 @@ def find_lowest_electric_usage(date_scores, electric_ts, n):
 
 def _find_benchmark(base_dt, occ_ts, wetbulb_ts, electric_ts, gran):
     """
-        Find benchmark electric usage for the given base date. Benchmark
-        electric is defined as the lowest observed total daily electric usage
-        for a similar weather and occupancy day in the past. weather and
-        occupancy forecasts are used to find such a day and its associated
-        electric usage
+        Find benchmark electric usage for the date base_dt. Benchmark
+        electric usage is defined as the electric usage profile from a similar
+        weather and occupancy day in the past with the lowest total daily
+        electric usage. weather and occupancy forecasts are used to find such
+        a day. Benchmark electric usage for any given day can not go up, it can
+        only go down as the building operation becomes more efficient
 
     :param base_dt:
-    :param occ_ts:
-    :param wetbulb_ts:
-    :param electric_ts:
-    :param gran:
-    :return:
+    :param occ_ts: pandas Series
+        occupancy time series
+    :param wetbulb_ts: pandas Series
+        wet bulb time series
+    :param electric_ts: pandas Series
+        total electric usage time series
+    :param granularity: int
+        expected frequency of observations and forecast in minutes
+
+    :return: tuple containing benchmark date and a pandas Series object with
+        electric usage data from that date
     """
 
     # get data availability

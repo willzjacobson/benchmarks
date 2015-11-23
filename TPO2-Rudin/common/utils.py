@@ -22,8 +22,20 @@ def drop_series_ix_date(tseries):
 
 
 
-# TODO: this code can be generalized and used everywhere
 def get_ts(db_server, db_name, collection_name, bldg_id, device, system, field):
+    """
+    Get all observation data with the given building, device and system
+    combination from the database
+
+    :param db_server:
+    :param db_name:
+    :param collection_name:
+    :param bldg_id:
+    :param device:
+    :param system:
+    :param field:
+    :return:
+    """
 
 
     with connect.connect(db_server, database=db_name) as conn:
@@ -41,9 +53,7 @@ def get_ts(db_server, db_name, collection_name, bldg_id, device, system, field):
             ts_list_t, val_list_t = zip(*zipped)
 
             ts_list.extend(ts_list_t)
-            # ts_list.append(ts_list_t)
             value_list.extend(val_list_t)
-            # value_list.append(val_list_t)
 
     return ts_list, value_list
 
