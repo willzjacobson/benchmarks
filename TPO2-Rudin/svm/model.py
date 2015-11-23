@@ -2,6 +2,7 @@ __author__ = 'David Karapetyan'
 
 import weather.helpers
 import sklearn.svm
+import numpy as np
 import sklearn.preprocessing
 import pandas as pd
 import ts_proc.munge
@@ -62,7 +63,103 @@ def _build(endog, weather_orig, cov, gran, params, param_grid, n_jobs,
                                                param_grid=param_grid,
                                                n_jobs=n_jobs)
 
-        return [clf.fit(x, y), scaler]
+        fit = clf.fit(x, y)
+
+        return [fit, scaler]
+
+
+def best_gamma(estimator, c, param_grid_gamma, n_jobs, threshold):
+    fit = sklearn.grid_search.GridSearchCV(estimator,
+                                           param_grid_gamma,
+                                           n_jobs).fit()
+
+    if param_grid_gamma[0] or param_grid_gamma[-1] is \
+            fit.best_params_[
+                'gamma']:
+        return fit.best_params_
+
+    center = fit.best_params_['gamma']
+    left = param_grid_gamma[0]
+    right = param_grid_gamma[-1]
+    left_mid = (param_grid_gamma[0] + center) / 2
+    right_mid = (param_grid_gamma[-1] + center) / 2
+
+    left_new_params = {'C': c, 'gamma': [left, left_mid, center]}
+    right_new_params = {'C': c, 'gamma': [center, right_mid, right]}
+
+    fit_next_1 = sklearn.grid_search.GridSearchCV(estimator,
+                                                  left_new_params,
+                                                  n_jobs).fit()
+
+    fit_next_2 = sklearn.grid_search.GridSearchCV(estimator,
+                                                  right_new_params,
+                                                  n_jobs).fit()
+
+    if fit_next_1.best_score_ <= fit_next_2.best_score:
+        new_params = right_new_params
+        fit_next = fit_next_2
+    else:
+        new_params = left_new_params
+        fit_next = fit_next_1
+
+    # base case:
+    if fit_next.best_score_ <= fit.best_score:
+        return fit.best_params_
+
+    # inductive step
+    while np.abs(fit_next.best_score_ - fit.best_score_) > threshold:
+        # check if last element or first element
+        # of parameter grid is best. If so, return
+        # check if last element or first element
+        # of parameter grid is best. If so, return
+
+        fit = sklearn.grid_search.GridSearchCV(estimator,
+                                               new_params,
+                                               n_jobs).fit()
+
+        if new_params['gamma'][-1] is fit.best_params_['gamma']:
+            return param_grid_gamma
+
+        center = new_params[1]
+        left = new_params[0]
+        right = new_params[2]
+        left_mid = (new_params[0] + new_params[1]) / 2
+        right_mid = (new_params[1] + new_params[2]) / 2
+
+        left_new_params = {'C': c, 'gamma': [left, left_mid, center]}
+        right_new_params = {'C': c, 'gamma': [center, right_mid, right]}
+
+        fit_next_1 = sklearn.grid_search.GridSearchCV(estimator,
+                                                      left_new_params,
+                                                      n_jobs).fit()
+
+        fit_next_2 = sklearn.grid_search.GridSearchCV(estimator,
+                                                      right_new_params,
+                                                      n_jobs).fit()
+
+        if fit_next_1.best_score_ <= fit_next_2.best_score:
+            new_params = right_new_params
+            fit_next = fit_next_2
+        else:
+            new_params = left_new_params
+            fit_next = fit_next_1
+
+        if fit_next.best_score_ <= fit.best_score:
+            return fit
+
+
+def best_params(estimator, param_grid, n_jobs, threshold):
+    params = []
+    scores = []
+    for constant in param_grid["C"]:
+        fit = best_gamma(estimator, constant, param_grid, n_jobs,
+                         threshold)
+        scores.append(fit.best_score_)
+        params.append(fit.best_params_)
+
+    ind = np.argmax(scores)
+
+    return params[ind]
 
 
 def predict(endog, weather_history, weather_forecast, cov, gran,
@@ -85,7 +182,8 @@ def predict(endog, weather_history, weather_forecast, cov, gran,
                                param_grid=param_grid, n_jobs=n_jobs,
                                discrete=discrete)
 
-        features = weather.helpers.forecast_munge(weather_forecast, gran)[cov]
+        features = weather.helpers.forecast_munge(weather_forecast, gran)[
+            cov]
         prediction_index = features.index
         features = features.reset_index()
 
