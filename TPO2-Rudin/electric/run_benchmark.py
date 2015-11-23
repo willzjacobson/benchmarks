@@ -7,13 +7,28 @@ co-variates
 
 import config
 import electric.benchmark as bmark
+import sys
+import datetime
 
 cfg = config.ashish
 
 buildings = cfg['default']['buildings']
 
-# determine benchmark date
 
+# determine benchmark date
+bench_dt = datetime.date.today()
+
+
+arg_count = len(sys.argv)
+if arg_count not in [1, 4]:
+    raise Exception("Usage: python %s [YYYY MM DD]"
+                    % sys.argv[0])
+
+elif arg_count == 4:
+    int_args = list(map(int, sys.argv[1:]))
+    bench_dt = datetime.date(int_args[0], int_args[1], int_args[2])
+
+print("looking up benchmark for %s" % bench_dt)
 
 # iterate over all buildings
 for building_id in buildings:
@@ -28,4 +43,4 @@ for building_id in buildings:
                            cfg['weather']['history_orig'],
                            cfg['weather']['forecast_orig'],
                            cfg['sampling']['granularity'],
-                           None)
+                           bench_dt)

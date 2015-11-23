@@ -29,7 +29,7 @@ def compute_bulb(temp, dew_pt, pressure):
 def compute_bulb_helper(args):
 
     temp, dew_pt, pressure = args
-    print(args)
+    # print(args)
     return compute_bulb(temp, dew_pt, pressure)
 
 
