@@ -10,6 +10,17 @@ import math
 
 
 def dow_type(dt):
+    """
+    Find day of week type.
+    Type 1: Mondays are usually different from other weekdays
+    Type 2:Tue-Thu are categorized as one type
+    Type 3: Fridays are different from other days as some people leave early
+    Type 4: weekend has it
+    own type
+
+    :param dt: datetime.date
+    :return: int in [1, 2, 3, 4]
+    """
 
     dow = dt.isoweekday()
 
@@ -50,11 +61,11 @@ def get_ts(db_server, db_name, collection_name, bldg_id, device, system, field):
     :param bldg_id: string
         building identifier
     :param device: string
-        device name for time series
+        device name for identifying time series
     :param system: string
-        system name for time series
+        system name for identifying time series
     :param field: string
-        field name for time series
+        field name for identifying time series
 
     :return: tuple with a list of time stamps followed by a list of values
     """
@@ -82,12 +93,27 @@ def get_ts(db_server, db_name, collection_name, bldg_id, device, system, field):
 
 
 def compute_profile_similarity_score(gold_ts, other_ts):
+    """
+    compute similarity score of two profiles/time-series snippets
+    Similarity score is the L2 norm computed using values associated with
+    indices common to both profiles. The score is normalized by number of common
+    indices to avoid penalizing days with larger overlaps
+
+    Assumption: Index over must be 90% or more
+
+    :param gold_ts: pandas Series
+        time series from base date
+    :param other_ts: pandas Series
+        time series from another past day
+
+    :return: float
+    """
 
     # find index overlap
     common_tms = set(gold_ts.index).intersection(set(other_ts.index))
 
     # if index overlap is less than threshold, do not compute score
-    if len(common_tms) < 0.95 * gold_ts.size:
+    if len(common_tms) < 0.90 * gold_ts.size:
         # print('data overlap below threshold: %s' % other_ts.index[0].date())
         return None
 
@@ -99,6 +125,24 @@ def compute_profile_similarity_score(gold_ts, other_ts):
 
 
 def find_similar_profile_days(gold_ts, gold_dow_type, all_ts, k, data_avlblty):
+    """
+    Find k most similar profile days within all_ts with day-of-week type
+    matching gold_dow_type and profile/time-series most similar to gold_ts such
+    that they are also in the set data_avlblty
+
+    :param gold_ts: pandas Series
+        base time series
+    :param gold_dow_type: int
+        day-of-week type for base date
+    :param all_ts: pandas Series
+        complete time series to search similar profile days in
+    :param k: int
+        number of most similar days to returns
+    :param data_avlblty: set
+        set of dates which must contain the k most similar days selected
+
+    :return: list of top k dates with most similar profiles
+    """
 
     # find long list of dates
     all_dates = list(all_ts.index.date)
@@ -149,8 +193,8 @@ def convert_datatypes(ts_list, value_list, drop_tz=True, val_type=float):
         If None, no transformation is done
 
     :return: list of lists
-        list containing two lists: parsed timestamps followed by transformed
-        observation data
+        list containing a list with parsed timestamps followed by another one
+        with transformed/casted observation data
 
     """
 
@@ -178,8 +222,6 @@ def get_dt_tseries(dt, full_ts):
 
     :return: pandas Series or DataFrame
     """
-    bod_tm = datetime.time(0, 0, 0, 0)
-    start_idx = datetime.datetime.combine(dt, bod_tm)
-    end_idx = datetime.datetime.combine(
-        dt + dateutil.relativedelta.relativedelta(days=1), bod_tm)
+    start_idx = datetime.datetime.combine(dt, datetime.time.min)
+    end_idx = datetime.datetime.combine(dt, datetime.time.max)
     return full_ts[str(start_idx) : str(end_idx)]

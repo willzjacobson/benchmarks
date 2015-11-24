@@ -38,7 +38,7 @@ def _get_weather(h5file_name, history_name, forecast_name, gran):
         group identifier for historical weather data within the HDF5 file
     :param forecast_name: string
         group identifier for weather forecast within the HDF5 file
-    :param granularity: int
+    :param gran: int
         sampling frequency of input data and forecast data
 
     :return: pandas DataFrame
@@ -96,6 +96,7 @@ def _get_data_availability_dates(obs_ts, gran):
 def _get_wetbulb_ts(weather_df):
     """
     Compute wet bulb temperature time series from weather data
+
     :param weather_df: pandas DataFrame
     :return: pandas
     """
@@ -165,7 +166,7 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, electric_ts, gran):
         wet bulb time series
     :param electric_ts: pandas Series
         total electric usage time series
-    :param granularity: int
+    :param gran: int
         expected frequency of observations and forecast in minutes
 
     :return: tuple containing benchmark date and a pandas Series object with
@@ -225,6 +226,7 @@ def process_building(building_id, db_server, db_name, collection_name,
         expected frequency of observations and forecast in minutes
     :param base_dt: datetime.date
         date for which benchmark electric usage is to be found
+
     :return:
     """
 
@@ -256,6 +258,7 @@ def process_building(building_id, db_server, db_name, collection_name,
     # get actual, if available
     actual_ts = common.utils.get_dt_tseries(base_dt, elec_ts)
     actual_ts_nodate = common.utils.drop_series_ix_date(actual_ts)
+    print("actual: %s" % actual_ts)
     disp_df = bench_usage.to_frame(name='benchmark')
     disp_df = disp_df.join(actual_ts_nodate.to_frame(name='actual'),
                            how='outer')

@@ -37,24 +37,6 @@ def _construct_dataframe(ts_lists, value_lists):
     return total_df.sort_index()
 
 
-# TODO: this code can be generalized and used everywhere
-# def _get_meter_data(meter_id, bldg_id, collection):
-#
-#     ts_list, value_list = [], []
-#     for data in collection.find({"_id.building": bldg_id,
-#                                  "_id.device": "Elec-M%d" % meter_id,
-#                                  "_id.system": "SIF_Electric_Demand"}):
-#
-#         readings = data['readings']
-#         zipped = map(lambda x: (x['time'], x['value']), readings)
-#
-#         ts_list_t, value_list_t = zip(*zipped)
-#         ts_list.extend(ts_list_t)
-#         value_list.extend(value_list_t)
-#
-#     return [ts_list, value_list]
-
-
 
 def get_electric_ts(db_server, db_name, collection_name, bldg_id, meter_count,
                     granularity):
@@ -75,8 +57,6 @@ def get_electric_ts(db_server, db_name, collection_name, bldg_id, meter_count,
         sampling frequency of input data and forecast data
     :return: pandas Dataframe
     """
-
-    # collection = db[collection_name]
 
     ts_lists, value_lists = [], []
     # for equip_id in range(1, meter_count+1):
