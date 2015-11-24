@@ -107,6 +107,7 @@ david :
           kernel:
             - rbf
       n_jobs: -1
+      threshold: 0.003
 
 
   sarima:

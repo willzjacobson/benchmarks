@@ -22,6 +22,7 @@ if __name__ == "__main__":
 
     granularity = config.david["sampling"]["granularity"]
     param_grid = config.david["svm"]["cross_val"]["param_grid"]
+    threshold = config.david["svm"]["cross_val"]["threshold"]
     n_jobs = config.david["svm"]["cross_val"]["n_jobs"]
 
     fandata_store = pd.HDFStore(
@@ -45,7 +46,8 @@ if __name__ == "__main__":
                                    weather_history=weather_history,
                                    weather_forecast=weather_forecast,
                                    cov=cov, gran=gran, params=params_init,
-                                   param_grid=param_grid, n_jobs=n_jobs,
+                                   param_grid=param_grid,
+                                   threshold=threshold, n_jobs=n_jobs,
                                    discrete=True)
 
     print(prediction)
