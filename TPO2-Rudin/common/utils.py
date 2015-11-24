@@ -5,16 +5,59 @@ import numpy
 import datetime
 import pandas as pd
 import db.connect as connect
+import math
+
+
+
+def dow_type(dt):
+
+    dow = dt.isoweekday()
+
+    if dow in [1]: # Monday
+        return 1
+    elif dow in [2, 3, 4]: # Tue, Wed, Thu
+        return 2
+    elif dow in [5]: # Friday
+        return 3
+    else: # weekend
+        return 4
+
 
 def drop_series_ix_date(tseries):
+    """
+    Drop dates from Series index
 
+    :param tseries: pandas Series of DataFrame
+        Data set to work on
+    :return: pandas Series
+    """
     return pd.Series(data=tseries.data, index=map(lambda x: x.time(),
                                                   tseries.index.to_datetime()))
 
 
 
-# TODO: this code can be generalized and used everywhere
 def get_ts(db_server, db_name, collection_name, bldg_id, device, system, field):
+    """
+    Get all observation data with the given building, device and system
+    combination from the database
+
+    :param db_server: string
+        database server name or IP-address
+    :param db_name: string
+        name of the database on server
+    :param collection_name: string
+        collection name to use
+    :param bldg_id: string
+        building identifier
+    :param device: string
+        device name for time series
+    :param system: string
+        system name for time series
+    :param field: string
+        field name for time series
+
+    :return: tuple with a list of time stamps followed by a list of values
+    """
 
 
     with connect.connect(db_server, database=db_name) as conn:
@@ -51,11 +94,11 @@ def compute_profile_similarity_score(gold_ts, other_ts):
     norm_ts = gold_ts.loc[common_tms] - other_ts.loc[common_tms]
     # L2 norm is normalized by number of overlapping keys to make sure days with
     # more overlapping data available are not at a disadvantage
-    return (norm_ts**2).sum()/len(common_tms)
+    return math.sqrt((norm_ts**2).sum()/len(common_tms))
 
 
 
-def find_similar_profile_days(gold_ts, all_ts, k, data_avlblty):
+def find_similar_profile_days(gold_ts, gold_dow_type, all_ts, k, data_avlblty):
 
     # find long list of dates
     all_dates = list(all_ts.index.date)
@@ -64,7 +107,9 @@ def find_similar_profile_days(gold_ts, all_ts, k, data_avlblty):
     cutoff_dt = gold_ts.index[0].to_datetime().date()
     print("cutoff date: %s" % cutoff_dt)
 
-    all_dates = set([t for t in all_dates if t < cutoff_dt])
+    # drop future dates and dates from other day of week types
+    all_dates = set([t for t in all_dates if t < cutoff_dt and
+                     dow_type(t) == gold_dow_type])
 
     # compute similarity score for each date
     one_day = datetime.timedelta(days=1)
@@ -123,15 +168,18 @@ def convert_datatypes(ts_list, value_list, drop_tz=True, val_type=float):
 
 
 def get_dt_tseries(dt, full_ts):
+    """
+    Get time series snippet for the given date
 
-    # zipped = zip(list[full_ts.index.map(lambda x: x.date())],
-    #              full_ts.index)
-    # zipped = zip(list[full_ts.index.date(lambda x: x.date())],
-    #              full_ts.index)
+    :param dt: datetime.date
+        Date for which to get the observation data from
+    :param full_ts: pandas Series or DataFrame
+        complete observation / time series data set
+
+    :return: pandas Series or DataFrame
+    """
     bod_tm = datetime.time(0, 0, 0, 0)
     start_idx = datetime.datetime.combine(dt, bod_tm)
     end_idx = datetime.datetime.combine(
         dt + dateutil.relativedelta.relativedelta(days=1), bod_tm)
     return full_ts[str(start_idx) : str(end_idx)]
-
-    # dt_indices = list[map(lambda x, y: y if x == dt else pass, zipped)]

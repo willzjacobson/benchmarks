@@ -6,26 +6,6 @@ import datetime
 import sys
 
 
-# TODO: this code can be generalized and used everywhere
-# def _get_ts(collection, bldg_id, device, system, field):
-#
-#     ts_list, value_list, daily_dict = [], [], {}
-#
-#     for data in collection.find({"_id.building": bldg_id,
-#                                  "_id.device": device,
-#                                  "_id.system": system}):
-#
-#         readings = data['readings']
-#         zipped = map(lambda x: (x['time'], x[field]), readings)
-#
-#         ts_list_t, val_list_t = zip(*zipped)
-#
-#         ts_list.extend(ts_list_t)
-#         value_list.extend(val_list_t)
-#
-#     return ts_list, value_list
-
-
 
 def get_occupancy_ts(db_server, db_name, collection_name, bldg_id, drop_tz=True):
     """Fetch all available occupancy data from database
@@ -60,12 +40,24 @@ def get_occupancy_ts(db_server, db_name, collection_name, bldg_id, drop_tz=True)
     #     if type(x) is not int else numpy.nan)
 
     # drop missing values, set timestamp as the new index and sort by index
-    return occ_df.dropna().set_index('tstamp',
-                                     verify_integrity=True).sort_index()
+    occ_df = occ_df.dropna().set_index('tstamp',
+                                       verify_integrity=True).sort_index()
+    return occ_df['occupancy']
+
 
 
 
 def score_occ_similarity(base_dt, date_shortlist, occ_ts):
+    """
+    Score occupancy profile similarity between occupancy predicted for base date
+    and that observed on the the short list of dates provided
+
+    :param base_dt: datetime.date
+        date for w
+    :param date_shortlist:
+    :param occ_ts:
+    :return:
+    """
 
     # TODO: when we have occupancy forecast, use that to obtain expected
     # occupancy. For now, use actual
@@ -82,4 +74,5 @@ def score_occ_similarity(base_dt, date_shortlist, occ_ts):
                     common.utils.drop_series_ix_date(occ_ts[dt_t: end_idx]))
         scores.append((dt_t, score))
 
-    return scores.sort(key=lambda x: x if x else sys.maxint)
+    scores.sort(key=lambda x: x[1] if x[1] else sys.maxsize)
+    return scores
