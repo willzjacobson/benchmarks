@@ -5,6 +5,15 @@ import common.utils
 import joblib
 
 def _construct_dataframe(ts_lists, value_lists):
+    """
+    Construct a pandas DataFrame using the time series data on individual
+    meter can compute the total instantaneous usage
+
+    :param ts_lists: list of lists
+        list of
+    :param value_lists:
+    :return:
+    """
 
     # error checks
     if len(ts_lists) != len(value_lists):

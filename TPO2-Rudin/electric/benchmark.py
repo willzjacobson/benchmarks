@@ -11,6 +11,8 @@ import weather.wet_bulb
 import common.utils
 import numpy
 import sys
+import matplotlib.pyplot
+
 
 
 
@@ -180,7 +182,9 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, electric_ts, gran):
 
     # find k closest weather days for which electric and occupancy data is
     # available
+    dow_type = common.utils.dow_type(base_dt)
     sim_wetbulb_days = common.utils.find_similar_profile_days(base_dt_wetbulb,
+                                                              dow_type,
                                                               wetbulb_ts,
                                                               20,
                                                               data_avlblty)
@@ -246,4 +250,21 @@ def process_building(building_id, db_server, db_name, collection_name,
     bench_dt, bench_usage = _find_benchmark(base_dt, occ_ts, wetbulb_ts,
                                             elec_ts, granularity)
     print("bench dt: %s, bench usage: %s" % (bench_dt, bench_usage))
+
+    # TODO: delete display code
+    # plot
+    # get actual, if available
+    actual_ts = common.utils.get_dt_tseries(base_dt, elec_ts)
+    actual_ts_nodate = common.utils.drop_series_ix_date(actual_ts)
+    disp_df = bench_usage.to_frame(name='benchmark')
+    disp_df = disp_df.join(actual_ts_nodate.to_frame(name='actual'),
+                           how='outer')
+    print("disp df: %s" % disp_df)
+
+    matplotlib.pyplot.style.use('ggplot')
+    matplotlib.pyplot.figure()
+    chart = disp_df.plot()
+    fig = chart.get_figure()
+    fig.savefig('bmark.png')
+
     # TODO: save results

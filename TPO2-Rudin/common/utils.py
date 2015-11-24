@@ -9,9 +9,23 @@ import math
 
 
 
+def dow_type(dt):
+
+    dow = dt.isoweekday()
+
+    if dow in [1]: # Monday
+        return 1
+    elif dow in [2, 3, 4]: # Tue, Wed, Thu
+        return 2
+    elif dow in [5]: # Friday
+        return 3
+    else: # weekend
+        return 4
+
+
 def drop_series_ix_date(tseries):
     """
-    Remove dates from Series index
+    Drop dates from Series index
 
     :param tseries: pandas Series of DataFrame
         Data set to work on
@@ -27,14 +41,22 @@ def get_ts(db_server, db_name, collection_name, bldg_id, device, system, field):
     Get all observation data with the given building, device and system
     combination from the database
 
-    :param db_server:
-    :param db_name:
-    :param collection_name:
-    :param bldg_id:
-    :param device:
-    :param system:
-    :param field:
-    :return:
+    :param db_server: string
+        database server name or IP-address
+    :param db_name: string
+        name of the database on server
+    :param collection_name: string
+        collection name to use
+    :param bldg_id: string
+        building identifier
+    :param device: string
+        device name for time series
+    :param system: string
+        system name for time series
+    :param field: string
+        field name for time series
+
+    :return: tuple with a list of time stamps followed by a list of values
     """
 
 
@@ -76,7 +98,7 @@ def compute_profile_similarity_score(gold_ts, other_ts):
 
 
 
-def find_similar_profile_days(gold_ts, all_ts, k, data_avlblty):
+def find_similar_profile_days(gold_ts, gold_dow_type, all_ts, k, data_avlblty):
 
     # find long list of dates
     all_dates = list(all_ts.index.date)
@@ -85,7 +107,9 @@ def find_similar_profile_days(gold_ts, all_ts, k, data_avlblty):
     cutoff_dt = gold_ts.index[0].to_datetime().date()
     print("cutoff date: %s" % cutoff_dt)
 
-    all_dates = set([t for t in all_dates if t < cutoff_dt])
+    # drop future dates and dates from other day of week types
+    all_dates = set([t for t in all_dates if t < cutoff_dt and
+                     dow_type(t) == gold_dow_type])
 
     # compute similarity score for each date
     one_day = datetime.timedelta(days=1)
