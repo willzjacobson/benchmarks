@@ -9,6 +9,18 @@ import math
 
 
 def compute_bulb(temp, dew_pt, pressure):
+    """
+    compute wet bulb temperature in Celsius
+
+    :param temp: float
+        temperature in Fahrenheit
+    :param dew_pt: float
+        dew point temperature in Fahrenheit
+    :param pressure: float
+        pressure in Hg inches
+
+    :return: float
+    """
 
     temp_c = _convert_to_c(temp)
     dew_pt_c = _convert_to_c(dew_pt)
@@ -40,6 +52,12 @@ def _convert_to_c(temp_f):  # define conversion function
 
 
 def _convert_to_pressure_nmb(pressure_hg):
+    """
+    conver pressure from Hg inches to millibars
+    :param pressure_hg: float
+        pressure in Hg inches
+    :return: float
+    """
     return 33.8639 * pressure_hg
 
 
