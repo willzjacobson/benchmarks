@@ -1,4 +1,4 @@
-__author__ = 'davidkarapetyan'
+__author__ = 'David Karapetyan'
 
 import pandas as pd
 import pandas.tseries.offsets as offsets
