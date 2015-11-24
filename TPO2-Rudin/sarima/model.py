@@ -1,10 +1,11 @@
 import numpy as np
-import statsmodels.tsa.statespace.sarimax
-import statsmodels.tsa.ar_model
-import statsmodels.tsa.stattools
 import pandas as pd
-import ts_proc.munge
+import statsmodels.tsa.ar_model
+import statsmodels.tsa.statespace.sarimax
+import statsmodels.tsa.stattools
 from dateutil.relativedelta import relativedelta
+
+import ts_proc.munge
 
 
 # from rpy2.robjects.packages import importr
@@ -49,23 +50,17 @@ def _number_diff(ts, upper=10):
 
 
 def _benchmark_ts(ts, date_time):
-    """ Identify benchmark time series to feet to start_up module
+    """ Identify benchmark time series to feed to start_up module
 
-    Parameters
-    ----------
-
-    ts: pandas.core.series.Series
-    date_time: string
-    temp_range: tuple
-
-    Returns
-    -------
-
-    w: pandas.core.series.Series
+    :param ts: pandas.core.series.Series
+    Time series from which to extract a benchmark subset
+    :param date_time: string
+    Date for which we wish to find a benchmark time series
+    :return: pandas.core.series.Series
     # """
 
     ts_filt = ts_proc.munge.filter_day_season(ts, day=date_time.weekday,
-                                                    month=date_time.month)  # check that we have a complete time series
+                                              month=date_time.month)  # check that we have a complete time series
     if len(ts_filt.at_time('00:00:00')) != 0:
         raise ValueError("Start of day time missing. Complete benchmark Time"
                          "Series could not be found")
@@ -90,25 +85,24 @@ def start_time(ts, h5file_name, history_name, forecast_name, order,
     determine optimal start-up time.
 
     :param ts: pandas.core.series.Series
-    Numbers 0-6, denoting "Monday"-"Sunday", respectively
+    Numbers 0-6, denoting "Monday"-"Sunday", respectively.
     Specifies time by which building_id must be at desired_temp
-
     :param h5file_name: string
         path to HDF5 file containing weather data
     :param history_name: string
         group identifier for historical weather data within the HDF5 file
     :param forecast_name: string
         group identifier for weather forecast within the HDF5 file
-
     :param order: string
         order params tuple as string for SARIMA model
     :param enforce_stationarity: boolean
         whether to enforce stationarity in the SARIMA model
-
     :param granularity: int
     sampling frequency of input data and forecast data
-
-    :return: datetime.datetime
+    :param :date: string
+    Date for which to compute best start-up time
+    :return: datetime.datetime object
+    Optimal start up time for given date
     """
     date = pd.datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
     freq = ts.index.freqstr

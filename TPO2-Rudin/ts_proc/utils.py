@@ -37,12 +37,14 @@ def optimal_order(ts):
 def ts_day_pos(ts, day, time, start, end, freq):
     """Returns slice of input time series
 
-    Time series subset consists of points beginning at start,
-    terminating at end, and sampled with an input frequency
+    Time series subset consists of all points at a specific time between
+    start and end dates, and sampled with an input frequency
 
     :param ts: pandas.core.series.Series
-    :param day: int, day of week
-    :param time: datetime.datetime, time of day. Defaults to None
+    :param day: int
+    Day of week
+    :param time: datetime.datetime
+    Time of day. Defaults to None
     :param start: datetime.datetime
     :param end: datetime.datetime
     :param freq: frequency alias

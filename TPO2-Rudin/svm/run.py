@@ -1,14 +1,15 @@
-__author__ = 'davidkarapetyan'
+from datetime import datetime
 
 import pandas as pd
 
-import svm.model
 import config
-from datetime import datetime
+import svm.model
+
+__author__ = 'David Karapetyan'
 
 if __name__ == "__main__":
     # set variables
-    params = config.david["svm"]["params"]
+    params_init = config.david["svm"]["params"]
     cov = config.david["weather"]["cov"]
     gran = config.david["sampling"]["granularity"]
     h5file = config.david["weather"]["h5file"]
@@ -39,10 +40,11 @@ if __name__ == "__main__":
                    index=date_objects)
     ts = ts.resample(granularity).fillna(method="bfill")
 
+    # run prediction
     prediction = svm.model.predict(endog=ts,
                                    weather_history=weather_history,
                                    weather_forecast=weather_forecast,
-                                   cov=cov, gran=gran, params=params,
+                                   cov=cov, gran=gran, params=params_init,
                                    param_grid=param_grid, n_jobs=n_jobs,
                                    discrete=True)
 

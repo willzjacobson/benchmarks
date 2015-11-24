@@ -1,13 +1,15 @@
-__author__ = "David Karapetyan"
-
-import pandas as pd
-import numpy as np
-import config
-from urllib.request import urlopen
-import json
 import codecs
+import json
+from urllib.request import urlopen
+
+import numpy as np
+import pandas as pd
 from dateutil.relativedelta import relativedelta
 from joblib import Parallel, delayed
+
+import config
+
+__author__ = "David Karapetyan"
 
 stringcols = ['conds', 'wdire']
 
@@ -15,8 +17,15 @@ stringcols = ['conds', 'wdire']
 def _dtype_conv(df=pd.DataFrame(),
                 conds_mapping=config.david["weather"]["conds_mapping"],
                 wdire_mapping=config.david["weather"]["wdire_mapping"]):
-    """
+    """Relabeling of weather underground columns, and conversion of column
+    entries to either float or string data types (forecasting models expect
+    float entries to have a type signature of 'float')
+
     :param df: DataFrame
+    :param conds_mapping: Dictionary
+    Maps original weather underground labels to user-specified labels.
+    Used to make weather underground forecast labels match historical data
+    labels
     :return: DataFrame
     """
     # next, convert each column to appropriate data type, so that interpolation
@@ -54,20 +63,17 @@ def _history_pull(date=pd.datetime.today(),
                   city=config.david["weather"]["city"],
                   state=config.david["weather"]["state"],
                   account=config.david["weather"]["wund_url"]):
-    """Pull weather information
-
-    Weather information is pulled from weather underground at specified
+    """Weather information is pulled from weather underground at specified
     day
 
-    Parameters
-    ----------
-    date: datetime object
-    city: string
-    state: string
-
-    Returns
-    -------
-    w: Dataframe of weather parameters, indexed by hour
+    :param date: datetime object
+    Date to pull data for
+    :param city: string
+    City to pull data for
+    :param state: string
+    State to pull data for
+    :return: dataframe
+    Weather parameters, indexed by hour
     """
 
     date_path = 'history_%s%s%s' % (date.strftime('%Y'),
@@ -89,7 +95,6 @@ def _history_pull(date=pd.datetime.today(),
 
     df = pd.DataFrame.from_dict(observations)
 
-
     # convert date column to datetimeindex
     dateindex = df.date.apply(
         lambda x: pd.datetime(int(x['year']), int(x['mon']), int(x['mday']),
@@ -102,6 +107,14 @@ def _history_pull(date=pd.datetime.today(),
 
 
 def history_munge(df, gran):
+    """For munging history pull from weather underground
+
+    :param df: dataframe
+    Weather underground history pull
+    :param gran: int
+    Resampling granularity
+    :return: dataframe
+    """
     # drop what we don't need anymore, and set df index
     # dropping anything with metric system
     dates = ['date', 'utcdate']
@@ -118,7 +131,6 @@ def history_munge(df, gran):
     df = df.rename(columns=column_trans_dict)
     df = _dtype_conv(df)
 
-
     # resampling portion
     df = df.resample(gran, how="last")
     df = df.fillna(method="bfill")
@@ -127,6 +139,14 @@ def history_munge(df, gran):
 
 
 def forecast_munge(df, gran):
+    """For munging forecast pull from weather underground
+
+    :param df: dataframe
+    Weather underground forecast pull
+    :param gran: int
+    Resampling granularity
+    :return: dataframe
+    """
     # toss out metric system in favor of english system
     for column in ['windchill', 'wspd', 'temp', 'qpf', 'snow', 'mslp',
                    'heatindex', 'dewpoint', 'feelslike']:
@@ -141,8 +161,6 @@ def forecast_munge(df, gran):
             lambda x: x['degrees'])
         df['wdire'] = df['wdir'].apply(
             lambda x: x['dir'])
-
-
 
     # rename to have name mappings of identical entries in historical and
     # forecast dataframes be the same
@@ -168,16 +186,11 @@ def _forecast_pull(city=config.david["weather"]["city"],
                    account=config.david["weather"]["wund_url"]):
     """Returns forecasts from now until end of day
 
-     Parameters
-     ----------
-
-     city: string
-     state: string
-
-     Returns
-     -------
-
-     w: dataframe of weather parameters, indexed by hour
+     :param city: string
+     City portion of city-state pair to pull from weather underground
+     :param state: string
+     State portion of city-state pair to pull from weather underground
+     :return: dataframe of weather parameters, indexed by hour
     """
 
     city_path = '%s/%s' % (state, city)
@@ -200,6 +213,22 @@ def _forecast_pull(city=config.david["weather"]["city"],
 
 
 def forecast_update(city, state, account, gran=None, munged=False):
+    """Composition of forecast munging and forecast pull
+
+    :param city: string
+    City portion of city-state pair to pull from weather underground
+    :param state: string
+    City portion of city-state pair to pull from weather underground
+    :param account: string
+    Weather underground account url, including api key
+    :param gran: int
+    Resampling granularity
+    :param munged: boolean
+    Whether or not to munge (includes resampling) weather underground forecast
+    pull
+    :return: dataframe
+    Weather underground forecast data
+    """
     if munged:
         if gran is None:
             raise ValueError("Please supply a resampling granularity")
@@ -210,6 +239,24 @@ def forecast_update(city, state, account, gran=None, munged=False):
 
 # helper function for history_update.
 def comp(date, city, state, gran=None, munged=True):
+    """Function composing history munging and history pull
+    Necessary due to lack of pickling support for parallel processing code
+    using joblib library (see history_update)
+
+    :param date: datetime object
+    Date to pull from weather underground
+    :param city: string
+    City portion of city-state pair to pull from weather underground
+    :param state: string
+    State portion of city-state pair to pull from weather underground
+    :param gran: int
+    resampling granularity
+    :param munged: boolean
+    Whether or not to munge (includes resampling) weather underground forecast
+    pull
+    :return: dataframe
+    Weather underground history data
+    """
     if munged:
         if gran is None:
             raise ValueError("Please supply a resampling granularity")
@@ -227,21 +274,25 @@ def history_update(city, state, archive_location, df, cap, parallel,
     prescriptive weather database date to today, then added to
     weather database
 
-    Parameters
-    ----------
-    city: string
-    state: string
-    archive_location: string. Location of HDFS archive on disk
-    df: string. Name of weather dataframe in archive_location HDFS store
-    cap: int. Cap for number of WUnderground pulls, due to membership
+    :param city: string
+    City portion of city-state pair to pull from weather underground
+    :param state: string
+    State portion of city-state pair to pull from weather underground
+    :param archive_location: string.
+    Location of HDFS archive on disk
+    :param df: string.
+    Name of weather dataframe in archive_location HDFS store
+    :param cap: int.
+    Cap for number of WUnderground pulls, due to membership
     restrictions
-    parallel: Boolean. Whether to process in parallel
-    munged: Boolean. Whether or not to munge wunderground pulled data
-
-
-    Returns
-    -------
-    w: dataframe of weather parameters, indexed by hour
+    :param parallel: Boolean.
+    Whether to process in parallel
+    :param gran: int
+    Resampling granularity
+    :param munged: Boolean.
+    Whether or not to munge wunderground pulled data
+    :return: dataframe
+    Weather underground history data, indexed with granularity gran
     """
 
     # error handling built in, better than read_hdf
@@ -280,10 +331,12 @@ def history_update(city, state, archive_location, df, cap, parallel,
     weather_update = pd.concat(frames)
     archive = pd.concat([wdata_days_comp, weather_update])
 
-    # check for duplicate entries from weather underground, and delete
-    # all except one. Unfortunately, drop_duplicates works only for column
-    # entries, not timestamp row indices, so...
-    archive = archive.reset_index().drop_duplicates('index').set_index(
-        'index')
-
-    return archive
+    if isinstance(archive, pd.DataFrame):
+        # check for duplicate entries from weather underground, and delete
+        # all except one. Unfortunately, drop_duplicates works only for column
+        # entries, not timestamp row indices, so...
+        archive = archive.reset_index().drop_duplicates('index').set_index(
+            'index')
+        return archive
+    else:
+        raise ValueError("Parallel concatenation of dataframes failed")

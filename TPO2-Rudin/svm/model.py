@@ -1,13 +1,14 @@
-__author__ = 'David Karapetyan'
-
-import weather.helpers
-import sklearn.svm
-import numpy as np
-import sklearn.preprocessing
-import pandas as pd
-import ts_proc.munge
 import datetime
 import re
+
+import numpy as np
+import pandas as pd
+import sklearn
+
+import ts_proc.munge
+import weather.helpers
+
+__author__ = 'David Karapetyan'
 
 
 def _build(endog, weather_orig, cov, gran, params, param_grid, n_jobs,
@@ -19,9 +20,12 @@ def _build(endog, weather_orig, cov, gran, params, param_grid, n_jobs,
     :param cov: List of covariates.
     :param gran: Sampling granularity
     :param params: Dictionary of SVM model parameters
-    :param discrete: Boolean identifying whether the endogenous variable
+    :param discrete: Boolean.
+    Identifies whether the endogenous variable
     is discrete or takes a continuum of values
-    :return: Object of Class SVC
+    :return: List of objects.
+    One contains the fitted model, the other the data
+    normalization scaling parameters
     """
 
     if discrete is True:
@@ -40,7 +44,7 @@ def _build(endog, weather_orig, cov, gran, params, param_grid, n_jobs,
         # add column with datetime information, sans year or day (convert
         # time since midnight to minutes)
         features_filt = features_filt.reset_index()
-
+        #
         # need granularity as integer, to convert seconds to minutes
         gran_int = int(re.findall('\d+', gran)[0])
 
@@ -59,6 +63,8 @@ def _build(endog, weather_orig, cov, gran, params, param_grid, n_jobs,
         # in time series, model will fail
 
         svr = sklearn.svm.SVC(**params)
+
+        param_grid_opt = _best_params
         clf = sklearn.grid_search.GridSearchCV(estimator=svr,
                                                param_grid=param_grid,
                                                n_jobs=n_jobs)
@@ -68,7 +74,7 @@ def _build(endog, weather_orig, cov, gran, params, param_grid, n_jobs,
         return [fit, scaler]
 
 
-def best_gamma(estimator, c, param_grid_gamma, n_jobs, threshold):
+def _best_gamma(estimator, c, param_grid_gamma, n_jobs, threshold):
     fit = sklearn.grid_search.GridSearchCV(estimator,
                                            param_grid_gamma,
                                            n_jobs).fit()
@@ -148,12 +154,26 @@ def best_gamma(estimator, c, param_grid_gamma, n_jobs, threshold):
             return fit
 
 
-def best_params(estimator, param_grid, n_jobs, threshold):
+def _best_params(estimator, param_grid, n_jobs, threshold):
+    """
+    Function returning a dictionary of the optimal SVM C and gamma
+    parameters
+
+    :param estimator: The scikit-learn model class.
+    Example: SVC
+    :param param_grid: Dictionary of initial C and gamma grid.
+    Optimization is done over this grid using binary search
+    :param n_jobs: Number of processors for run
+    :param threshold: Binary search termination criterion.
+    Search terminates if difference of next iteration from current
+    does not exceed threshold.
+    :return: Dictionary of optimal C and gamma values for SVM run
+    """
     params = []
     scores = []
     for constant in param_grid["C"]:
-        fit = best_gamma(estimator, constant, param_grid, n_jobs,
-                         threshold)
+        fit = _best_gamma(estimator, constant, param_grid, n_jobs,
+                          threshold)
         scores.append(fit.best_score_)
         params.append(fit.best_params_)
 
@@ -164,7 +184,7 @@ def best_params(estimator, param_grid, n_jobs, threshold):
 
 def predict(endog, weather_history, weather_forecast, cov, gran,
             params, param_grid, n_jobs, discrete=True):
-    """SVM Model Instantiation and Training
+    """Time Series Prediciton Using SVM
 
     :param endog: Series. Endogenous variable to be forecasted
     :param weather_history: Dataframe. Built from weather underground data
@@ -172,6 +192,8 @@ def predict(endog, weather_history, weather_forecast, cov, gran,
     :param cov: List of covariates
     :param gran: Int. Sampling granularity
     :param params: Dictionary of SVM model parameters
+    :param param_grid: Dictionary of grid values for svm C and gamma
+    :param n_jobs: Positive integer specifying number of cores for run
     :param discrete: Boolean identifying whether the endogenous variable
     is discrete or takes a continuum of values
     :return: Series
