@@ -225,3 +225,17 @@ def get_dt_tseries(dt, full_ts):
     start_idx = datetime.datetime.combine(dt, datetime.time.min)
     end_idx = datetime.datetime.combine(dt, datetime.time.max)
     return full_ts[str(start_idx) : str(end_idx)]
+
+
+
+def gen_readings_list(tseries):
+    """
+    generate list of readings with each item being a dictionary of the form:
+    {"time": <datetime/date/time>, "value": <value>}
+
+    :param tseries: pandas Series
+        time series snippet to
+    :return: list
+    """
+
+    return [{'time': str(ix), 'value': val} for ix, val in tseries.iteritems()]

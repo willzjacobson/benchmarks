@@ -243,6 +243,8 @@ ashish:
 
     # electric
     electric_meter_count: 6
+    # electric -> benchmark
+    collection_name_out: analytics
 
 
 master: None
