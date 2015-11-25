@@ -11,7 +11,8 @@ import weather.helpers
 __author__ = 'David Karapetyan'
 
 
-def _build(endog, weather_orig, cov, gran, params, param_grid, n_jobs,
+def _build(endog, weather_orig, cov, gran, params, param_grid, threshold,
+           n_jobs,
            discrete=True):
     """SVM Model Instantiation and Training
 
@@ -20,6 +21,12 @@ def _build(endog, weather_orig, cov, gran, params, param_grid, n_jobs,
     :param cov: List of covariates.
     :param gran: Sampling granularity
     :param params: Dictionary of SVM model parameters
+    :param param_grid: Dictionary of C and gamma values
+    The C and gamma keys point to lists representing initial grids used to find
+    the optimal C and gamma
+    :param threshold: float. Binary search termination criterion.
+    Search over grid terminates if difference of next iteration from current
+    does not exceed threshold.
     :param discrete: Boolean.
     Identifies whether the endogenous variable
     is discrete or takes a continuum of values
@@ -64,9 +71,9 @@ def _build(endog, weather_orig, cov, gran, params, param_grid, n_jobs,
 
         svr = sklearn.svm.SVC(**params)
 
-        param_grid_opt = _best_params
+        param_grid_opt = _best_params(svr, param_grid, n_jobs, threshold)
         clf = sklearn.grid_search.GridSearchCV(estimator=svr,
-                                               param_grid=param_grid,
+                                               param_grid=param_grid_opt,
                                                n_jobs=n_jobs)
 
         fit = clf.fit(x, y)
@@ -183,7 +190,7 @@ def _best_params(estimator, param_grid, n_jobs, threshold):
 
 
 def predict(endog, weather_history, weather_forecast, cov, gran,
-            params, param_grid, n_jobs, discrete=True):
+            params, param_grid, threshold, n_jobs, discrete=True):
     """Time Series Prediciton Using SVM
 
     :param endog: Series. Endogenous variable to be forecasted
@@ -193,6 +200,9 @@ def predict(endog, weather_history, weather_forecast, cov, gran,
     :param gran: Int. Sampling granularity
     :param params: Dictionary of SVM model parameters
     :param param_grid: Dictionary of grid values for svm C and gamma
+    :param threshold: float. Binary search termination criterion.
+    Search over grid terminates if difference of next iteration from current
+    does not exceed threshold.
     :param n_jobs: Positive integer specifying number of cores for run
     :param discrete: Boolean identifying whether the endogenous variable
     is discrete or takes a continuum of values
@@ -201,7 +211,8 @@ def predict(endog, weather_history, weather_forecast, cov, gran,
     if discrete is True:
         model, scaler = _build(endog=endog, weather_orig=weather_history,
                                cov=cov, gran=gran, params=params,
-                               param_grid=param_grid, n_jobs=n_jobs,
+                               param_grid=param_grid, threshold=threshold,
+                               n_jobs=n_jobs,
                                discrete=discrete)
 
         features = weather.helpers.forecast_munge(weather_forecast, gran)[
