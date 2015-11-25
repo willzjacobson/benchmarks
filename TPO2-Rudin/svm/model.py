@@ -3,7 +3,9 @@ import re
 
 import numpy as np
 import pandas as pd
-import sklearn
+import sklearn.preprocessing
+
+import sklearn.svm
 
 import ts_proc.munge
 import weather.helpers
@@ -71,7 +73,7 @@ def _build(endog, weather_orig, cov, gran, params, param_grid, threshold,
 
         svr = sklearn.svm.SVC(**params)
 
-        param_grid_opt = _best_params(svr, param_grid, n_jobs, threshold)
+        param_grid_opt = _best_params(x, y, svr, param_grid, n_jobs, threshold)
         clf = sklearn.grid_search.GridSearchCV(estimator=svr,
                                                param_grid=param_grid_opt,
                                                n_jobs=n_jobs)
@@ -81,10 +83,12 @@ def _build(endog, weather_orig, cov, gran, params, param_grid, threshold,
         return [fit, scaler]
 
 
-def _best_gamma(estimator, c, param_grid_gamma, n_jobs, threshold):
+def _best_gamma(endog, features, estimator, c, param_grid_gamma, n_jobs,
+                threshold):
+    dict = {"C": [c], "gamma": param_grid_gamma}
     fit = sklearn.grid_search.GridSearchCV(estimator,
-                                           param_grid_gamma,
-                                           n_jobs).fit()
+                                           dict,
+                                           n_jobs).fit(features, endog)
 
     if param_grid_gamma[0] or param_grid_gamma[-1] is \
             fit.best_params_[
@@ -161,7 +165,7 @@ def _best_gamma(estimator, c, param_grid_gamma, n_jobs, threshold):
             return fit
 
 
-def _best_params(estimator, param_grid, n_jobs, threshold):
+def _best_params(endog, features, estimator, param_grid, n_jobs, threshold):
     """
     Function returning a dictionary of the optimal SVM C and gamma
     parameters
@@ -176,10 +180,13 @@ def _best_params(estimator, param_grid, n_jobs, threshold):
     does not exceed threshold.
     :return: Dictionary of optimal C and gamma values for SVM run
     """
+    param_grid_gamma = param_grid["gamma"]
     params = []
     scores = []
     for constant in param_grid["C"]:
-        fit = _best_gamma(estimator, constant, param_grid, n_jobs,
+        fit = _best_gamma(endog, features, estimator, constant,
+                          param_grid_gamma,
+                          n_jobs,
                           threshold)
         scores.append(fit.best_score_)
         params.append(fit.best_params_)
