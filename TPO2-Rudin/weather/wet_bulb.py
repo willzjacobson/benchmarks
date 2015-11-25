@@ -39,14 +39,28 @@ def compute_bulb(temp, dew_pt, pressure):
 
 
 def compute_bulb_helper(args):
+    """
+    same as compute_bulb() except takes all its parameters as a list
+
+    :param args: list
+        list of parameter if compute_bulb()
+
+    :return: same as compute_bulb()
+    """
 
     temp, dew_pt, pressure = args
-    # print(args)
     return compute_bulb(temp, dew_pt, pressure)
 
 
 
-def _convert_to_c(temp_f):  # define conversion function
+def _convert_to_c(temp_f):
+    """
+    convert temperature from fahrenheit to celsius
+
+    :param temp_f: float
+        temperature in fahrenheit
+    :return: float
+    """
     return (5.0 / 9.0) * (temp_f - 32.0)  # Convert F to C
 
 
@@ -68,7 +82,7 @@ def _esubx(temp_c):  # accept C temp
 
 
 
-def _calculate_bulb(e_diff, wetbulb_guess, thetemp, press_mb, E, prev_sign,
+def _calculate_bulb(e_diff, wetbulb_guess, thetemp, press_mb, e, prev_sign,
                    increase):
 
     while abs(e_diff) > 0.05:
@@ -76,7 +90,7 @@ def _calculate_bulb(e_diff, wetbulb_guess, thetemp, press_mb, E, prev_sign,
         ew_guess = 6.112 * math.exp(17.67 * wetbulb_guess / (wetbulb_guess + 243.5))
         e_guess = ew_guess - press_mb * (float(thetemp) - float(wetbulb_guess)) * 0.00066 * (
             1 + (0.00115 * wetbulb_guess))
-        e_diff = float(E) - e_guess
+        e_diff = float(e) - e_guess
         increase = float(increase)
 
         if e_diff == 0:
@@ -109,6 +123,16 @@ def _calculate_bulb(e_diff, wetbulb_guess, thetemp, press_mb, E, prev_sign,
 
 
 def _relative_hum(temp, dew_pt):
+    """
+    compute relative humidity
+
+    :param temp: float
+        temperature in Celsius
+    :param dew_pt: float
+        dew point in Celsius
+
+    :return: float
+    """
     return 100 * (
         math.exp(17.625 * dew_pt / (243.04 + dew_pt)) / math.exp(17.625 * temp / (243.04 + temp)))
 

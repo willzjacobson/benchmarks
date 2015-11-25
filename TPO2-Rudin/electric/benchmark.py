@@ -11,7 +11,7 @@ import weather.wet_bulb
 import common.utils
 import numpy
 import sys
-import matplotlib.pyplot
+import db.connect
 
 
 
@@ -149,6 +149,58 @@ def find_lowest_electric_usage(date_scores, electric_ts, n):
     return min_usage[0], min_usage[2]
 
 
+def _save_benchmark(bench_dt, base_dt, bench_ts, db_server, db_name,
+                    collection_name, bldg_id, system, output_type):
+
+    """
+    Save benchmark time series to database
+
+    :param bench_dt: datetime.date
+        date from the past most similar to base date
+    :param base_dt: datetime.date
+        base date
+    :param bench_ts: pandas Series
+        observation time series from bench_dt
+    :param db_server: string
+        database server name or IP-address
+    :param db_name: string
+        name of the database on server
+    :param collection_name: string
+        collection name to use
+    :param bldg_id: string
+        building identifier
+    :param system: string
+        system name for identifying time series
+    :param output_type: string
+        field name for identifying time series
+
+    :return:
+    """
+
+    with db.connect.connect(db_server, database=db_name) as conn:
+
+        collection = conn[db_name][collection_name]
+
+        # delete all existing matching documents
+        doc_id = {"_id.building": bldg_id,
+                  "_id.system": system,
+                  "_id.type": output_type,
+                  "_id.date": base_dt.isoformat()}
+        collection.remove(doc_id)
+
+        # insert
+        doc = {"_id": {"building": bldg_id,
+                       "system": system,
+                       "type": output_type,
+                       "date": base_dt.isoformat()
+                       },
+               "comment": bench_dt.isoformat(),
+               "readings": common.utils.gen_readings_list(bench_ts)}
+        collection.insert(doc)
+
+
+
+
 
 def _find_benchmark(base_dt, occ_ts, wetbulb_ts, electric_ts, gran):
     """
@@ -201,8 +253,8 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, electric_ts, gran):
 
 
 def process_building(building_id, db_server, db_name, collection_name,
-                     meter_count, h5file_name, history_name, forecast_name,
-                     granularity, base_dt):
+                     db_name_out, collection_name_out, meter_count, h5file_name,
+                     history_name, forecast_name, granularity, base_dt):
 
     """ Find baseline electric usage for building_id
 
@@ -214,6 +266,10 @@ def process_building(building_id, db_server, db_name, collection_name,
         name of the database on server
     :param collection_name: string
         name of collection in the database
+    :param db_name_out: string
+        name of the output database on server
+    :param collection_name_out: string
+        name of output collection in the database
     :param meter_count: int
         number of electric meters
     :param h5file_name: string
@@ -256,18 +312,21 @@ def process_building(building_id, db_server, db_name, collection_name,
     # TODO: delete display code
     # plot
     # get actual, if available
-    actual_ts = common.utils.get_dt_tseries(base_dt, elec_ts)
-    actual_ts_nodate = common.utils.drop_series_ix_date(actual_ts)
-    print("actual: %s" % actual_ts)
-    disp_df = bench_usage.to_frame(name='benchmark')
-    disp_df = disp_df.join(actual_ts_nodate.to_frame(name='actual'),
-                           how='outer')
-    print("disp df: %s" % disp_df)
-
-    matplotlib.pyplot.style.use('ggplot')
-    matplotlib.pyplot.figure()
-    chart = disp_df.plot()
-    fig = chart.get_figure()
-    fig.savefig('bmark.png')
+    # actual_ts = common.utils.get_dt_tseries(base_dt, elec_ts)
+    # actual_ts_nodate = common.utils.drop_series_ix_date(actual_ts)
+    # print("actual: %s" % actual_ts)
+    # disp_df = bench_usage.to_frame(name='benchmark')
+    # disp_df = disp_df.join(actual_ts_nodate.to_frame(name='actual'),
+    #                        how='outer')
+    # print("disp df: %s" % disp_df)
+    #
+    # matplotlib.pyplot.style.use('ggplot')
+    # matplotlib.pyplot.figure()
+    # chart = disp_df.plot()
+    # fig = chart.get_figure()
+    # fig.savefig('bmark.png')
 
     # TODO: save results
+    _save_benchmark(bench_dt, base_dt, bench_usage, db_server, db_name_out,
+                    collection_name_out, building_id, 'Electric_Demand',
+                    'benchmark')
