@@ -74,25 +74,28 @@ def _build(endog, weather_orig, cov, gran, params, param_grid, threshold,
         # with multiple samplings, with outputs in 1-space
 
         svr = sklearn.svm.SVC(**params)
-        # fit passed in order for scoring function to be constructed,
-        # which is then passed to grid_search
+        # estimator passed to grid search framework
         # TODO scoring string can be provided, which saves us one fit comp speed
 
-
+        # get optimal gamma and c
         param_grid_opt = _best_params(endog=y, features=x, estimator=svr,
                                       param_grid=param_grid, n_jobs=n_jobs,
                                       threshold=threshold)
-        clf = sklearn.grid_search.GridSearchCV(estimator=svr,
-                                               param_grid=param_grid_opt,
-                                               n_jobs=n_jobs)
 
-        fit = clf.fit(x, y)
+        # refit support vector model with optimal c and gamma
+        new_params = params
+        new_params["C"] = param_grid_opt["C"]
+        new_params["gamma"] = param_grid_opt["gamma"]
+        svr.set_params(**new_params)
+
+        # fit the optimal build
+        fit = svr.fit(x, y)
 
         return [fit, scaler]
 
 
-def _best_gamma(endog, features, estimator, c, param_grid_gamma, n_jobs,
-                threshold):
+def _best_gamma_fit(endog, features, estimator, c, param_grid_gamma, n_jobs,
+                    threshold):
     fixed_c_grid = {"C": [c], "gamma": param_grid_gamma}
     fit = sklearn.grid_search.GridSearchCV(estimator=estimator,
                                            param_grid=fixed_c_grid,
@@ -100,9 +103,8 @@ def _best_gamma(endog, features, estimator, c, param_grid_gamma, n_jobs,
                                            n_jobs=n_jobs).fit(features, endog)
 
     if param_grid_gamma[0] or param_grid_gamma[-1] is \
-            fit.best_params_[
-                'gamma']:
-        return fit.best_params_
+            fit.best_params_['gamma']:
+        return fit
 
     center = fit.best_params_['gamma']
     left = param_grid_gamma[0]
@@ -130,7 +132,7 @@ def _best_gamma(endog, features, estimator, c, param_grid_gamma, n_jobs,
 
     # base case:
     if fit_next.best_score_ <= fit.best_score:
-        return fit.best_params_
+        return fit
 
     # inductive step
     while np.abs(fit_next.best_score_ - fit.best_score_) > threshold:
@@ -144,7 +146,7 @@ def _best_gamma(endog, features, estimator, c, param_grid_gamma, n_jobs,
                                                n_jobs).fit(features, endog)
 
         if new_params['gamma'][-1] is fit.best_params_['gamma']:
-            return param_grid_gamma
+            return fit
 
         center = new_params[1]
         left = new_params[0]
@@ -195,10 +197,10 @@ def _best_params(endog, features, estimator, param_grid, n_jobs, threshold):
     params = []
     scores = []
     for constant in param_grid["C"]:
-        fit = _best_gamma(endog, features, estimator, constant,
-                          param_grid_gamma,
-                          n_jobs,
-                          threshold)
+        fit = _best_gamma_fit(endog, features, estimator, constant,
+                              param_grid_gamma,
+                              n_jobs,
+                              threshold)
         scores.append(fit.best_score_)
         params.append(fit.best_params_)
 
