@@ -46,6 +46,7 @@ if __name__ == "__main__":
                                    weather_history=weather_history,
                                    weather_forecast=weather_forecast,
                                    cov=cov, gran=gran,
+                                   params=params_init,
                                    param_grid=param_grid,
                                    threshold=threshold, n_jobs=n_jobs,
                                    discrete=True)
