@@ -13,7 +13,7 @@ import weather.helpers
 __author__ = 'David Karapetyan'
 
 
-def _build(endog, weather_orig, cov, gran, params, param_grid, threshold,
+def _build(endog, weather_orig, cov, gran, params, param_grid, cv, threshold,
            n_jobs,
            discrete=True):
     """SVM Model Instantiation and Training
@@ -105,12 +105,12 @@ def _best_gamma_fit(endog, features, estimator, c, param_grid_gamma, n_jobs,
     fit = None
 
     while np.abs(score_next - score) > threshold and score_next > score:
-        estimator.set_params(**params)
-        fit = sklearn.grid_search.GridSearchCV(estimator=estimator,
-                                               param_grid=params,
-                                               scoring="accuracy",
-                                               n_jobs=n_jobs).fit(features,
-                                                                  endog)
+        fit = sklearn.grid_search.GridSearchCV(
+                estimator=estimator,
+                param_grid=params,
+                scoring="accuracy",  # len(y_pred in y_true) / len(y_true)
+                n_jobs=n_jobs).fit(features, endog)
+
         center = fit.best_params_['gamma']
         left = params['gamma'][0]
         right = params['gamma'][-1]
@@ -118,33 +118,42 @@ def _best_gamma_fit(endog, features, estimator, c, param_grid_gamma, n_jobs,
         right_mid = (right + center) / 2
         # check if last element or first element
         # of parameter grid is best. If so, return
-        if left or right is center:
-            return fit
+
+        # if left and right is center:
+        #     return fit
 
         # inductive step
+        # In the case when right or left equal center, 'set' removes
+        # redundant elements
+        # sorting done due to weird bug with gridsearch--unsorted
+        # grids take longer to process
 
-        left_new_params = {'C': [c], 'gamma': [left, left_mid, center]}
-        right_new_params = {'C': [c], 'gamma': [center, right_mid, right]}
+        left_new_params = {'C': [c],
+                           'gamma': sorted({left, left_mid, center})}
+        right_new_params = {'C': [c],
+                            'gamma': sorted({center, right_mid, right})}
 
-        fit_next_1 = sklearn.grid_search.GridSearchCV(estimator,
-                                                      left_new_params,
-                                                      n_jobs).fit(features,
-                                                                  endog)
+        fit_next_1 = sklearn.grid_search.GridSearchCV(
+                estimator=estimator,
+                param_grid=left_new_params,
+                scoring="accuracy",
+                n_jobs=n_jobs).fit(features, endog)
 
-        fit_next_2 = sklearn.grid_search.GridSearchCV(estimator,
-                                                      right_new_params,
-                                                      n_jobs).fit(features,
-                                                                  endog)
+        fit_next_2 = sklearn.grid_search.GridSearchCV(
+                estimator=estimator,
+                param_grid=right_new_params,
+                scoring="accuracy",
+                n_jobs=n_jobs).fit(features, endog)
 
-        if fit_next_1.best_score_ <= fit_next_2.best_score:
+        if fit_next_1.best_score_ <= fit_next_2.best_score_:
             params = right_new_params
             fit_next = fit_next_2
         else:
             params = left_new_params
             fit_next = fit_next_1
 
-        score = fit.best_score
-        score_next = fit_next.best_score
+        score = fit.best_score_
+        score_next = fit_next.best_score_
 
     return fit
 
@@ -177,11 +186,13 @@ def _best_params(endog, features, estimator, param_grid, n_jobs, threshold):
 
     ind = np.argmax(scores)
 
+    print(scores)
+    print(params)
     return params[ind]
 
 
 def predict(endog, weather_history, weather_forecast, cov, gran,
-            params, param_grid, threshold, n_jobs, discrete=True):
+            params, param_grid, cv, threshold, n_jobs, discrete=True):
     """Time Series Prediciton Using SVM
 
     :param endog: Series. Endogenous variable to be forecasted
@@ -191,6 +202,7 @@ def predict(endog, weather_history, weather_forecast, cov, gran,
     :param gran: Int. Sampling granularity
     :param params: Dictionary of SVM model parameters
     :param param_grid: Dictionary of grid values for svm C and gamma
+    :param cv: Number of Stratified K-fold cross-validation folds
     :param threshold: float. Binary search termination criterion.
     Search over grid terminates if difference of next iteration from current
     does not exceed threshold.
@@ -202,7 +214,8 @@ def predict(endog, weather_history, weather_forecast, cov, gran,
     if discrete is True:
         model, scaler = _build(endog=endog, weather_orig=weather_history,
                                cov=cov, gran=gran, params=params,
-                               param_grid=param_grid, threshold=threshold,
+                               param_grid=param_grid, cv=cv,
+                               threshold=threshold,
                                n_jobs=n_jobs,
                                discrete=discrete)
 
