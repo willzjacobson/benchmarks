@@ -96,66 +96,35 @@ def _build(endog, weather_orig, cov, gran, params, param_grid, threshold,
 
 def _best_gamma_fit(endog, features, estimator, c, param_grid_gamma, n_jobs,
                     threshold):
-    fixed_c_grid = {"C": [c], "gamma": param_grid_gamma}
-    fit = sklearn.grid_search.GridSearchCV(estimator=estimator,
-                                           param_grid=fixed_c_grid,
-                                           scoring="accuracy",
-                                           n_jobs=n_jobs).fit(features, endog)
+    # base case setup
+    # initialization to run while loop below at least once (handling the
+    # base case at a minimum)
+    params = {"C": [c], "gamma": param_grid_gamma}
+    score = threshold
+    score_next = 3 * threshold
+    fit = None
 
-    if param_grid_gamma[0] or param_grid_gamma[-1] is \
-            fit.best_params_['gamma']:
-        return fit
-
-    center = fit.best_params_['gamma']
-    left = param_grid_gamma[0]
-    right = param_grid_gamma[-1]
-    left_mid = (param_grid_gamma[0] + center) / 2
-    right_mid = (param_grid_gamma[-1] + center) / 2
-
-    left_new_params = {'C': c, 'gamma': [left, left_mid, center]}
-    right_new_params = {'C': c, 'gamma': [center, right_mid, right]}
-
-    fit_next_1 = sklearn.grid_search.GridSearchCV(estimator,
-                                                  left_new_params,
-                                                  n_jobs).fit(features, endog)
-
-    fit_next_2 = sklearn.grid_search.GridSearchCV(estimator,
-                                                  right_new_params,
-                                                  n_jobs).fit(features, endog)
-
-    if fit_next_1.best_score_ <= fit_next_2.best_score:
-        new_params = right_new_params
-        fit_next = fit_next_2
-    else:
-        new_params = left_new_params
-        fit_next = fit_next_1
-
-    # base case:
-    if fit_next.best_score_ <= fit.best_score:
-        return fit
-
-    # inductive step
-    while np.abs(fit_next.best_score_ - fit.best_score_) > threshold:
+    while np.abs(score_next - score) > threshold and score_next > score:
+        estimator.set_params(**params)
+        fit = sklearn.grid_search.GridSearchCV(estimator=estimator,
+                                               param_grid=params,
+                                               scoring="accuracy",
+                                               n_jobs=n_jobs).fit(features,
+                                                                  endog)
+        center = fit.best_params_['gamma']
+        left = params['gamma'][0]
+        right = params['gamma'][-1]
+        left_mid = (left + center) / 2
+        right_mid = (right + center) / 2
         # check if last element or first element
         # of parameter grid is best. If so, return
-        # check if last element or first element
-        # of parameter grid is best. If so, return
-
-        fit = sklearn.grid_search.GridSearchCV(estimator,
-                                               new_params,
-                                               n_jobs).fit(features, endog)
-
-        if new_params['gamma'][-1] is fit.best_params_['gamma']:
+        if left or right is center:
             return fit
 
-        center = new_params[1]
-        left = new_params[0]
-        right = new_params[2]
-        left_mid = (new_params[0] + new_params[1]) / 2
-        right_mid = (new_params[1] + new_params[2]) / 2
+        # inductive step
 
-        left_new_params = {'C': c, 'gamma': [left, left_mid, center]}
-        right_new_params = {'C': c, 'gamma': [center, right_mid, right]}
+        left_new_params = {'C': [c], 'gamma': [left, left_mid, center]}
+        right_new_params = {'C': [c], 'gamma': [center, right_mid, right]}
 
         fit_next_1 = sklearn.grid_search.GridSearchCV(estimator,
                                                       left_new_params,
@@ -168,14 +137,16 @@ def _best_gamma_fit(endog, features, estimator, c, param_grid_gamma, n_jobs,
                                                                   endog)
 
         if fit_next_1.best_score_ <= fit_next_2.best_score:
-            new_params = right_new_params
+            params = right_new_params
             fit_next = fit_next_2
         else:
-            new_params = left_new_params
+            params = left_new_params
             fit_next = fit_next_1
 
-        if fit_next.best_score_ <= fit.best_score:
-            return fit
+        score = fit.best_score
+        score_next = fit_next.best_score
+
+    return fit
 
 
 def _best_params(endog, features, estimator, param_grid, n_jobs, threshold):
