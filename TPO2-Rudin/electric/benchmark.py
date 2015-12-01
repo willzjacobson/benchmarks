@@ -12,6 +12,7 @@ import common.utils
 import numpy
 import sys
 import db.connect
+import matplotlib.pyplot
 
 
 
@@ -104,7 +105,7 @@ def _get_wetbulb_ts(weather_df):
 
 
 
-def find_lowest_electric_usage(date_scores, electric_ts, n):
+def find_lowest_electric_usage(date_scores, electric_ts, n, debug):
     """
     Finds the day with the lowest total electric usage from among the n most
     similar occupancy days
@@ -116,6 +117,8 @@ def find_lowest_electric_usage(date_scores, electric_ts, n):
         Total electric demand time series
     :param n: int
         number of most similar occupancy days to consider
+    :param debug: bool
+        debug flag
 
     :return: tuple with benchmark date and pandas Series object with usage data
         from benchmark date
@@ -141,12 +144,13 @@ def find_lowest_electric_usage(date_scores, electric_ts, n):
                                                          + x.minute * 60
                                                          + x.second,
                                                            day_elec_ts.index)))
-            print("%s, %s" % (dt, auc))
+            common.utils.debug_msg(debug, "%s, %s" % (dt, auc))
 
             if 0 < auc < min_usage[1]:
                 min_usage = [dt, auc, day_elec_ts]
 
     return min_usage[0], min_usage[2]
+
 
 
 def _save_benchmark(bench_dt, base_dt, bench_ts, db_server, db_name,
@@ -202,7 +206,7 @@ def _save_benchmark(bench_dt, base_dt, bench_ts, db_server, db_name,
 
 
 
-def _find_benchmark(base_dt, occ_ts, wetbulb_ts, electric_ts, gran):
+def _find_benchmark(base_dt, occ_ts, wetbulb_ts, electric_ts, gran, debug):
     """
         Find benchmark electric usage for the date base_dt. Benchmark
         electric usage is defined as the electric usage profile from a similar
@@ -220,6 +224,8 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, electric_ts, gran):
         total electric usage time series
     :param gran: int
         expected frequency of observations and forecast in minutes
+    :param debug: bool
+        debug flag
 
     :return: tuple containing benchmark date and a pandas Series object with
         electric usage data from that date
@@ -228,7 +234,12 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, electric_ts, gran):
     # get data availability
     elec_avlblty = _get_data_availability_dates(electric_ts, gran)
     occ_avlblty = _get_data_availability_dates(occ_ts, gran)
-    data_avlblty = occ_avlblty.intersection(elec_avlblty)
+    wetbulb_avlblty = _get_data_availability_dates(wetbulb_ts, gran)
+    data_avlblty = occ_avlblty.intersection(elec_avlblty, wetbulb_avlblty)
+
+    # check if all required data is available for base dt
+    if base_dt not in data_avlblty:
+        raise Exception("insufficient data available for %s" % base_dt)
 
     # get weather for base_dt
     base_dt_wetbulb = common.utils.get_dt_tseries(base_dt, wetbulb_ts)
@@ -241,20 +252,20 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, electric_ts, gran):
                                                               wetbulb_ts,
                                                               20,
                                                               data_avlblty)
-    print("sim days: %s" % str(sim_wetbulb_days))
+    common.utils.debug_msg(debug, "sim days: %s" % str(sim_wetbulb_days))
 
     # compute occupancy similarity score for the k most similar weather days
     occ_scores = occupancy.utils.score_occ_similarity(base_dt, sim_wetbulb_days,
                                                       occ_ts)
-    print(occ_scores)
+    common.utils.debug_msg(debug, occ_scores)
     # find the date with the lowest electric usage
-    return find_lowest_electric_usage(occ_scores, electric_ts, 5)
+    return find_lowest_electric_usage(occ_scores, electric_ts, 5, debug)
 
 
 
 def process_building(building_id, db_server, db_name, collection_name,
                      db_name_out, collection_name_out, meter_count, h5file_name,
-                     history_name, forecast_name, granularity, base_dt):
+                     history_name, forecast_name, granularity, base_dt, debug):
 
     """ Find baseline electric usage for building_id
 
@@ -282,51 +293,57 @@ def process_building(building_id, db_server, db_name, collection_name,
         expected frequency of observations and forecast in minutes
     :param base_dt: datetime.date
         date for which benchmark electric usage is to be found
+    :param debug: bool
+        debug flag
 
     :return:
     """
 
+    # get weather
+    weather_df = _get_weather(h5file_name, history_name, forecast_name,
+                              granularity)
+    common.utils.debug_msg(debug, "weather: %s" % weather_df)
+
+    wetbulb_ts = _get_wetbulb_ts(weather_df)
+    common.utils.debug_msg(debug, "wetbulb: %s" % wetbulb_ts)
+
     # get occupancy data
     occ_ts = occupancy.utils.get_occupancy_ts(db_server, db_name,
                                               collection_name, building_id)
-    print("occupancy: %s" % occ_ts)
+    common.utils.debug_msg(debug, "occupancy: %s" % occ_ts)
 
     # query electric data
     elec_ts = electric.utils.get_electric_ts(db_server, db_name,
                                              collection_name, building_id,
                                              meter_count, granularity)
-    print("electric: %s" % elec_ts)
+    common.utils.debug_msg(debug, "electric: %s" % elec_ts)
 
-    # get weather
-    weather_df = _get_weather(h5file_name, history_name, forecast_name,
-                              granularity)
-    print("weather: %s" % weather_df)
-    wetbulb_ts = _get_wetbulb_ts(weather_df)
-    print("wetbulb: %s" % wetbulb_ts)
+
 
     # find baseline
     bench_dt, bench_usage = _find_benchmark(base_dt, occ_ts, wetbulb_ts,
-                                            elec_ts, granularity)
-    print("bench dt: %s, bench usage: %s" % (bench_dt, bench_usage))
+                                            elec_ts, granularity, debug)
+    common.utils.debug_msg(debug, "bench dt: %s, bench usage: %s" % (
+        bench_dt, bench_usage))
 
     # TODO: delete display code
     # plot
     # get actual, if available
-    # actual_ts = common.utils.get_dt_tseries(base_dt, elec_ts)
+    # # actual_ts = common.utils.get_dt_tseries(base_dt, elec_ts)
     # actual_ts_nodate = common.utils.drop_series_ix_date(actual_ts)
     # print("actual: %s" % actual_ts)
     # disp_df = bench_usage.to_frame(name='benchmark')
     # disp_df = disp_df.join(actual_ts_nodate.to_frame(name='actual'),
     #                        how='outer')
     # print("disp df: %s" % disp_df)
-    #
-    # matplotlib.pyplot.style.use('ggplot')
-    # matplotlib.pyplot.figure()
+
+    # # # matplotlib.pyplot.style.use('ggplot')
+    # # matplotlib.pyplot.figure()
     # chart = disp_df.plot()
     # fig = chart.get_figure()
-    # fig.savefig('bmark.png')
+    # fig.savefig("bmark_%s.png" % base_dt)
 
-    # TODO: save results
+    # save results
     _save_benchmark(bench_dt, base_dt, bench_usage, db_server, db_name_out,
                     collection_name_out, building_id, 'Electric_Demand',
                     'benchmark')

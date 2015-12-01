@@ -35,9 +35,6 @@ def get_occupancy_ts(db_server, db_name, collection_name, bldg_id, drop_tz=True)
     # placeholder entries may be there for missing data. these are usually
     # in the form of time:0 associated with value:0
     occ_df = pd.DataFrame({'tstamp': ts_list, 'occupancy': val_list})
-    # occ_df['tstamp'] = occ_df['tstamp'].apply(
-    #     lambda x: dateutil.parser.parse(x, ignoretz=drop_tz)
-    #     if type(x) is not int else numpy.nan)
 
     # drop missing values, set timestamp as the new index and sort by index
     occ_df = occ_df.dropna().set_index('tstamp',
@@ -53,10 +50,13 @@ def score_occ_similarity(base_dt, date_shortlist, occ_ts):
     and that observed on the the short list of dates provided
 
     :param base_dt: datetime.date
-        date for w
-    :param date_shortlist:
-    :param occ_ts:
-    :return:
+        base date or as of date
+    :param date_shortlist: list
+        short-list of dates to choose from
+    :param occ_ts: pandas Series
+        occupancy data
+    :return: list of tuples sorted by score
+        each tuple is of the form (<date>, <similarity_score>)
     """
 
     # TODO: when we have occupancy forecast, use that to obtain expected
