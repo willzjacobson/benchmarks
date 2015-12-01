@@ -26,11 +26,11 @@ if __name__ == "__main__":
     n_jobs = config.david["svm"]["cross_val"]["n_jobs"]
 
     fandata_store = pd.HDFStore(
-        config.david["default"]["data_sources"] + "/lex560.h5")
+            config.david["default"]["data_sources"] + "/lex560.h5")
     fandata = fandata_store.bms_hva_fan
     fandata_store.close()
     cleandata = fandata[fandata.FLOOR == 'F02'].drop_duplicates(
-        subset="TIMESTAMP")
+            subset="TIMESTAMP")
 
     # construct endogenous variable to run predictions on
 
@@ -45,7 +45,8 @@ if __name__ == "__main__":
     prediction = svm.model.predict(endog=ts,
                                    weather_history=weather_history,
                                    weather_forecast=weather_forecast,
-                                   cov=cov, gran=gran, params=params_init,
+                                   cov=cov, gran=gran,
+                                   params=params_init,
                                    param_grid=param_grid,
                                    threshold=threshold, n_jobs=n_jobs,
                                    discrete=True)
