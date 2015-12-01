@@ -46,4 +46,5 @@ for building_id in buildings:
                            cfg['weather']['history_orig'],
                            cfg['weather']['forecast_orig'],
                            cfg['sampling']['granularity'],
-                           bench_dt)
+                           bench_dt,
+                           cfg['default']['debug'])

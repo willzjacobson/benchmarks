@@ -6,6 +6,7 @@ import datetime
 import pandas as pd
 import db.connect as connect
 import math
+import joblib
 
 
 
@@ -149,7 +150,7 @@ def find_similar_profile_days(gold_ts, gold_dow_type, all_ts, k, data_avlblty):
 
     # find cutoff date
     cutoff_dt = gold_ts.index[0].to_datetime().date()
-    print("cutoff date: %s" % cutoff_dt)
+    # print("cutoff date: %s" % cutoff_dt)
 
     # drop future dates and dates from other day of week types
     all_dates = set([t for t in all_dates if t < cutoff_dt and
@@ -176,6 +177,24 @@ def find_similar_profile_days(gold_ts, gold_dow_type, all_ts, k, data_avlblty):
 
 
 
+def _parse_tstamp(tstamp, drop_tz):
+    """
+    parse timestamp from database
+    sample input "2015-09-21T19:45:00-04:00"
+
+    :param tstamp: string
+        timestamp as string
+    :param drop_tz: bool
+        flag to indicate whether to ignore/drop timezone information
+
+    :return: datetime.datetime
+    """
+    if type(tstamp) == int:
+        return numpy.nan
+    return dateutil.parser.parse(tstamp, ignoretz=drop_tz)
+    # return datetime.datetime.strptime(tstamp, "%Y-%m-%dT%H:%M:%S%z")
+
+
 def convert_datatypes(ts_list, value_list, drop_tz=True, val_type=float):
     """
     Parse timestamp and observation data read from database. Timestamps
@@ -198,14 +217,26 @@ def convert_datatypes(ts_list, value_list, drop_tz=True, val_type=float):
 
     """
 
-    # parse timestamps to dateime and drop timezone
+    # parse timestamps to datetime and drop timezone
     # placeholder readings could have '0' as time, replace with NaN
+    # ts_list = joblib.Parallel(n_jobs=2)(joblib.delayed(
+    #     _parse_tstamp)(x, drop_tz) for x in ts_list)
+
     ts_list = list(map(lambda x: dateutil.parser.parse(
         x, ignoretz=drop_tz) if type(x) is not int else numpy.nan, ts_list))
 
     # convert str to val_type
     if val_type:
-        value_list = list(map(val_type, value_list))
+        #value_list = list(map(val_type, value_list))
+        # print(numpy.asarray(value_list)[:100])
+
+        arr = numpy.asarray(value_list)
+        if val_type == float:
+            value_list = arr.astype(numpy.float)
+        elif val_type == int:
+            value_list = arr.astype(numpy.int64)
+        else:
+            raise Exception('unsupported transformation')
 
     return [ts_list, value_list]
 
@@ -225,6 +256,19 @@ def get_dt_tseries(dt, full_ts):
     start_idx = datetime.datetime.combine(dt, datetime.time.min)
     end_idx = datetime.datetime.combine(dt, datetime.time.max)
     return full_ts[str(start_idx) : str(end_idx)]
+
+
+
+def debug_msg(debug, str):
+    """
+    print debug message to log or stdout if debug is True
+    :param debug: bool
+    :param str: string
+        debug message
+    :return:
+    """
+    if debug:
+        print(str)
 
 
 
