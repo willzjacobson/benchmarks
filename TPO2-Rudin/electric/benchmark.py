@@ -302,9 +302,11 @@ def process_building(building_id, db_server, db_name, collection_name,
     # get weather
     weather_df = _get_weather(h5file_name, history_name, forecast_name,
                               granularity)
+    # weather_df = common.utils.interp_tseries(weather_df, granularity)
     common.utils.debug_msg(debug, "weather: %s" % weather_df)
 
     wetbulb_ts = _get_wetbulb_ts(weather_df)
+    wetbulb_ts = common.utils.interp_tseries(wetbulb_ts, granularity)
     common.utils.debug_msg(debug, "wetbulb: %s" % wetbulb_ts)
 
     # get occupancy data

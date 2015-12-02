@@ -48,6 +48,111 @@ def drop_series_ix_date(tseries):
 
 
 
+
+def _clear_sec_musec(tstamp):
+
+    tstamp -= datetime.timedelta(seconds=tstamp.second,
+                                 microseconds=tstamp.microsecond)
+    return tstamp
+
+
+def _round_minute(tstamp, gran, begin_data):
+    one_minute = datetime.timedelta(minutes=1)
+    max_tries = 60
+
+    count = 0
+    tmp_tstamp = tstamp
+    while tmp_tstamp.minute % gran != 0:
+        if begin_data:
+            tmp_tstamp += one_minute
+        else:
+            tmp_tstamp -= one_minute
+
+        count += 1
+        if count > max_tries:
+            raise Exception("failure rounding timestamp <%s>" % tstamp)
+
+    return _clear_sec_musec(tmp_tstamp)
+
+
+
+
+def _round_tstamp(tstamp, gran, begin_data=True):
+
+    rounded = tstamp
+    if tstamp.minute % gran == 0:
+        return _clear_sec_musec(rounded)
+    else:
+        return _round_minute(tstamp, gran, begin_data)
+
+
+
+
+def _find_gaps(index, threshold):
+
+    df = pd.DataFrame(data=index, columns=['end'])
+    df['begin'] = df['end'].shift()
+    df['diff'] = (df['end'] - df['begin']).fillna(0)
+    # print(df)
+    # longest_allowed_gap = pd.Timedelta(pd.tseries.offsets.Hour(threshold))
+    longest_allowed_gap = datetime.timedelta(hours=threshold)
+    return df[df['diff'] > longest_allowed_gap]
+
+
+
+
+def _drop_large_gaps(index, gap_info, gran):
+
+    to_drop = None
+    freq = "%dmin" % gran
+    interval = datetime.timedelta(minutes=gran)
+    # gap_info.apply(lambda row: to_drop = to_drop.union(), axis=1)
+    for _, row in gap_info.iterrows():
+        # we have an open interval
+        # print(gap_info['begin'])
+        # print(gap_info['end'])
+        sub_idx = pd.DatetimeIndex(start=row['begin'] + interval,
+                                   end=row['end'] + interval, freq=freq)
+        if to_drop is not None:
+            to_drop = to_drop.union(sub_idx)
+        else:
+            to_drop = sub_idx
+
+    return index.difference(to_drop)
+
+
+
+def _get_ideal_index(tseries, gran):
+
+    start_ts, end_ts = tseries.index[0], tseries.index[-1]
+    round_start_ts = _round_tstamp(start_ts, gran)
+    round_end_ts = _round_tstamp(end_ts, gran, False)
+
+    ideal_index = pd.DatetimeIndex(start=round_start_ts,
+                                   end=round_end_ts,
+                                   freq="%dmin" % gran)
+    return _drop_large_gaps(ideal_index, _find_gaps(tseries.index, 2), gran)
+
+
+def interp_tseries(tseries, gran):
+
+    ideal_index = _get_ideal_index(tseries, gran)
+    full_index = ideal_index.union(tseries.index)
+
+    full_tseries = tseries.reindex(full_index)
+    print(full_tseries)
+
+    # limit does not seem to work when method is specified as time
+    new_tseries = full_tseries.interpolate(method='time')#,
+                                           # limit=2*60/gran)
+                                          # limit_direction='both',
+                                          # downcast='infer')
+    # print(new_tseries)
+    return new_tseries.reindex(ideal_index)
+
+
+
+
 def get_ts(db_server, db_name, collection_name, bldg_id, device, system, field):
     """
     Get all observation data with the given building, device and system
