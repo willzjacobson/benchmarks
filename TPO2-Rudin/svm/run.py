@@ -21,10 +21,10 @@ if __name__ == "__main__":
     store.close()
 
     granularity = config.david["sampling"]["granularity"]
-    param_grid = config.david["svm"]["grid_search"]["param_grid"]
-    threshold = config.david["svm"]["grid_search"]["threshold"]
-    cv = config.david["svm"]["grid_search"]["cv"]
-    n_jobs = config.david["svm"]["grid_search"]["n_jobs"]
+    param_grid = config.david["svm"]["bin_search"]["param_grid"]
+    threshold = config.david["svm"]["bin_search"]["threshold"]
+    cv = config.david["svm"]["bin_search"]["cv"]
+    n_jobs = config.david["svm"]["bin_search"]["n_jobs"]
 
     fandata_store = pd.HDFStore(
             config.david["default"]["data_sources"] + "/lex560.h5")
