@@ -8,13 +8,13 @@ __author__ = 'ashishgagneja'
 import math
 
 
-def compute_bulb(temp, dew_pt, pressure):
+def compute_bulb(temp, dewpt, pressure):
     """
     compute wet bulb temperature in Celsius
 
     :param temp: float
         temperature in Fahrenheit
-    :param dew_pt: float
+    :param dewpt: float
         dew point temperature in Fahrenheit
     :param pressure: float
         pressure in Hg inches
@@ -23,11 +23,11 @@ def compute_bulb(temp, dew_pt, pressure):
     """
 
     temp_c = _convert_to_c(temp)
-    dew_pt_c = _convert_to_c(dew_pt)
+    dewpt_c = _convert_to_c(dewpt)
     pressure_mb = _convert_to_pressure_nmb(pressure)
 
-    E, es = float(_esubx(dew_pt_c)), float(_esubx(temp_c))
-    e2 = _inverted_rh(es, _relative_hum(temp_c, dew_pt_c), temp_c)
+    es = float(_esubx(temp_c))
+    e2 = _inverted_rh(es, _relative_hum(temp_c, dewpt_c))
 
     tw_guess = 0  # guess that the wet bulb is the dew point
     increase = 10  # start by increasing by 10
@@ -48,8 +48,8 @@ def compute_bulb_helper(args):
     :return: same as compute_bulb()
     """
 
-    temp, dew_pt, pressure = args
-    return compute_bulb(temp, dew_pt, pressure)
+    temp, dewpt, pressure = args
+    return compute_bulb(temp, dewpt, pressure)
 
 
 
@@ -121,22 +121,21 @@ def _calculate_bulb(e_diff, wetbulb_guess, thetemp, press_mb, e, prev_sign,
     return wetbulb_guess
 
 
-
-def _relative_hum(temp, dew_pt):
+def _relative_hum(temp, dewpt):
     """
     compute relative humidity
 
     :param temp: float
         temperature in Celsius
-    :param dew_pt: float
+    :param dewpt: float
         dew point in Celsius
 
     :return: float
     """
     return 100 * (
-        math.exp(17.625 * dew_pt / (243.04 + dew_pt)) / math.exp(17.625 * temp / (243.04 + temp)))
+        math.exp(17.625 * dewpt / (243.04 + dewpt)) / math.exp(
+                17.625 * temp / (243.04 + temp)))
 
 
-
-def _inverted_rh(es, rh, temp):
+def _inverted_rh(es, rh):
     return es * (float(rh) / 100.0)
