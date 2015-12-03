@@ -140,9 +140,11 @@ def history_munge(df, gran):
 
     # add wetbulb temperature
     df['wetbulb'] = df.apply(
-            lambda x: weather.wet_bulb.compute_bulb(temp=x['temp'],
-                                                    dewpt=x['dewpt'],
-                                                    pressure=x['pressure']))
+            lambda x: weather.wet_bulb.compute_bulb(
+                    temp=x['temp'],
+                    dewpt=x['dewpt'],
+                    pressure=x['pressure']),
+            axis=1)
 
     return df
 
@@ -174,7 +176,7 @@ def forecast_munge(df, gran):
     # rename to have name mappings of identical entries in historical and
     # forecast dataframes be the same
     column_trans_dict = {'condition': 'conds', 'humidity': 'hum',
-                         'mlsp': 'pressure', 'pop': 'rain',
+                         'mslp': 'pressure', 'pop': 'rain',
                          'dewpoint': 'dewpt'}
     df = df.rename(columns=column_trans_dict)
 
@@ -192,9 +194,10 @@ def forecast_munge(df, gran):
 
     # add wetbulb temperature
     df['wetbulb'] = df.apply(
-            lambda x: weather.wet_bulb.compute_bulb(temp=x['temp'],
-                                                    dewpt=x['dewpt'],
-                                                    pressure=x['pressure']))
+            lambda x: weather.wet_bulb.compute_bulb(
+                    temp=x['temp'],
+                    dewpt=x['dewpt'],
+                    pressure=x['pressure']), axis=1)
     return df
 
 
