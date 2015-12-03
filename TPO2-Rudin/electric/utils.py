@@ -42,8 +42,7 @@ def _construct_dataframe(ts_lists, value_lists):
 
 
 
-def get_electric_ts(db_server, db_name, collection_name, bldg_id, meter_count,
-                    granularity):
+def get_electric_ts(db_server, db_name, collection_name, bldg_id, meter_count):
     """ retrieves all available electric data from all meters and sums up
     to get total electric usage time series
 
@@ -57,8 +56,6 @@ def get_electric_ts(db_server, db_name, collection_name, bldg_id, meter_count,
         database building_id identifier
     :param meter_count: int
         number of distinct meters that need to be summed up
-    :param granularity: int
-        sampling frequency of input data and forecast data
     :return: pandas Dataframe
     """
 

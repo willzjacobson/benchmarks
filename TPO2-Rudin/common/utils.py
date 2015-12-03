@@ -48,22 +48,43 @@ def drop_series_ix_date(tseries):
 
 
 
-
 def _clear_sec_musec(tstamp):
+    """
+    clear second and microsecond fields of timestamp
+
+    :param tstamp: timestamp like object
+    :return: timestamp like object
+    """
 
     tstamp -= datetime.timedelta(seconds=tstamp.second,
                                  microseconds=tstamp.microsecond)
     return tstamp
 
 
-def _round_minute(tstamp, gran, begin_data):
+
+def _round_minute(tstamp, gran, is_begin_data):
+    """
+    find the closest regularized timestamp. if is_begin_data is True, looks
+    forward, otherwise looks backward
+
+    For example: tstamp = '2015-11-22T15:21:05', gran = 15
+        if is_begin_data is True, returns '2015-11-22T15:30:00', otherwise
+        returns '2015-11-22T15:15:00'
+
+    :param tstamp: timestamp like object
+    :param gran: int
+        expected frequency of observations and forecast in minutes
+    :param is_begin_data: bool
+        True if tstamp is from the first available observation, False otherwise
+    :return:
+    """
     one_minute = datetime.timedelta(minutes=1)
     max_tries = 60
 
     count = 0
     tmp_tstamp = tstamp
     while tmp_tstamp.minute % gran != 0:
-        if begin_data:
+        if is_begin_data:
             tmp_tstamp += one_minute
         else:
             tmp_tstamp -= one_minute
@@ -76,25 +97,52 @@ def _round_minute(tstamp, gran, begin_data):
 
 
 
-
-def _round_tstamp(tstamp, gran, begin_data=True):
-
-    rounded = tstamp
-    if tstamp.minute % gran == 0:
-        return _clear_sec_musec(rounded)
-    else:
-        return _round_minute(tstamp, gran, begin_data)
+def _round_tstamp(tstamp, gran, is_begin_data=True):
+    """
+    round timestamp to closest regularized value in the direction dictated by
+    is_begin_data. If True, normalize forward, otherwise backward
 
 
+    :param tstamp: timestamp like object
+    :param gran: int
+        expected frequency of observations and forecast in minutes
+    :param is_begin_data: bool
+        True if tstamp is from the first available observation, False otherwise
+    :return:
+    """
+
+    if not _is_tstamp_rounded(tstamp, gran):
+        return _round_minute(_clear_sec_musec(tstamp), gran, is_begin_data)
+    return tstamp
+
+
+
+def _is_tstamp_rounded(tstamp, gran):
+    if (tstamp.minute % gran == 0 and tstamp.second == 0 and
+                tstamp.microsecond == 0):
+        return True
+    return False
 
 
 def _find_gaps(index, threshold):
+    """
+    find gaps in index longer than threshold hours
+
+    :param index: pandas DatetimeIndex
+        index to operate one
+    :param threshold: int
+        length of longest permissible gap in the index in hours
+
+    :return: pandas DataFrame
+        Has columns ['begin', 'end', 'diff']
+        Each row represents interval (row['begin'], row['end'])
+        The interval end point is open/closed depending upon whether or not the
+        specific timestamp is rounded/regularized.
+    """
 
     df = pd.DataFrame(data=index, columns=['end'])
     df['begin'] = df['end'].shift()
     df['diff'] = (df['end'] - df['begin']).fillna(0)
-    # print(df)
-    # longest_allowed_gap = pd.Timedelta(pd.tseries.offsets.Hour(threshold))
     longest_allowed_gap = datetime.timedelta(hours=threshold)
     return df[df['diff'] > longest_allowed_gap]
 
@@ -102,54 +150,89 @@ def _find_gaps(index, threshold):
 
 
 def _drop_large_gaps(index, gap_info, gran):
+    """
+    remove gaps from timestamp index
+    gaps are first consolidated into one DatetimeIndex and then dropped from
+    the main index for efficiency
+
+    :param index: pandas DatetimeIndex
+    :param gap_info: pandas DataFrame
+        gap information with columns begin, end and diff
+    :param gran: int
+        expected frequency of observations and forecast in minutes
+    :return:
+    """
 
     to_drop = None
     freq = "%dmin" % gran
+
     interval = datetime.timedelta(minutes=gran)
-    # gap_info.apply(lambda row: to_drop = to_drop.union(), axis=1)
+    print("gap info shape: %d" % gap_info.size)
     for _, row in gap_info.iterrows():
-        # we have an open interval
-        # print(gap_info['begin'])
-        # print(gap_info['end'])
-        sub_idx = pd.DatetimeIndex(start=row['begin'] + interval,
-                                   end=row['end'] + interval, freq=freq)
-        if to_drop is not None:
-            to_drop = to_drop.union(sub_idx)
-        else:
-            to_drop = sub_idx
 
-    return index.difference(to_drop)
+        start_ts = (row['begin'] + interval
+                    if _is_tstamp_rounded(row['begin'], gran)
+                    else row['begin'])
+        end_ts   = (row['end']   - interval
+                    if _is_tstamp_rounded(row['end'], gran)
+                    else row['end'])
+
+        if end_ts - start_ts > interval:
+            # we have an open interval
+            sub_idx = pd.DatetimeIndex(start=start_ts, end=end_ts, freq=freq)
+            to_drop = to_drop.union(sub_idx) if to_drop is not None else sub_idx
+
+    print("to_drop: %s" % to_drop)
+    return index.difference(to_drop) if to_drop is not None else index
 
 
 
-def _get_ideal_index(tseries, gran):
+def _get_ideal_index(index, gran):
+    """
+    generate best possible index with gran as frequency that can be obtained
+    index-snippets from gaps longer than two hours are trimmed
+    Assumption: No NAs in the data
 
-    start_ts, end_ts = tseries.index[0], tseries.index[-1]
-    round_start_ts = _round_tstamp(start_ts, gran)
-    round_end_ts = _round_tstamp(end_ts, gran, False)
+    :param index: pandas DatetimeIndex
+        timestamp-based index of available data
+    :param gran: int
+        expected frequency of observations and forecast in minutes
 
-    ideal_index = pd.DatetimeIndex(start=round_start_ts,
-                                   end=round_end_ts,
+    :return: pandas DatetimeIndex
+    """
+    ideal_index = pd.DatetimeIndex(start=_round_tstamp(index[0], gran),
+                                   end=_round_tstamp(index[-1], gran, False),
                                    freq="%dmin" % gran)
-    return _drop_large_gaps(ideal_index, _find_gaps(tseries.index, 2), gran)
+    print("ideal ideal idx: %s" % ideal_index)
+    return _drop_large_gaps(ideal_index, _find_gaps(index, 2), gran)
+
 
 
 def interp_tseries(tseries, gran):
+    """
+    interpolate time series data using linear interpolation to fill missing data
+    data gaps longer than 2 hours are ignored
 
-    ideal_index = _get_ideal_index(tseries, gran)
+    :param tseries: pandas Series or DataFrame
+        time series data to interpolate
+    :param gran: int
+        expected frequency of observations and forecast in minutes
+
+    :return: pandas Series or DataFrame
+    """
+
+    # TODO: try resampling
+    print("tseries index: %s" % tseries.index)
+    ideal_index = _get_ideal_index(tseries.index, gran)
+    print("ideal idx: %s" % ideal_index)
     full_index = ideal_index.union(tseries.index)
-
+    print(full_index)
     full_tseries = tseries.reindex(full_index)
+
     print(full_tseries)
 
     # limit does not seem to work when method is specified as time
-    new_tseries = full_tseries.interpolate(method='time')#,
-                                           # limit=2*60/gran)
-                                          # limit_direction='both',
-                                          # downcast='infer')
-    # print(new_tseries)
-    return new_tseries.reindex(ideal_index)
-
+    return full_tseries.interpolate(method='time').reindex(ideal_index)
 
 
 

@@ -141,7 +141,7 @@ ashish:
     data_sources: /data
     log_dir: /var/log
     # run mode
-    debug: False
+    debug: True
 
 #     list of building ids. There should be a key corresponding to each
 #     name on this list elsewhere in this configuration spec.
