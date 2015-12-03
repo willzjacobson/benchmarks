@@ -97,7 +97,7 @@ david :
             - 4
           kernel:
             - rbf
-      cv: 10 #number of Kfold cross validation folds
+      cv: 3 #number of Kfold cross validation folds
       n_jobs: -1
       threshold: 0.003
 
