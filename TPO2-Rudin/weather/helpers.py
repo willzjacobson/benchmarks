@@ -44,7 +44,7 @@ def _dtype_conv(df=pd.DataFrame(),
         if floatcol in df.columns:
             df[floatcol] = df[floatcol].apply(
                     lambda x: float(x) if x != 'N/A' and float(
-                            x) >= 0 else np.nan)
+                            x) > -999 else np.nan)
 
     # map conditions to uniformly spaced, unique integer values for processing
     # in models, with basic error checking.
