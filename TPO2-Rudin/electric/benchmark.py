@@ -353,6 +353,7 @@ def process_building(building_id, db_server, db_name, collection_name,
     # fig.savefig("bmark_%s.png" % base_dt)
 
     # save results
-    _save_benchmark(bench_dt, base_dt, bench_usage, db_server, db_name_out,
-                    collection_name_out, building_id, 'Electric_Demand',
-                    'benchmark')
+    if not debug:
+        _save_benchmark(bench_dt, base_dt, bench_usage, db_server, db_name_out,
+                        collection_name_out, building_id, 'Electric_Demand',
+                        'benchmark')

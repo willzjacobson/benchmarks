@@ -118,10 +118,20 @@ def _round_tstamp(tstamp, gran, is_begin_data=True):
 
 
 def _is_tstamp_rounded(tstamp, gran):
+    """
+    check if timestamp is rounded/regularized
+
+    :param tstamp: datetime like object
+    :param gran: int
+        expected frequency of observations and forecast in minutes
+
+    :return: bool
+    """
     if (tstamp.minute % gran == 0 and tstamp.second == 0 and
                 tstamp.microsecond == 0):
         return True
     return False
+
 
 
 def _find_gaps(index, threshold):
@@ -167,7 +177,6 @@ def _drop_large_gaps(index, gap_info, gran):
     freq = "%dmin" % gran
 
     interval = datetime.timedelta(minutes=gran)
-    print("gap info shape: %d" % gap_info.size)
     for _, row in gap_info.iterrows():
 
         start_ts = (row['begin'] + interval
@@ -182,7 +191,6 @@ def _drop_large_gaps(index, gap_info, gran):
             sub_idx = pd.DatetimeIndex(start=start_ts, end=end_ts, freq=freq)
             to_drop = to_drop.union(sub_idx) if to_drop is not None else sub_idx
 
-    print("to_drop: %s" % to_drop)
     return index.difference(to_drop) if to_drop is not None else index
 
 
@@ -203,7 +211,6 @@ def _get_ideal_index(index, gran):
     ideal_index = pd.DatetimeIndex(start=_round_tstamp(index[0], gran),
                                    end=_round_tstamp(index[-1], gran, False),
                                    freq="%dmin" % gran)
-    print("ideal ideal idx: %s" % ideal_index)
     return _drop_large_gaps(ideal_index, _find_gaps(index, 2), gran)
 
 
@@ -221,18 +228,14 @@ def interp_tseries(tseries, gran):
     :return: pandas Series or DataFrame
     """
 
-    # TODO: try resampling
-    print("tseries index: %s" % tseries.index)
     ideal_index = _get_ideal_index(tseries.index, gran)
-    print("ideal idx: %s" % ideal_index)
-    full_index = ideal_index.union(tseries.index)
-    print(full_index)
-    full_tseries = tseries.reindex(full_index)
-
-    print(full_tseries)
+    # this approach does not work for some reason, the reindex takes forever
+    # full_index = ideal_index.union(tseries.index)
+    # full_tseries = tseries.reindex(full_index)
 
     # limit does not seem to work when method is specified as time
-    return full_tseries.interpolate(method='time').reindex(ideal_index)
+    return tseries.resample('5T', how='median').interpolate(
+        method='time').reindex(ideal_index)
 
 
 
