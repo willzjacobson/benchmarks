@@ -1,5 +1,6 @@
 from datetime import datetime
 
+import numpy as np
 import pandas as pd
 
 import config
@@ -21,17 +22,19 @@ if __name__ == "__main__":
     store.close()
 
     granularity = config.david["sampling"]["granularity"]
-    param_grid = config.david["svm"]["bin_search"]["param_grid"]
-    threshold = config.david["svm"]["bin_search"]["threshold"]
-    cv = config.david["svm"]["bin_search"]["cv"]
-    n_jobs = config.david["svm"]["bin_search"]["n_jobs"]
+    pg = config.david["svm"]["param_search"]["grid"]
+    param_grid = {"C": np.logspace(**(pg["C"])),
+                  "gamma": np.logspace(**(pg["gamma"])),
+                  "kernel": pg["kernel"]}
+    threshold = config.david["svm"]["param_search"]["threshold"]
+    cv = config.david["svm"]["param_search"]["cv"]
+    n_jobs = config.david["svm"]["param_search"]["n_jobs"]
 
     fandata_store = pd.HDFStore(
             config.david["default"]["data_sources"] + "/lex560.h5")
     fandata = fandata_store.bms_hva_fan
     fandata_store.close()
-    cleandata = fandata[fandata.FLOOR == 'F02'].drop_duplicates(
-            subset="TIMESTAMP")
+    cleandata = fandata[(fandata.FLOOR == 'F02') & (fandata.ZONE == 'Z00')]
 
     # construct endogenous variable to run predictions on
 
@@ -51,6 +54,7 @@ if __name__ == "__main__":
                                    param_grid=param_grid,
                                    cv=cv,
                                    threshold=threshold, n_jobs=n_jobs,
+                                   bin_search=False,
                                    discrete=True)
 
     print(prediction)

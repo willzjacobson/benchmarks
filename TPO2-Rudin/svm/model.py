@@ -15,8 +15,7 @@ __author__ = 'David Karapetyan'
 
 
 def _build(endog, weather_orig, cov, gran, params, param_grid, cv, threshold,
-           n_jobs,
-           discrete=True):
+           n_jobs, discrete, bin_search):
     """SVM Model Instantiation and Training
 
     :param endog: Series. Endogenous variable to be forecasted
@@ -82,19 +81,37 @@ def _build(endog, weather_orig, cov, gran, params, param_grid, cv, threshold,
         svm = sklearn.svm.SVR(**params)
 
     # get optimal gamma and c
-    param_grid_opt = _best_params(endog=y, features=x, estimator=svm,
-                                  param_grid=param_grid, cv=cv,
-                                  n_jobs=n_jobs,
-                                  threshold=threshold)
-
-    # refit support vector model with optimal c and gamma
-    new_params = params
-    new_params["C"] = param_grid_opt["C"]
-    new_params["gamma"] = param_grid_opt["gamma"]
-    svm.set_params(**new_params)
-
-    # fit the optimal build
-    fit = svm.fit(x, y)
+    if bin_search:
+        param_grid_opt = _best_params(endog=y, features=x, estimator=svm,
+                                      param_grid=param_grid, cv=cv,
+                                      n_jobs=n_jobs,
+                                      threshold=threshold)
+        # refit support vector model with optimal c and gamma
+        new_params = params
+        new_params["C"] = param_grid_opt["C"]
+        new_params["gamma"] = param_grid_opt["gamma"]
+        svm.set_params(**new_params)
+        # fit the optimal build
+        fit = svm.fit(x, y)
+    else:
+        if type(svm) == sklearn.svm.classes.SVC:
+            scofunc = "accuracy"
+        elif type(svm) == sklearn.svm.classes.SVR:
+            scofunc = "r2"
+        else:
+            raise ValueError("You have entered an invalid svm. Please use"
+                             "an svm of class SVR or SVC")
+            # fixed grid search along specified grid
+        fit = sklearn.grid_search.GridSearchCV(
+                estimator=svm,
+                param_grid=param_grid,
+                scoring=scofunc,
+                cv=cv,
+                n_jobs=n_jobs).fit(x, y)
+        for item in fit.grid_scores_:
+            print(item)
+        print("The best parameters are {} with a score of {}".format(
+                fit.best_params_, fit.best_score_))
 
     return [fit, scaler]
 
@@ -216,7 +233,7 @@ def _best_params(endog, features, estimator, param_grid, cv, n_jobs, threshold):
 
 
 def predict(endog, weather_history, weather_forecast, cov, gran,
-            params, param_grid, cv, threshold, n_jobs, discrete=True):
+            params, param_grid, cv, threshold, n_jobs, discrete, bin_search):
     """Time Series Prediciton Using SVM
 
     :param endog: Series. Endogenous variable to be forecasted
@@ -233,6 +250,8 @@ def predict(endog, weather_history, weather_forecast, cov, gran,
     :param n_jobs: Positive integer specifying number of cores for run
     :param discrete: Boolean identifying whether the endogenous variable
     is discrete or takes a continuum of values
+    :param bin_search: Boolean. Whether or not to use binary search along
+    gamma grid for each fixed C
     :return: Series
     """
     if discrete is True:
@@ -241,7 +260,9 @@ def predict(endog, weather_history, weather_forecast, cov, gran,
                                param_grid=param_grid, cv=cv,
                                threshold=threshold,
                                n_jobs=n_jobs,
-                               discrete=discrete)
+                               bin_search=bin_search,
+                               discrete=discrete,
+                               )
 
         features = weather.helpers.forecast_munge(weather_forecast, gran)[
             cov]
