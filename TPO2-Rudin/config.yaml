@@ -10,7 +10,7 @@ david :
     # wund_url: http://api.wunderground.com/api/08d25f404214f50b/
     wund_url: http://api.wunderground.com/api/bab4ba5bcbc2dbec/
     #cov: [conds, hum, rain, snow, temp]
-    cov: [hum, temp]
+    cov: [hum, temp, wetbulb]
     seasons: {spring: [3, 6], summer: [6, 9], fall: [9, 12], winter: [12, 3]}
     # cov choice is constrained by column entries in wund forecast which is
     # sparser than those in history data from wund. For example no
@@ -69,10 +69,7 @@ david :
 
   svm:
     params:
-      gamma: 3
-      C: 1
-      cache_size: 10000
-      kernel: rbf
+      cache_size: 30000
       max_iter: -1
       probability: False
       random_state: 1
@@ -80,7 +77,7 @@ david :
       tol: 0.001
       verbose: False
 
-    cross_val:
+    bin_search:
       param_grid:
           C:
             - 1
@@ -97,20 +94,26 @@ david :
 
           gamma:
             - 0.000001
-            - 0.0001
-            - 0.0005
-            - 0.001
-            - 0.00125
-            - 0.0015
-            - 0.001625
-            - 0.00175
-            - 0.002
-            - 0.00225
-            - 0.0025
-            - 1
-
+            - 4
           kernel:
             - rbf
+      cv: 3 #number of Kfold cross validation folds
+      n_jobs: -1
+      threshold: 0.003
+
+    fixsearch:
+      C_range:
+        - 1 #left
+        - 10 #right
+        - 2 #base
+
+      gamma_range:
+        - 0.000001 #left
+        - 4 #right
+        - 2 #base
+      kernel:
+        - rbf
+      cv: 10 #number of Kfold cross validation folds
       n_jobs: -1
       threshold: 0.003
 

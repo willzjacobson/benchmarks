@@ -1,6 +1,7 @@
-import weather.helpers
-import config
 import pandas as pd
+
+import config
+import weather.helpers
 
 if __name__ == "__main__":
     city = config.david["weather"]["city"]
@@ -18,12 +19,12 @@ if __name__ == "__main__":
     whist_orig = weather.helpers.history_update(city, state,
                                                 archive_location,
                                                 history_orig_name, cap,
-                                                parallel=False,
+                                                parallel=True,
                                                 munged=False)
     whist_munged = weather.helpers.history_update(city, state,
                                                   archive_location,
                                                   history_munged_name, cap,
-                                                  parallel=False,
+                                                  parallel=True,
                                                   gran=gran,
                                                   munged=True)
 

@@ -8,6 +8,7 @@ from dateutil.relativedelta import relativedelta
 from joblib import Parallel, delayed
 
 import config
+import weather.wet_bulb
 
 __author__ = "David Karapetyan"
 
@@ -33,15 +34,17 @@ def _dtype_conv(df=pd.DataFrame(),
 
     # fill done different for text vs float columns
     floatcols = df.columns[df.columns.isin(stringcols) == False]
-    # convert each column label to appropriate dtype
+    # convert each column label to appropriate dtype. Convert sentinels
+    # (negative numbers) to nan
     for stringcol in stringcols:
         if stringcol in df.columns:
             df[stringcol] = df[stringcol].apply(
-                lambda x: str(x) if x != 'N/A' else np.nan)
+                    lambda x: str(x) if x != 'N/A' else np.nan)
     for floatcol in floatcols:
         if floatcol in df.columns:
             df[floatcol] = df[floatcol].apply(
-                lambda x: float(x) if x != 'N/A' else np.nan)
+                    lambda x: float(x) if x != 'N/A' and float(
+                            x) > -999 else np.nan)
 
     # map conditions to uniformly spaced, unique integer values for processing
     # in models, with basic error checking.
@@ -49,12 +52,12 @@ def _dtype_conv(df=pd.DataFrame(),
     # code will make forecast conds be identical to history conds
     if 'conds' in df.columns:
         df['conds'] = df['conds'].apply(
-            lambda x: conds_mapping[x] if x in conds_mapping.keys()
-            else np.nan)
+                lambda x: conds_mapping[x] if x in conds_mapping.keys()
+                else np.nan)
     if 'wdire' in df.columns:
         df['wdire'] = df['wdire'].apply(
-            lambda x: wdire_mapping[x] if x in wdire_mapping.keys()
-            else np.nan)
+                lambda x: wdire_mapping[x] if x in wdire_mapping.keys()
+                else np.nan)
         df[['conds', 'wdire']] = df[['conds', 'wdire']].fillna(method="bfill")
     return df
 
@@ -97,8 +100,8 @@ def _history_pull(date=pd.datetime.today(),
 
     # convert date column to datetimeindex
     dateindex = df.date.apply(
-        lambda x: pd.datetime(int(x['year']), int(x['mon']), int(x['mday']),
-                              int(x['hour']), int(x['min'])))
+            lambda x: pd.datetime(int(x['year']), int(x['mon']), int(x['mday']),
+                                  int(x['hour']), int(x['min'])))
 
     dateindex.name = None
     df = df.set_index(dateindex)
@@ -135,6 +138,14 @@ def history_munge(df, gran):
     df = df.resample(gran, how="last")
     df = df.fillna(method="bfill")
 
+    # add wetbulb temperature
+    df['wetbulb'] = df.apply(
+            lambda x: weather.wet_bulb.compute_bulb(
+                    temp=x['temp'],
+                    dewpt=x['dewpt'],
+                    pressure=x['pressure']),
+            axis=1)
+
     return df
 
 
@@ -151,20 +162,22 @@ def forecast_munge(df, gran):
     for column in ['windchill', 'wspd', 'temp', 'qpf', 'snow', 'mslp',
                    'heatindex', 'dewpoint', 'feelslike']:
         df[column] = df[column].apply(
-            lambda x: x['english']
+                lambda x: x['english']
         )
 
         # add columns from forecast data to match weather underground past
         # data pull
 
         df['wdird'] = df['wdir'].apply(
-            lambda x: x['degrees'])
+                lambda x: x['degrees'])
         df['wdire'] = df['wdir'].apply(
-            lambda x: x['dir'])
+                lambda x: x['dir'])
 
     # rename to have name mappings of identical entries in historical and
     # forecast dataframes be the same
-    column_trans_dict = {'condition': 'conds', 'humidity': 'hum', 'pop': 'rain'}
+    column_trans_dict = {'condition': 'conds', 'humidity': 'hum',
+                         'mslp': 'pressure', 'pop': 'rain',
+                         'dewpoint': 'dewpt'}
     df = df.rename(columns=column_trans_dict)
 
     # delete redundant columns
@@ -178,6 +191,13 @@ def forecast_munge(df, gran):
 
     df = df.resample(gran, how="last")
     df = df.fillna(method="bfill")
+
+    # add wetbulb temperature
+    df['wetbulb'] = df.apply(
+            lambda x: weather.wet_bulb.compute_bulb(
+                    temp=x['temp'],
+                    dewpt=x['dewpt'],
+                    pressure=x['pressure']), axis=1)
     return df
 
 
@@ -205,8 +225,8 @@ def _forecast_pull(city=config.david["weather"]["city"],
 
     df = pd.DataFrame.from_dict(df)
     dateindex = df.FCTTIME.apply(
-        lambda x: pd.datetime(int(x['year']), int(x['mon']), int(x['mday']),
-                              int(x['hour']), int(x['min'])))
+            lambda x: pd.datetime(int(x['year']), int(x['mon']), int(x['mday']),
+                                  int(x['hour']), int(x['min'])))
     dateindex.name = None
     df = df.set_index(dateindex)
     return df
@@ -322,8 +342,8 @@ def history_update(city, state, archive_location, df, cap, parallel,
 
     if parallel:
         frames = Parallel(n_jobs=config.david["parallel"]["processors"])(
-            delayed(comp)(date, city, state, gran, munged)
-            for date in interval[:cap])
+                delayed(comp)(date, city, state, gran, munged)
+                for date in interval[:cap])
     else:
         frames = [comp(date, city, state, gran, munged) for date in
                   interval[:cap]]
@@ -336,7 +356,7 @@ def history_update(city, state, archive_location, df, cap, parallel,
         # all except one. Unfortunately, drop_duplicates works only for column
         # entries, not timestamp row indices, so...
         archive = archive.reset_index().drop_duplicates('index').set_index(
-            'index')
+                'index')
         return archive
     else:
         raise ValueError("Parallel concatenation of dataframes failed")
