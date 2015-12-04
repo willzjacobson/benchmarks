@@ -25,6 +25,8 @@ def _filter_missing_weather_data(weather_df):
     :return: pandas DataFrame
     """
 
+    # TODO: it might be better to not ignore good data in records with
+    # some missing data
     bad_data = weather_df.where(weather_df < -998).any(axis=1)
     return weather_df.drop(bad_data[bad_data == True].index)
 
@@ -302,20 +304,27 @@ def process_building(building_id, db_server, db_name, collection_name,
     # get weather
     weather_df = _get_weather(h5file_name, history_name, forecast_name,
                               granularity)
+    # weather_df = common.utils.interp_tseries(weather_df, granularity)
     common.utils.debug_msg(debug, "weather: %s" % weather_df)
 
     wetbulb_ts = _get_wetbulb_ts(weather_df)
+    wetbulb_ts = common.utils.interp_tseries(wetbulb_ts, granularity)
     common.utils.debug_msg(debug, "wetbulb: %s" % wetbulb_ts)
 
     # get occupancy data
     occ_ts = occupancy.utils.get_occupancy_ts(db_server, db_name,
                                               collection_name, building_id)
+    # interpolation converts occupancy data to float; convert back to int64
+    occ_ts = common.utils.interp_tseries(occ_ts, granularity).astype(
+        numpy.int64)
     common.utils.debug_msg(debug, "occupancy: %s" % occ_ts)
 
     # query electric data
     elec_ts = electric.utils.get_electric_ts(db_server, db_name,
                                              collection_name, building_id,
-                                             meter_count, granularity)
+                                             meter_count)
+    # print(elec_ts)
+    elec_ts = common.utils.interp_tseries(elec_ts, granularity)
     common.utils.debug_msg(debug, "electric: %s" % elec_ts)
 
 
@@ -344,6 +353,7 @@ def process_building(building_id, db_server, db_name, collection_name,
     # fig.savefig("bmark_%s.png" % base_dt)
 
     # save results
-    _save_benchmark(bench_dt, base_dt, bench_usage, db_server, db_name_out,
-                    collection_name_out, building_id, 'Electric_Demand',
-                    'benchmark')
+    if not debug:
+        _save_benchmark(bench_dt, base_dt, bench_usage, db_server, db_name_out,
+                        collection_name_out, building_id, 'Electric_Demand',
+                        'benchmark')
