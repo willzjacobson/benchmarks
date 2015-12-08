@@ -130,7 +130,7 @@ ashish:
 
 
   weather:
-    h5file: /data/weather.h5
+    h5file: /home/ashishgagneja/data/weather.h5
     # wund_url: http://api.wunderground.com/api/08d25f404214f50b/
     wund_url: http://api.wunderground.com/api/bab4ba5bcbc2dbec/
     #cov: [conds, hum, rain, snow, temp]
