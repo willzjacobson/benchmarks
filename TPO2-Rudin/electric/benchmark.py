@@ -61,7 +61,7 @@ def _get_weather(h5file_name, history_name, forecast_name, gran):
     # TODO: this should be done before munging for efficiency but couldn't make
     # it work
     munged_history = munged_history[['temp', 'dewpt', 'pressure']]
-    munged_forecast = munged_forecast[['temp', 'dewpoint', 'mslp']]
+    munged_forecast = munged_forecast[['temp', 'dewpt', 'pressure']]
 
     # rename forecast columns to match the corresponding historical columns
     munged_forecast = munged_forecast.rename(columns={'dewpoint': 'dewpt',
@@ -107,6 +107,36 @@ def _get_wetbulb_ts(weather_df):
 
 
 
+def _incremental_trapz(y, x):
+    """
+    compute area under the curve incrementally
+
+    :param y: list
+        list of y co-ordinates
+    :param x: list
+        list of  co-ordinates
+
+    :return: tuple
+        (<list of incremental AUCs>, <total auc>)
+        the length of the list of incremental AUCs matches that of y
+    """
+
+    if len(y) != len(x):
+        raise Exception('length of x and y lists must match')
+
+    incr_auc = []
+    curr_total = 0.0
+
+    for i, y_i in enumerate(y):
+
+        if i > 0:
+            curr_total += (y_i + y[i-1]) * (x[i] - x[i-1])/2.0
+
+        incr_auc.append(curr_total)
+
+    return incr_auc, curr_total
+
+
 def find_lowest_electric_usage(date_scores, electric_ts, n, debug):
     """
     Finds the day with the lowest total electric usage from among the n most
@@ -128,7 +158,10 @@ def find_lowest_electric_usage(date_scores, electric_ts, n, debug):
 
     dates, sim_scores = zip(*date_scores)
 
-    min_usage = [dates[0], sys.maxsize, None]
+    if not len(dates):
+        return None
+
+    min_usage = [dates[0], sys.maxsize, None, None]
     for i, dt in enumerate(dates):
 
         if i >= n:
@@ -141,22 +174,28 @@ def find_lowest_electric_usage(date_scores, electric_ts, n, debug):
             # Assumption: Linear interpolation is a reasonable way to fill gaps
             day_elec_ts = common.utils.drop_series_ix_date(
                 common.utils.get_dt_tseries(dt, electric_ts))
-            auc = numpy.trapz(day_elec_ts.data, x=list(map(lambda x:
-                                                           x.hour * 3600
-                                                         + x.minute * 60
-                                                         + x.second,
-                                                           day_elec_ts.index)))
+
+            # compute total and incremental AUC
+            x = list(map(lambda x: x.hour + x.minute / 60.0 + x.second / 3600.0,
+                         day_elec_ts.index))
+            incr_auc, auc = _incremental_trapz(day_elec_ts.data.tolist(), x)
+            # auc = numpy.trapz(day_elec_ts.data, x=list(map(lambda x:
+                                                           # x.hour * 3600
+                                                         # + x.minute * 60
+                                                         # + x.second,
+                                                         #   day_elec_ts.index)))
             common.utils.debug_msg(debug, "%s, %s" % (dt, auc))
 
             if 0 < auc < min_usage[1]:
-                min_usage = [dt, auc, day_elec_ts]
+                min_usage = [dt, auc, incr_auc, day_elec_ts]
 
-    return min_usage[0], min_usage[2]
+    return min_usage
 
 
 
-def _save_benchmark(bench_dt, base_dt, bench_ts, db_server, db_name,
-                    collection_name, bldg_id, system, output_type):
+def _save_benchmark(bench_dt, base_dt, bench_ts, bench_auc, bench_incr_auc,
+                    db_server, db_name, collection_name, bldg_id, system,
+                    output_type):
 
     """
     Save benchmark time series to database
@@ -167,6 +206,9 @@ def _save_benchmark(bench_dt, base_dt, bench_ts, db_server, db_name,
         base date
     :param bench_ts: pandas Series
         observation time series from bench_dt
+    :param bench_incr_auc: list
+        list with incremental auc scores, is assumed to be of the same size as
+        bench_ts
     :param db_server: string
         database server name or IP-address
     :param db_name: string
@@ -201,9 +243,28 @@ def _save_benchmark(bench_dt, base_dt, bench_ts, db_server, db_name,
                        "date": base_dt.isoformat()
                        },
                "comment": bench_dt.isoformat(),
-               "readings": common.utils.gen_readings_list(bench_ts)}
+               "readings": _gen_bmark_readings_list(bench_ts, bench_incr_auc),
+               'daily_total': bench_auc}
         collection.insert(doc)
 
+
+
+
+def _gen_bmark_readings_list(tseries, incr_auc):
+    """
+    generate list of readings with each item being a dictionary of the form:
+    {"time": <datetime/date/time>, "value": <value>, 'incr_total': <incr_auc>}
+
+    :param tseries: pandas Series
+        time series snippet to
+    :param incr_auc: list
+        list with incremental auc scores, is assumed to be of the same size as
+        tseries
+    :return: list of dictionaries
+    """
+
+    return [{'time': str(t[0]), 'value': t[1], 'incr_total': auc}
+            for t, auc in zip(tseries.iteritems(), incr_auc)]
 
 
 
@@ -330,15 +391,16 @@ def process_building(building_id, db_server, db_name, collection_name,
 
 
     # find baseline
-    bench_dt, bench_usage = _find_benchmark(base_dt, occ_ts, wetbulb_ts,
+    bench_info = _find_benchmark(base_dt, occ_ts, wetbulb_ts,
                                             elec_ts, granularity, debug)
-    common.utils.debug_msg(debug, "bench dt: %s, bench usage: %s" % (
-        bench_dt, bench_usage))
+    bench_dt, bench_auc, bench_incr_auc, bench_usage = bench_info
+    common.utils.debug_msg(debug, "bench dt: %s, bench usage: %s, auc: %s" % (
+        bench_dt, bench_usage, bench_auc))
 
     # TODO: delete display code
     # plot
     # get actual, if available
-    # # actual_ts = common.utils.get_dt_tseries(base_dt, elec_ts)
+    # actual_ts = common.utils.get_dt_tseries(base_dt, elec_ts)
     # actual_ts_nodate = common.utils.drop_series_ix_date(actual_ts)
     # print("actual: %s" % actual_ts)
     # disp_df = bench_usage.to_frame(name='benchmark')
@@ -346,14 +408,15 @@ def process_building(building_id, db_server, db_name, collection_name,
     #                        how='outer')
     # print("disp df: %s" % disp_df)
 
-    # # # matplotlib.pyplot.style.use('ggplot')
-    # # matplotlib.pyplot.figure()
+    # matplotlib.pyplot.style.use('ggplot')
+    # matplotlib.pyplot.figure()
     # chart = disp_df.plot()
     # fig = chart.get_figure()
     # fig.savefig("bmark_%s.png" % base_dt)
 
     # save results
     if not debug:
-        _save_benchmark(bench_dt, base_dt, bench_usage, db_server, db_name_out,
+        _save_benchmark(bench_dt, base_dt, bench_usage, bench_auc,
+                        bench_incr_auc, db_server, db_name_out,
                         collection_name_out, building_id, 'Electric_Demand',
                         'benchmark')

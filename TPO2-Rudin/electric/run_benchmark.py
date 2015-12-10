@@ -14,7 +14,6 @@ cfg = config.ashish
 
 buildings = cfg['default']['buildings']
 
-
 # determine benchmark date
 bench_dt = datetime.date.today()
 
