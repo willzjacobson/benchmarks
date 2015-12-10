@@ -233,7 +233,8 @@ def _forecast_pull(city=config.david["weather"]["city"],
     return df
 
 
-def forecast_update(city, state, account, host, port, username, password,
+def forecast_update(city, state, account, host, port, source, username,
+                    password,
                     db_name, collection_name, munged, gran=None):
     """Composition of forecast munging and forecast pull
 
@@ -259,7 +260,8 @@ def forecast_update(city, state, account, host, port, username, password,
     else:
         fcast = _forecast_pull(city, state, account)
 
-    _mongo_forecast_push(fcast, host=host, port=port, username=username,
+    _mongo_forecast_push(fcast, host=host, port=port, source=source,
+                         username=username,
                          password=password,
                          db_name=db_name,
                          collection_name=collection_name,
@@ -296,7 +298,8 @@ def comp(date, city, state, gran=None, munged=True):
 
 
 def history_update(city, state, archive_location, df, cap, parallel,
-                   host, port, username, password, db_name, collection_name,
+                   host, port, source, username, password, db_name,
+                   collection_name,
                    munged, gran=None):
     """Pull archived weather information
 
@@ -363,10 +366,12 @@ def history_update(city, state, archive_location, df, cap, parallel,
 
     if isinstance(weather_update, pd.DataFrame) \
             and isinstance(archive, pd.DataFrame):
-        # push to mongo
-        _mongo_history_push(weather_update,
+        # push to mongo. Mongo upsert checks if dates already exist,
+        # and if they don't, new items are pushed
+        _mongo_history_push(archive,
                             host=host,
                             port=port,
+                            source=source,
                             username=username,
                             password=password,
                             db_name=db_name,
@@ -382,7 +387,7 @@ def history_update(city, state, archive_location, df, cap, parallel,
         raise ValueError("Parallel concatenation of dataframes failed")
 
 
-def _mongo_forecast_push(df, host, port, username, password,
+def _mongo_forecast_push(df, host, port, source, username, password,
                          db_name, collection_name, munged):
     """
     Get all observation data with the given building, device and system
@@ -400,14 +405,13 @@ def _mongo_forecast_push(df, host, port, username, password,
     :return: None
     """
 
-    with pymongo.MongoClient(host=host, port=port,
-                             username=username,
-                             password=password) as conn:
+    with pymongo.MongoClient(host=host, port=port) as conn:
+        conn[db_name].authenticate(username, password, source=source)
         collection = conn[db_name][collection_name]
 
         df.index.name = 'time'
         date = pd.datetime.today()
-        readings = list(df.reset_index().transpose().to_dict().values())
+        readings = df.reset_index().to_dict("records")
 
         collection.insert({
             "_id": {"weather_host": "Weather Underground", "date": date,
@@ -417,17 +421,22 @@ def _mongo_forecast_push(df, host, port, username, password,
         })
 
 
-def _mongo_history_push(df, host, port, db_name, username, password,
+def _mongo_history_push(df, host, port, source, db_name, username, password,
                         collection_name, munged):
     with pymongo.MongoClient(host=host, port=port) as conn:
-        # conn[db_name].authenticate(username, password)
+        conn[db_name].authenticate(username, password, source=source)
         collection = conn[db_name][collection_name]
         df.index.name = 'time'
         # don't have to check if collection exists, due to upsert below
-        readings = list(df.reset_index().transpose().to_dict().values())
 
-        collection.update_one(
-                {"_id": {"weather_host": "Weather Underground",
-                         "munged": munged}},
-                {'$addToSet': {'readings': readings}},
-                upsert=True)
+        for date in pd.Series(df.index.date).unique():
+            readings = df[df.index.date == date].to_dict("records")
+            daytime = pd.Timestamp(date)
+
+            collection.insert({
+                "_id": {"weather_host": "Weather Underground",
+                        "date": daytime,
+                        "munged": munged},
+                "readings": readings,
+                "units": "us"
+            })

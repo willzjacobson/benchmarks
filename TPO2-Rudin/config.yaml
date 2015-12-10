@@ -10,15 +10,17 @@ david :
       forecast:
         host: 52.91.89.104
         port: 27017
-        username: None
-        password: None
+        source: admin
+        username: Analytics
+        password: L3x1^gt0n
         db_name: weather
         collection_name: forecast
       history:
         host: 52.91.89.104
         port: 27017
-        username: None
-        password: None
+        source: admin
+        username: Analytics
+        password: L3x1^gt0n
         db_name: weather
         collection_name: history
 
