@@ -1,7 +1,7 @@
 import pandas as pd
 
 import config
-import weather.helpers
+import weather.utils
 
 cfg = config.david
 if __name__ == "__main__":
@@ -17,7 +17,11 @@ if __name__ == "__main__":
     gran = cfg["sampling"]["granularity"]
     account = cfg["weather"]["wund_url"]
 
-    whist_orig = weather.helpers.history_update(
+    bobo = weather.utils.get_latest_forecast(gran="15min", munged=True,
+                                             **(cfg["weather"]["mongo"][
+                                                    "forecast"]))
+
+    whist_orig = weather.utils.history_update(
             city, state,
             archive_location,
             history_orig_name, cap,
@@ -25,7 +29,7 @@ if __name__ == "__main__":
             munged=False,
             **(cfg["weather"]["mongo"]["history"])
     )
-    whist_munged = weather.helpers.history_update(
+    whist_munged = weather.utils.history_update(
             city, state,
             archive_location,
             history_munged_name, cap,
@@ -35,11 +39,11 @@ if __name__ == "__main__":
             **(cfg["weather"]["mongo"]["history"])
     )
 
-    forecast_orig = weather.helpers.forecast_update(
+    forecast_orig = weather.utils.forecast_update(
             city, state, account,
             munged=False,
             **(cfg["weather"]["mongo"]["forecast"]))
-    forecast_munged = weather.helpers.forecast_update(
+    forecast_munged = weather.utils.forecast_update(
             city, state, account,
             gran=gran,
             munged=True,

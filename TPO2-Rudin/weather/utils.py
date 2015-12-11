@@ -366,6 +366,12 @@ def history_update(city, state, archive_location, df, cap, parallel,
 
     if isinstance(weather_update, pd.DataFrame) \
             and isinstance(archive, pd.DataFrame):
+
+        # check for duplicate entries from weather underground, and delete
+        # all except one. Unfortunately, drop_duplicates works only for column
+        # entries, not timestamp row indices, so...
+        archive = archive.reset_index().drop_duplicates('index').set_index(
+                'index')
         # push to mongo. Mongo upsert checks if dates already exist,
         # and if they don't, new items are pushed
         _mongo_history_push(archive,
@@ -377,11 +383,6 @@ def history_update(city, state, archive_location, df, cap, parallel,
                             db_name=db_name,
                             collection_name=collection_name,
                             munged=munged)
-        # check for duplicate entries from weather underground, and delete
-        # all except one. Unfortunately, drop_duplicates works only for column
-        # entries, not timestamp row indices, so...
-        archive = archive.reset_index().drop_duplicates('index').set_index(
-                'index')
         return archive
     else:
         raise ValueError("Parallel concatenation of dataframes failed")
@@ -429,14 +430,44 @@ def _mongo_history_push(df, host, port, source, db_name, username, password,
         df.index.name = 'time'
         # don't have to check if collection exists, due to upsert below
 
+        bulk = collection.initialize_unordered_bulk_op()
         for date in pd.Series(df.index.date).unique():
-            readings = df[df.index.date == date].to_dict("records")
+            readings = df[df.index.date == date].reset_index().to_dict(
+                    "records")
             daytime = pd.Timestamp(date)
+            bulk.insert(
+                    {
+                        "_id": {"weather_host": "Weather Underground",
+                                "date": daytime,
+                                "munged": munged},
+                        "readings": readings,
+                        "units": "us"
+                    })
+        bulk.execute()
 
-            collection.insert({
-                "_id": {"weather_host": "Weather Underground",
-                        "date": daytime,
-                        "munged": munged},
-                "readings": readings,
-                "units": "us"
-            })
+
+def get_weather(host, port, source, db_name, username, password,
+                collection_name, gran, munged):
+    whist = pd.DataFrame()
+    with pymongo.MongoClient(host=host, port=port) as conn:
+        conn[db_name].authenticate(username, password, source=source)
+        collection = conn[db_name][collection_name]
+        for data in collection.find({"_id.munged": munged}):
+            reading = data['readings']
+            whist = whist.append(pd.DataFrame(reading))
+
+    whist.set_index('time', inplace=True)
+    return whist.sort_index().resample(gran)
+
+
+def get_latest_forecast(host, port, source, db_name, username, password,
+                        collection_name, gran, munged):
+    with pymongo.MongoClient(host=host, port=port) as conn:
+        conn[db_name].authenticate(username, password, source=source)
+        collection = conn[db_name][collection_name]
+        for data in collection.find({"_id.munged": munged}).sort(
+                "_id.date", pymongo.DESCENDING):
+            reading = data['readings']
+            wfore = pd.DataFrame(reading)
+            wfore.set_index('time', inplace=True)
+            return wfore.sort_index().resample(gran)
