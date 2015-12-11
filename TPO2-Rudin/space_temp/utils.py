@@ -10,9 +10,11 @@ import pandas as pd
 import dateutil.parser
 import sarima.model
 import dateutil.relativedelta as relativedelta
+import pymongo
 
 
-def get_space_temp_ts(db, collection_name, bldg, floor, quad, granularity):
+def get_space_temp_ts(host, port, db_name, username, password, source,
+                      collection_name, bldg, floor, quad, granularity):
     """ retrieve all available space temperature data for floor-quad of
         building_id bldg
 
@@ -31,20 +33,27 @@ def get_space_temp_ts(db, collection_name, bldg, floor, quad, granularity):
     """
 
     ts_list, value_list = [], []
-    collection = db[collection_name]
-    for data in collection.find({"_id.building": bldg,
-                                 "_id.device": "Space_Temp",
-                                 "_id.floor": str(floor),
-                                 "_id.quad": quad}):
-        readings = data['readings']
-        for reading in readings:
-            ts_list.append(
-                dateutil.parser.parse(reading['time'], ignoretz=True))
-            value_list.append(float(reading['value']))
+
+    # query data
+    with pymongo.MongoClient(host=host, port=port) as conn:
+
+        conn[db_name].authenticate(username, password, source=source)
+        collection = conn[db_name][collection_name]
+
+        for data in collection.find({"_id.building": bldg,
+                                     "_id.device": "Space_Temp",
+                                     "_id.floor": str(floor),
+                                     "_id.quad": quad}):
+            readings = data['readings']
+            for reading in readings:
+                ts_list.append(
+                    dateutil.parser.parse(reading['time'], ignoretz=True))
+                value_list.append(float(reading['value']))
 
     gran = "%dmin" % granularity
     return pd.Series(data=value_list, index=pd.DatetimeIndex(ts_list)
                      ).sort_index().resample(gran)
+
 
 
 def process_building(building_id, db_server, db_name, collection_name,

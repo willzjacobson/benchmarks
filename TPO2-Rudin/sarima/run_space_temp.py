@@ -21,8 +21,8 @@ for building in buildings:
     sarima_params = cfg['sarima']
     sampling_params = cfg['sampling']
 
-    utils.process_building(building, bldg_params['db_server_input'],
-                           bldg_params['db_name_input'],
+    utils.process_building(building, bldg_params['host'],
+                           bldg_params['database'],
                            bldg_params['collection_name_input'],
                            bldg_params['floor_quadrants'],
                            weather_params['h5file'],

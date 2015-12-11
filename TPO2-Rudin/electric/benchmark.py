@@ -122,10 +122,9 @@ def _incremental_trapz(y, x):
     """
 
     if len(y) != len(x):
-        raise Exception('length of x and y lists must match')
+        raise Exception('length of x and y must match')
 
-    incr_auc = []
-    curr_total = 0.0
+    incr_auc, curr_total = [],  0.0
 
     for i, y_i in enumerate(y):
 
@@ -253,7 +252,7 @@ def _save_benchmark(bench_dt, base_dt, bench_ts, bench_auc, bench_incr_auc,
 def _gen_bmark_readings_list(tseries, incr_auc):
     """
     generate list of readings with each item being a dictionary of the form:
-    {"time": <datetime/date/time>, "value": <value>, 'incr_total': <incr_auc>}
+    {"time": <datetime/date/time>, "value": <value>, 'daily': <incr_auc>}
 
     :param tseries: pandas Series
         time series snippet to
@@ -263,7 +262,7 @@ def _gen_bmark_readings_list(tseries, incr_auc):
     :return: list of dictionaries
     """
 
-    return [{'time': str(t[0]), 'value': t[1], 'incr_total': auc}
+    return [{'time': str(t[0]), 'value': t[1], 'daily': auc}
             for t, auc in zip(tseries.iteritems(), incr_auc)]
 
 
