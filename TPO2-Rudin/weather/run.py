@@ -17,9 +17,9 @@ if __name__ == "__main__":
     gran = cfg["sampling"]["granularity"]
     account = cfg["weather"]["wund_url"]
 
-    bobo = weather.utils.get_latest_forecast(gran="15min", munged=True,
-                                             **(cfg["weather"]["mongo"][
-                                                    "forecast"]))
+    # bobo = weather.utils._get_latest_forecast(gran="15min", munged=True,
+    #                                           **(cfg["weather"]["mongo"][
+    #                                                 "forecast"]))
 
     whist_orig = weather.utils.history_update(
             city, state,
