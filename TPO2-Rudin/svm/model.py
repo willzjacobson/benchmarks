@@ -9,7 +9,7 @@ import sklearn.svm
 import sklearn.svm.classes
 
 import ts_proc.munge
-import weather.helpers
+import weather.utils
 
 __author__ = 'David Karapetyan'
 
@@ -39,8 +39,8 @@ def _build(endog, weather_orig, cov, gran, params, param_grid, cv, threshold,
     """
 
     # get only dates from weather data that coincide with endog dates
-    weather_cond = weather.helpers.history_munge(df=weather_orig,
-                                                 gran=gran)[cov]
+    weather_cond = weather.utils.history_munge(df=weather_orig,
+                                               gran=gran)[cov]
 
     endog_filt = ts_proc.munge.filter_day_season(endog)
     # only include dates (as integers)that are both in features and
@@ -264,7 +264,7 @@ def predict(endog, weather_history, weather_forecast, cov, gran,
                                discrete=discrete,
                                )
 
-        features = weather.helpers.forecast_munge(weather_forecast, gran)[
+        features = weather.utils.forecast_munge(weather_forecast, gran)[
             cov]
         prediction_index = features.index
         features = features.reset_index()

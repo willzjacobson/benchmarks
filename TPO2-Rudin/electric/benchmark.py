@@ -1,20 +1,19 @@
 
 __author__ = 'ashishgagneja'
 
-import pandas as pd
-import electric.utils
-import weather.helpers
 import datetime
-import occupancy.utils
 import itertools
-import weather.wet_bulb
-import common.utils
-import numpy
 import sys
+
 import db.connect
-import matplotlib.pyplot
+import numpy
+import pandas as pd
 
-
+import common.utils
+import electric.utils
+import occupancy.utils
+import weather.utils
+import weather.wet_bulb
 
 
 def _filter_missing_weather_data(weather_df):
@@ -49,10 +48,10 @@ def _get_weather(h5file_name, history_name, forecast_name, gran):
 
     with pd.HDFStore(h5file_name) as store:
 
-        munged_history = weather.helpers.history_munge(store[history_name],
+        munged_history = weather.utils.history_munge(store[history_name],
                                                        "%dmin" % gran)
 
-        munged_forecast = weather.helpers.forecast_munge(store[forecast_name],
+        munged_forecast = weather.utils.forecast_munge(store[forecast_name],
                                                          "%dmin" % gran)
                                                          # cov, "%dmin" % gran)
 
