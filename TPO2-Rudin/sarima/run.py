@@ -63,7 +63,7 @@ prediction = sarima.model.start_time(park_ts, cfg['weather'], cfg['sarima'],
                                      cfg['sampling']['forecast_granularity'])
 # park_ts = park_ts['2013-04-01': '2013-07-01']
 # start_up._benchmark_ts(park_ts, datetime="2013-06-06 7:00:00")
-# weather_all = weather.history_update()
+# weather_all = weather.mongo_history_update()
 # bobo = start_up.start_time(park_ts, city="New_York", state="NY",
 #                     date="2013-06-06 7:00:00")
 
