@@ -7,8 +7,8 @@ import config
 import weather.wund
 
 
-def _mongo_forecast_push(df, host, port, source, username, password,
-                         db_name, collection_name):
+def _forecast_push(df, host, port, source, username, password,
+                   db_name, collection_name):
     """
     Get all observation data with the given building, device and system
     combination from the database
@@ -36,8 +36,8 @@ def _mongo_forecast_push(df, host, port, source, username, password,
         # don't need to check for existence of document--guaranteed not to exist
         # for each run of model, due to 'date = pd.datetime.today()'
         collection.insert({
-            "_id": {"weather_host": "Weather Underground", "date": daytime
-                    },
+            "weather_host": "Weather Underground",
+            "date": daytime,
             "readings": readings,
             "units": "us"
         })
@@ -56,39 +56,27 @@ def _mongo_history_push(df, host, port, source, db_name, username, password,
             readings = df[df.index.date == date].reset_index().to_dict(
                     "records")
             daytime = pd.Timestamp(date)
-            bulk.find({"_id.date": daytime}).update(
+            bulk.find({"date": daytime}).update(
                     {
-                        "_id": {"weather_host": "Weather Underground",
-                                "date": daytime},
+                        "weather_host": "Weather Underground",
+                        "date": daytime,
                         "readings": readings,
                         "units": "us"
                     }, upsert=True)
         bulk.execute()
 
 
-def get_history(host, port, source, db_name, username, password,
-                collection_name):
-    whist = pd.DataFrame()
-    with pymongo.MongoClient(host=host, port=port) as conn:
-        conn[db_name].authenticate(username, password, source=source)
-        collection = conn[db_name][collection_name]
-        for data in collection.find():
-            reading = data['readings']
-            whist = whist.append(pd.DataFrame(reading))
-
-    whist.set_index('time', inplace=True).sort_index()
-    return whist
-
-
 def forecast_update(city, state, account, cap, host, port, source,
                     username, password, db_name, collection_name):
-    _mongo_forecast_push(weather.wund.forecast_pull(city=city, state=state,
-                                                    account=account))
+    data = weather.wund.forecast_pull(city=city, state=state,
+                                      account=account)
+    _forecast_push(data, host=host, port=port, source=source,
+                   username=username, password=password, db_name=db_name,
+                   collection_name=collection_name)
 
 
-
-def mongo_history_update(city, state, cap, parallel, host, port, source,
-                         username, password, db_name, collection_name):
+def history_update(city, state, cap, parallel, host, port, source,
+                   username, password, db_name, collection_name):
     """Pull archived weather information
 
     Weather information is pulled from weather underground from end of
@@ -163,9 +151,25 @@ def mongo_history_update(city, state, cap, parallel, host, port, source,
                             db_name=db_name,
                             collection_name=collection_name
                             )
-        return archive
     else:
         raise ValueError("Parallel concatenation of dataframes failed")
+
+
+def get_history(host, port, source, db_name, username, password,
+                collection_name):
+    whist = pd.DataFrame()
+    with pymongo.MongoClient(host=host, port=port) as conn:
+        conn[db_name].authenticate(username, password, source=source)
+        collection = conn[db_name][collection_name]
+        for data in collection.find():
+            reading = data['readings']
+            whist = whist.append(pd.DataFrame(reading))
+
+    if len(whist) == 0:
+        return whist
+    else:
+        whist.set_index('time', inplace=True).sort_index()
+        return whist
 
 
 def get_latest_forecast(host, port, source, db_name, username, password,
@@ -174,8 +178,12 @@ def get_latest_forecast(host, port, source, db_name, username, password,
         conn[db_name].authenticate(username, password, source=source)
         collection = conn[db_name][collection_name]
         for data in collection.find().sort(
-                "_id.date", pymongo.DESCENDING):
+                "date", pymongo.DESCENDING):
             reading = data['readings']
             wfore = pd.DataFrame(reading)
-            wfore.set_index('time', inplace=True).sort_index()
-            return wfore
+
+            if len(wfore) == 0:
+                return wfore
+            else:
+                wfore.set_index('time', inplace=True).sort_index()
+                return wfore

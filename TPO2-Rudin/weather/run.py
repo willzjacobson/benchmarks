@@ -1,5 +1,3 @@
-import pandas as pd
-
 import config
 import weather.mongo
 import weather.wund
@@ -22,22 +20,13 @@ if __name__ == "__main__":
     #                                           **(cfg["weather"]["mongo"][
     #                                                 "forecast"]))
 
-    whist_orig = weather.mongo.mongo_history_update(
+    weather.mongo.history_update(
             city=city, state=state, cap=cap, parallel=True,
             **(cfg["weather"]["mongo"]["history"])
     )
-    whist_munged = weather.wund.history_munge(whist_orig, gran=gran)
 
-    forecast_orig = weather.wund.forecast_update(
+    weather.mongo.forecast_update(
             city=city, state=state, account=account,
             **(cfg["weather"]["mongo"]["forecast"]))
-    forecast_munged = weather.wund.forecast_munge(forecast_orig, gran=gran)
 
-    # store munged and pure data in database, for debugging
-    store = pd.HDFStore(archive_location)
-    store[forecast_munged_name] = forecast_munged
-    store[forecast_orig_name] = forecast_orig
 
-    store[history_munged_name] = whist_munged
-    store[history_orig_name] = whist_orig
-    store.close()
