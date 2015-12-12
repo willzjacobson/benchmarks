@@ -60,10 +60,7 @@ def _dtype_conv(df=pd.DataFrame(),
     return df
 
 
-def history_pull(date=pd.datetime.today(),
-                 city=config.david["weather"]["city"],
-                 state=config.david["weather"]["state"],
-                 account=config.david["weather"]["wund_url"]):
+def history_pull(city, state, account, date=pd.datetime.today()):
     """Weather information is pulled from weather underground at specified
     day
 

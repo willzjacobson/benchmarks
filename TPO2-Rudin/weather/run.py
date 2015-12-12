@@ -23,32 +23,15 @@ if __name__ == "__main__":
     #                                                 "forecast"]))
 
     whist_orig = weather.mongo.mongo_history_update(
-            city, state,
-            archive_location,
-            history_orig_name, cap,
-            parallel=True,
-            munged=False,
+            city=city, state=state, cap=cap, parallel=True,
             **(cfg["weather"]["mongo"]["history"])
     )
-    whist_munged = weather.mongo.mongo_history_update(
-            city, state,
-            archive_location,
-            history_munged_name, cap,
-            parallel=True,
-            gran=gran,
-            munged=True,
-            **(cfg["weather"]["mongo"]["history"])
-    )
+    whist_munged = weather.wund.history_munge(whist_orig, gran=gran)
 
     forecast_orig = weather.wund.forecast_update(
-            city, state, account,
-            munged=False,
+            city=city, state=state, account=account,
             **(cfg["weather"]["mongo"]["forecast"]))
-    forecast_munged = weather.wund.forecast_update(
-            city, state, account,
-            gran=gran,
-            munged=True,
-            **(cfg["weather"]["mongo"]["forecast"]))
+    forecast_munged = weather.wund.forecast_munge(forecast_orig, gran=gran)
 
     # store munged and pure data in database, for debugging
     store = pd.HDFStore(archive_location)
