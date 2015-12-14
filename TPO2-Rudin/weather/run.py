@@ -16,10 +16,9 @@ if __name__ == "__main__":
     gran = cfg["sampling"]["granularity"]
     account = cfg["weather"]["wund_url"]
 
-    # bobo = weather.utils.get_latest_forecast(gran="15min", munged=True,
-    #                                           **(cfg["weather"]["mongo"][
-    #                                                 "forecast"]))
-
+    # whist = pd.read_hdf("/data/weather.h5", "history_orig")
+    # weather.mongo._mongo_history_push(whist,
+    #                                   **(cfg["weather"]["mongo"]["history"]))
     weather.mongo.history_update(
             city=city, state=state, cap=cap, parallel=True,
             **(cfg["weather"]["mongo"]["history"])
@@ -28,5 +27,3 @@ if __name__ == "__main__":
     weather.mongo.forecast_update(
             city=city, state=state, account=account,
             **(cfg["weather"]["mongo"]["forecast"]))
-
-

@@ -56,17 +56,18 @@ def _mongo_history_push(df, host, port, source, db_name, username, password,
             readings = df[df.index.date == date].reset_index().to_dict(
                     "records")
             daytime = pd.Timestamp(date)
-            bulk.find({"date": daytime}).update(
+            bulk.find({"date": daytime}).upsert().update(
                     {
-                        "weather_host": "Weather Underground",
-                        "date": daytime,
-                        "readings": readings,
-                        "units": "us"
-                    }, upsert=True)
+                        "$set": {"weather_host": "Weather Underground",
+                                 "date": daytime,
+                                 "readings": readings,
+                                 "units": "us"
+                                 }
+                    })
         bulk.execute()
 
 
-def forecast_update(city, state, account, cap, host, port, source,
+def forecast_update(city, state, account, host, port, source,
                     username, password, db_name, collection_name):
     data = weather.wund.forecast_pull(city=city, state=state,
                                       account=account)
