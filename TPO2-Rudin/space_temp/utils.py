@@ -4,17 +4,15 @@ __author__ = 'ashishgagneja'
 driver for generating start-time using a sarima model built using space
 temperature data
 """
-
-import db.connect as connect
-import pandas as pd
 import dateutil.parser
-import sarima.model
 import dateutil.relativedelta as relativedelta
+import pandas as pd
 import pymongo
 
+import sarima.model
 
-def get_space_temp_ts(host, port, db_name, username, password, source,
-                      collection_name, bldg, floor, quad, granularity):
+
+def get_space_temp_ts(db, collection_name, bldg, floor, quad, granularity):
     """ retrieve all available space temperature data for floor-quad of
         building_id bldg
 
@@ -33,30 +31,24 @@ def get_space_temp_ts(host, port, db_name, username, password, source,
     """
 
     ts_list, value_list = [], []
-
-    # query data
-    with pymongo.MongoClient(host=host, port=port) as conn:
-
-        conn[db_name].authenticate(username, password, source=source)
-        collection = conn[db_name][collection_name]
-
-        for data in collection.find({"_id.building": bldg,
-                                     "_id.device": "Space_Temp",
-                                     "_id.floor": str(floor),
-                                     "_id.quad": quad}):
-            readings = data['readings']
-            for reading in readings:
-                ts_list.append(
+    collection = db[collection_name]
+    for data in collection.find({"_id.building": bldg,
+                                 "_id.device": "Space_Temp",
+                                 "_id.floor": str(floor),
+                                 "_id.quad": quad}):
+        readings = data['readings']
+        for reading in readings:
+            ts_list.append(
                     dateutil.parser.parse(reading['time'], ignoretz=True))
-                value_list.append(float(reading['value']))
+            value_list.append(float(reading['value']))
 
     gran = "%dmin" % granularity
     return pd.Series(data=value_list, index=pd.DatetimeIndex(ts_list)
                      ).sort_index().resample(gran)
 
 
-
-def process_building(building_id, db_server, db_name, collection_name,
+def process_building(building_id, host, port, username, password,
+                     db_name, collection_name,
                      floor_quadrants, h5file_name, history_name, forecast_name,
                      order, enforce_stationarity, granularity):
     """ Generate startup time using SARIMA model for each floor-quadrant
@@ -64,7 +56,7 @@ def process_building(building_id, db_server, db_name, collection_name,
 
     :param building_id: string
         building_id identifier
-    :param db_server: string
+    :param host: string
         database server name or IP-address
     :param db_name: string
         name of the database on server
@@ -88,7 +80,7 @@ def process_building(building_id, db_server, db_name, collection_name,
     """
 
     # connect to database
-    conn = connect.connect(db_server, database=db_name)
+    conn = pymongo.MongoClient(host, port, username, password)
     db = conn[db_name]
 
     predictions = []
@@ -104,9 +96,10 @@ def process_building(building_id, db_server, db_name, collection_name,
 
         # invoke model
         predictions.append(
-            sarima.model.start_time(ts, h5file_name, history_name,
-                                    forecast_name, order, enforce_stationarity,
-                                    granularity, str(pred_dt)))
+                sarima.model.start_time(ts, h5file_name, history_name,
+                                        forecast_name, order,
+                                        enforce_stationarity,
+                                        granularity, str(pred_dt)))
 
     # TODO: save results
     conn.close()

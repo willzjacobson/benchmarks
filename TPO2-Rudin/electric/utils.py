@@ -1,9 +1,9 @@
 __author__ = 'ashishgagneja'
 
-import pandas as pd
-import common.utils
 import joblib
-import datetime
+import pandas as pd
+
+import common.utils
 
 
 def _construct_dataframe(ts_lists, value_lists):
@@ -63,7 +63,7 @@ def get_electric_ts(db_server, db_name, collection_name, bldg_id, meter_count):
     # for equip_id in range(1, meter_count+1):
 
         # ts_list, value_list = _get_meter_data(equipment_id, bldg_id, collection)
-        # ts_list, value_list = common.utils.get_ts(db_server, db_name,
+    # ts_list, value_list = common.utils.get_ts(host, db_name,
         #                                            collection_name, bldg_id,
         #                                            "Elec-M%d" % equip_id,
         #                                            'SIF_Electric_Demand',

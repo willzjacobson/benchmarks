@@ -4,6 +4,7 @@ from urllib.request import urlopen
 
 import numpy as np
 import pandas as pd
+import pymongo
 from dateutil.relativedelta import relativedelta
 from joblib import Parallel, delayed
 
@@ -232,7 +233,9 @@ def _forecast_pull(city=config.david["weather"]["city"],
     return df
 
 
-def forecast_update(city, state, account, gran=None, munged=False):
+def forecast_update(city, state, account, host, port, source, username,
+                    password,
+                    db_name, collection_name, munged, gran=None):
     """Composition of forecast munging and forecast pull
 
     :param city: string
@@ -252,9 +255,18 @@ def forecast_update(city, state, account, gran=None, munged=False):
     if munged:
         if gran is None:
             raise ValueError("Please supply a resampling granularity")
-        return forecast_munge(_forecast_pull(city, state, account), gran)
+        fcast = forecast_munge(_forecast_pull(city, state, account), gran)
+
     else:
-        return _forecast_pull(city, state, account)
+        fcast = _forecast_pull(city, state, account)
+
+    _mongo_forecast_push(fcast, host=host, port=port, source=source,
+                         username=username,
+                         password=password,
+                         db_name=db_name,
+                         collection_name=collection_name
+                         )
+    return fcast
 
 
 # helper function for history_update.
@@ -286,8 +298,9 @@ def comp(date, city, state, gran=None, munged=True):
 
 
 def history_update(city, state, archive_location, df, cap, parallel,
-                   gran=None,
-                   munged=False):
+                   host, port, source, username, password, db_name,
+                   collection_name,
+                   munged, gran=None):
     """Pull archived weather information
 
     Weather information is pulled from weather underground from end of
@@ -319,11 +332,17 @@ def history_update(city, state, archive_location, df, cap, parallel,
     # will just create store and entry
     # if they don't exist
 
-    store = pd.HDFStore(archive_location)
-    if ("/" + df) not in store.keys():
-        store[df] = pd.DataFrame()
-    weather_data = store[df]
-    store.close()
+    # store = pd.HDFStore(archive_location)
+    # if ("/" + df) not in store.keys():
+    #     store[df] = pd.DataFrame()
+    # weather_data = store[df]
+    # store.close()
+
+    weather_data = _get_history(host=host, port=port, source=source,
+                                db_name=db_name, username=username,
+                                password=password,
+                                collection_name=collection_name, gran=gran,
+                                munged=munged)
 
     # start is beginning of day for last entry in weather_data
     # we toss out any times already existing between start and end of
@@ -351,12 +370,119 @@ def history_update(city, state, archive_location, df, cap, parallel,
     weather_update = pd.concat(frames)
     archive = pd.concat([wdata_days_comp, weather_update])
 
-    if isinstance(archive, pd.DataFrame):
+    if isinstance(weather_update, pd.DataFrame) \
+            and isinstance(archive, pd.DataFrame):
+
         # check for duplicate entries from weather underground, and delete
         # all except one. Unfortunately, drop_duplicates works only for column
         # entries, not timestamp row indices, so...
         archive = archive.reset_index().drop_duplicates('index').set_index(
                 'index')
+        # push to mongo. Mongo upsert checks if dates already exist,
+        # and if they don't, new items are pushed
+        _mongo_history_push(archive,
+                            host=host,
+                            port=port,
+                            source=source,
+                            username=username,
+                            password=password,
+                            db_name=db_name,
+                            collection_name=collection_name
+                            )
         return archive
     else:
         raise ValueError("Parallel concatenation of dataframes failed")
+
+
+def _mongo_forecast_push(df, host, port, source, username, password,
+                         db_name, collection_name):
+    """
+    Get all observation data with the given building, device and system
+    combination from the database
+
+    :param df: pd.DataFrame
+        Dataframe to push to mongo
+    :param host: string
+        database server name or IP-address
+    :param db_name: string
+        name of the database on server
+    :param collection_name: string
+        collection name to use
+
+    :return: None
+    """
+
+    with pymongo.MongoClient(host=host, port=port) as conn:
+        conn[db_name].authenticate(username, password, source=source)
+        collection = conn[db_name][collection_name]
+
+        df.index.name = 'time'
+        daytime = pd.datetime.today()
+        readings = df.reset_index().to_dict("records")
+
+        # don't need to check for existence of document--guaranteed not to exist
+        # for each run of model, due to 'date = pd.datetime.today()'
+        collection.insert({
+            "_id": {"weather_host": "Weather Underground", "date": daytime
+                    },
+            "readings": readings,
+            "units": "us"
+        })
+
+
+def _mongo_history_push(df, host, port, source, db_name, username, password,
+                        collection_name):
+    with pymongo.MongoClient(host=host, port=port) as conn:
+        conn[db_name].authenticate(username, password, source=source)
+        collection = conn[db_name][collection_name]
+        df.index.name = 'time'
+        # don't have to check if collection exists, due to upsert below
+
+        bulk = collection.initialize_unordered_bulk_op()
+        for date in pd.Series(df.index.date).unique():
+            readings = df[df.index.date == date].reset_index().to_dict(
+                    "records")
+            daytime = pd.Timestamp(date)
+            bulk.find({"_id.date": daytime}).update(
+                    {
+                        "_id": {"weather_host": "Weather Underground",
+                                "date": daytime},
+                        "readings": readings,
+                        "units": "us"
+                    }, upsert=True)
+        bulk.execute()
+
+
+def _get_history(host, port, source, db_name, username, password,
+                 collection_name, gran, munged=True):
+    whist = pd.DataFrame()
+    with pymongo.MongoClient(host=host, port=port) as conn:
+        conn[db_name].authenticate(username, password, source=source)
+        collection = conn[db_name][collection_name]
+        for data in collection.find():
+            reading = data['readings']
+            whist = whist.append(pd.DataFrame(reading))
+
+    whist.set_index('time', inplace=True).sort_index()
+
+    if munged:
+        return history_munge(whist, gran)
+    else:
+        return whist
+
+
+def _get_latest_forecast(host, port, source, db_name, username, password,
+                         collection_name, gran, munged=True):
+    with pymongo.MongoClient(host=host, port=port) as conn:
+        conn[db_name].authenticate(username, password, source=source)
+        collection = conn[db_name][collection_name]
+        for data in collection.find().sort(
+                "_id.date", pymongo.DESCENDING):
+            reading = data['readings']
+            wfore = pd.DataFrame(reading)
+            wfore.set_index('time', inplace=True).sort_index()
+
+            if munged:
+                return forecast_munge(wfore, gran)
+            else:
+                return wfore
