@@ -173,7 +173,7 @@ def find_lowest_electric_usage(date_scores, electric_ts, n, debug):
                 common.utils.get_dt_tseries(dt, electric_ts))
 
             # compute total and incremental AUC
-            x = list(map(lambda x: x.hour + x.minute / 60.0 + x.second / 3600.0,
+            x = list(map(lambda y: y.hour + y.minute / 60.0 + y.second / 3600.0,
                          day_elec_ts.index))
             incr_auc, auc = _incremental_trapz(day_elec_ts.data.tolist(), x)
             # auc = numpy.trapz(day_elec_ts.data, x=list(map(lambda x:

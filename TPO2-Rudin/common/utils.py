@@ -6,7 +6,6 @@ import datetime
 import pandas as pd
 import db.connect as connect
 import math
-import joblib
 
 
 
@@ -450,16 +449,16 @@ def get_dt_tseries(dt, full_ts):
 
 
 
-def debug_msg(debug, str):
+def debug_msg(debug, msg):
     """
     print debug message to log or stdout if debug is True
     :param debug: bool
-    :param str: string
+    :param msg: string
         debug message
     :return:
     """
     if debug:
-        print(str)
+        print(msg)
 
 
 
