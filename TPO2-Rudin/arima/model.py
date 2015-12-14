@@ -1,8 +1,4 @@
-import numpy as np
 import pandas as pd
-# import statsmodels.tsa.ar_model
-# import statsmodels.tsa.statespace.sarimax
-# import statsmodels.tsa.stattools
 import statsmodels.tsa.arima_model
 from dateutil.relativedelta import relativedelta
 
@@ -82,7 +78,7 @@ def start_time(ts, h5file_name, history_name, forecast_name, order,
     """ Identify optimal start-up time
 
     Fits a ARIMA model to the input time series, then
-    backwards iterates from input end_time and desired_temp to
+    performs out-of-sample forecast from input end_time and desired_temp to
     determine optimal start-up time.
 
     :param ts: pandas.core.series.Series
@@ -181,22 +177,17 @@ def start_time(ts, h5file_name, history_name, forecast_name, order,
     #     exog_new,
     #     order=sarima_order,
     #     enforce_stationarity=enforce_stationarity)
-    mod_new = statsmodels.tsa.arima_model.ARIMA(endog_new, order, exog=exog_new,
-                                                freq=freq)
+    # mod_new = statsmodels.tsa.arima_model.ARIMA(endog_new, order, exog=exog_new,
+    #                                             freq=freq)
 
     # res = mod_new.filter(np.array(fit_res.params))
 
     # moment of truth: prediction
-    # find offset by counting backwards from end of day to system cutoff
-    # time we wish to forecast backwards from
-
-    offset = endog.shape[0] - 1
-    # print(offset)
-    print(fit_res.params)
-    print(exog_new[exog_new.index >= date])
     # prediction = res.predict(dynamic=offset, full_results=True)
-    prediction = mod_new.predict(fit_res.params,
-                                 exog=exog_new[exog_new.index >= date])
+    exog_pred = exog_new[exog_new.index >= date]
+    forecast, std_err, conf_int = fit_res.forecast(exog_pred.size,
+                                                   exog=exog_pred,
+                                                   alpha=0.05)
     # predict = prediction.forecasts
 
     # # construct time series with predictions. Have to drop first p terms,
@@ -204,4 +195,4 @@ def start_time(ts, h5file_name, history_name, forecast_name, order,
     # ts_fit = pd.Series(data=predict.flatten()[p:],
     #                    index=res.data.dates[p:])
 
-    return prediction
+    return forecast, std_err, conf_int
