@@ -239,15 +239,21 @@ ashish:
     enforce_stationarity: False
 
 
+  arima:
+      order: [1, 1, 0]
+
+
   345_Park:
     steam_data: /home/davidkarapetyan/data_analysis/data/park345.h5
     steam_data_group: oa_temp
 
     # database for input data
-    db_server_input: 52.91.89.104
-    db_user_input: None
-    db_password_input: None
-    db_name_input: skynet
+    host: 52.91.89.104
+    port: 27017
+    username: Analytics
+    password: L3x1^gt0n
+    database: skynet
+    source_db: admin
     collection_name_input: devicetimeseries
 
 

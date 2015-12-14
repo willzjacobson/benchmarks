@@ -34,11 +34,11 @@ for building_id in buildings:
 
     bldg_params = cfg[building_id]
     bmark.process_building(building_id,
-                           bldg_params['db_server_input'],
-                           bldg_params['db_name_input'],
+                           bldg_params['host'],
+                           bldg_params['database'],
                            bldg_params['collection_name_input'],
                            # use the input db for now for output
-                           bldg_params['db_name_input'],
+                           bldg_params['database'],
                            bldg_params['collection_name_out'],
                            bldg_params['electric_meter_count'],
                            cfg['weather']['h5file'],

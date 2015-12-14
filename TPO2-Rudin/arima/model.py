@@ -3,6 +3,7 @@ import pandas as pd
 # import statsmodels.tsa.ar_model
 # import statsmodels.tsa.statespace.sarimax
 # import statsmodels.tsa.stattools
+import statsmodels.tsa.arima_model
 from dateutil.relativedelta import relativedelta
 
 import ts_proc.munge
@@ -36,23 +37,17 @@ def _number_diff(ts, upper=10):
     :return: int
     """
     my_tuple = statsmodels.tsa.stattools.adfuller(ts)
-    pvalue, ar_lags = my_tuple[1], my_tuple[2]
+    pvalue, ar_lags = my_tuple[1:3]
 
     for i in range(upper):
         if pvalue < 0.1:
             return i
         else:
             ts = ts.diff()[1:]
-            df_test = statsmodels.tsa.stattools.adfuller(ts, maxlag=ar_lags)
-            if isinstance(df_test, tuple):
-                pvalue = df_test[1]
-            else:
-                raise ValueError(
-                        "Statsmodels implementation of adfuller has changed:"
-                        " it is no longer returning tuples")
+            pvalue = statsmodels.tsa.stattools.adfuller(ts, maxlag=ar_lags)[1]
 
     raise ValueError("May not be stationary even after 0-{} lags".format(
-            str(upper)))
+        str(upper)))
 
 
 def _benchmark_ts(ts, date_time):
@@ -83,10 +78,10 @@ def _benchmark_ts(ts, date_time):
 
 
 def start_time(ts, h5file_name, history_name, forecast_name, order,
-               enforce_stationarity, granularity, date):
+               granularity, date="2013-06-06 7:00:00"):
     """ Identify optimal start-up time
 
-    Fits a SARIMA model to the input time series, then
+    Fits a ARIMA model to the input time series, then
     backwards iterates from input end_time and desired_temp to
     determine optimal start-up time.
 
@@ -101,13 +96,11 @@ def start_time(ts, h5file_name, history_name, forecast_name, order,
         group identifier for weather forecast within the HDF5 file
     :param order: string
         order params tuple as string for SARIMA model
-    :param enforce_stationarity: boolean
-        whether to enforce stationarity in the SARIMA model
     :param granularity: int
     sampling frequency of input data and forecast data
-    :param date: string
+    :param :date: string
     Date for which to compute best start-up time
-
+    :return: datetime.datetime object
     Optimal start up time for given date
     """
     date = pd.datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
@@ -149,11 +142,7 @@ def start_time(ts, h5file_name, history_name, forecast_name, order,
 
     weather_all = pd.concat([weather, forecast])
 
-    if isinstance(weather_all, pd.DataFrame):
-        wtemp = weather_all.temp.resample(freq).interpolate()
-    else:
-        raise ValueError("Error concatenating weather history with the weather"
-                         "forecast.")
+    wtemp = weather_all.temp.resample(freq).interpolate()
     intsec = wtemp.index.intersection(endog_temp.index)
 
     endog = endog_temp[intsec]
@@ -161,11 +150,7 @@ def start_time(ts, h5file_name, history_name, forecast_name, order,
 
     # resample exog
 
-    mod = statsmodels.tsa.statespace.sarimax.SARIMAX(endog=endog,
-                                                     exog=exog,
-                                                     order=order,
-                                                     enforce_stationarity=
-                                                     enforce_stationarity)
+    mod = statsmodels.tsa.arima_model.ARIMA(endog, order, exog=exog, freq=freq)
     fit_res = mod.fit()
 
     # new model with same parameters, but different endog and exog data
@@ -180,11 +165,7 @@ def start_time(ts, h5file_name, history_name, forecast_name, order,
     # post 7:00am values with benchmark ts values
 
     endog_new_temp = pd.concat([endog, endog_addition])
-    if isinstance(endog_new_temp, pd.DataFrame):
-        intsec_new = wtemp.index.intersection(endog_new_temp.index)
-    else:
-        raise ValueError("Error concatenating endogenous variable with"
-                         "additional time.")
+    intsec_new = wtemp.index.intersection(endog_new_temp.index)
 
     # align indices of endog_new and exog_new, otherwise
     # model will break, thanks Chad Fulton
@@ -195,19 +176,27 @@ def start_time(ts, h5file_name, history_name, forecast_name, order,
     # create model object, and replace ar/ma coefficients
     # with those from previous fitted model on larger sample of data
 
-    mod_new = statsmodels.tsa.statespace.sarimax.SARIMAX(
-            endog_new,
-            exog_new,
-            order=order,
-            enforce_stationarity=enforce_stationarity)
-    res = mod_new.filter(np.array(fit_res.params))
+    # mod_new = statsmodels.tsa.statespace.sarimax.SARIMAX(
+    #     endog_new,
+    #     exog_new,
+    #     order=sarima_order,
+    #     enforce_stationarity=enforce_stationarity)
+    mod_new = statsmodels.tsa.arima_model.ARIMA(endog_new, order, exog=exog_new,
+                                                freq=freq)
+
+    # res = mod_new.filter(np.array(fit_res.params))
 
     # moment of truth: prediction
     # find offset by counting backwards from end of day to system cutoff
     # time we wish to forecast backwards from
 
     offset = endog.shape[0] - 1
-    prediction = res.predict(dynamic=offset, full_results=True)
+    # print(offset)
+    print(fit_res.params)
+    print(exog_new[exog_new.index >= date])
+    # prediction = res.predict(dynamic=offset, full_results=True)
+    prediction = mod_new.predict(fit_res.params,
+                                 exog=exog_new[exog_new.index >= date])
     # predict = prediction.forecasts
 
     # # construct time series with predictions. Have to drop first p terms,
