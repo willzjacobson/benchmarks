@@ -23,7 +23,6 @@ Each directory has
 * run.py : entry point for the modules in the directory
 * model.py : model-related code
 
-
 Sample usage:
 > python run.py
 
