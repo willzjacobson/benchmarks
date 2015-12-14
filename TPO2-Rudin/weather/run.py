@@ -19,6 +19,7 @@ if __name__ == "__main__":
     # whist = pd.read_hdf("/data/weather.h5", "history_orig")
     # weather.mongo._mongo_history_push(whist,
     #                                   **(cfg["weather"]["mongo"]["history"]))
+
     weather.mongo.history_update(
             city=city, state=state, cap=cap, parallel=True,
             **(cfg["weather"]["mongo"]["history"])

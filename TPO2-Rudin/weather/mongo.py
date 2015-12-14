@@ -169,7 +169,8 @@ def get_history(host, port, source, db_name, username, password,
     if len(whist) == 0:
         return whist
     else:
-        whist.set_index('time', inplace=True).sort_index()
+        whist.set_index('time', inplace=True)
+        whist = whist.sort_index()
         return whist
 
 
@@ -186,5 +187,6 @@ def get_latest_forecast(host, port, source, db_name, username, password,
             if len(wfore) == 0:
                 return wfore
             else:
-                wfore.set_index('time', inplace=True).sort_index()
+                wfore.set_index('time', inplace=True)
+                wfore = wfore.sort_index()
                 return wfore
