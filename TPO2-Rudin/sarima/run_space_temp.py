@@ -18,7 +18,7 @@ for building in buildings:
 
     bldg_params = cfg[building]
     weather_params = cfg['weather']
-    sarima_params = cfg['sarima']
+    sarima_params = cfg['arima']
     sampling_params = cfg['sampling']
 
     utils.process_building(building, bldg_params['host'],

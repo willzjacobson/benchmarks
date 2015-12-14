@@ -1,5 +1,6 @@
 import pandas as pd
 import statsmodels.tsa.arima_model
+import statsmodels.tsa.stattools
 from dateutil.relativedelta import relativedelta
 
 import ts_proc.munge
@@ -17,7 +18,7 @@ def _number_ar_terms(ts):
     :param ts: pandas.core.series.Series
     :return: int
     """
-    mod = statsmodels.tsa.ar_model.AR(ts)
+    mod = statsmodels.tsa.arima_model.AR(ts)
     return mod.select_order(maxlag=10, ic="aic")
 
 
@@ -40,7 +41,7 @@ def _number_diff(ts, upper=10):
             return i
         else:
             ts = ts.diff()[1:]
-            pvalue = statsmodels.tsa.stattools.adfuller(ts, maxlag=ar_lags)[1]
+            pvalue = statsmodels.tsa.stattools.adfuller(ts, maxlag=ar_lags)[1:2]
 
     raise ValueError("May not be stationary even after 0-{} lags".format(
         str(upper)))
@@ -74,7 +75,7 @@ def _benchmark_ts(ts, date_time):
 
 
 def start_time(ts, h5file_name, history_name, forecast_name, order,
-               granularity, date="2013-06-06 7:00:00"):
+               granularity, date):
     """ Identify optimal start-up time
 
     Fits a ARIMA model to the input time series, then
@@ -94,7 +95,7 @@ def start_time(ts, h5file_name, history_name, forecast_name, order,
         order params tuple as string for SARIMA model
     :param granularity: int
     sampling frequency of input data and forecast data
-    :param :date: string
+    :param date: string
     Date for which to compute best start-up time
     :return: datetime.datetime object
     Optimal start up time for given date
@@ -138,6 +139,9 @@ def start_time(ts, h5file_name, history_name, forecast_name, order,
 
     weather_all = pd.concat([weather, forecast])
 
+    if not isinstance(weather_all, pd.DataFrame):
+        raise ValueError("Concatenation Failed")
+
     wtemp = weather_all.temp.resample(freq).interpolate()
     intsec = wtemp.index.intersection(endog_temp.index)
 
@@ -161,12 +165,13 @@ def start_time(ts, h5file_name, history_name, forecast_name, order,
     # post 7:00am values with benchmark ts values
 
     endog_new_temp = pd.concat([endog, endog_addition])
+    if not isinstance(endog_new_temp, pd.DataFrame):
+        raise ValueError("Concatenation Failed")
     intsec_new = wtemp.index.intersection(endog_new_temp.index)
 
     # align indices of endog_new and exog_new, otherwise
     # model will break, thanks Chad Fulton
 
-    endog_new = endog_new_temp[intsec_new]
     exog_new = wtemp[intsec_new]
 
     # create model object, and replace ar/ma coefficients

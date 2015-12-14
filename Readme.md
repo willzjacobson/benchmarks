@@ -21,7 +21,7 @@ manipulate and forecast. For example, the steam directory
 will have modules related to steam forecasting, the svm directory modules
 related to building a Support Vector Machines model, and so on.
 
-The directories dealing with model building and execution (svm and sarima)
+The directories dealing with model building and execution (svm and arima)
 have: 
 * run.py : entry point for the modules in the directory
 * model.py : model-related code

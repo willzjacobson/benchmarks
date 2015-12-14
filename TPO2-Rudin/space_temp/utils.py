@@ -1,7 +1,7 @@
 __author__ = 'ashishgagneja'
 
 """
-driver for generating start-time using a sarima model built using space
+driver for generating start-time using a arima model built using space
 temperature data
 """
 import dateutil.parser
@@ -9,7 +9,7 @@ import dateutil.relativedelta as relativedelta
 import pandas as pd
 import pymongo
 
-import sarima.model
+import arima.model
 
 
 def get_space_temp_ts(db, collection_name, bldg, floor, quad, granularity):
@@ -96,10 +96,10 @@ def process_building(building_id, host, port, username, password,
 
         # invoke model
         predictions.append(
-                sarima.model.start_time(ts, h5file_name, history_name,
-                                        forecast_name, order,
-                                        enforce_stationarity,
-                                        granularity, str(pred_dt)))
+                arima.model.start_time(ts, h5file_name, history_name,
+                                       forecast_name, order,
+                                       enforce_stationarity,
+                                       granularity, str(pred_dt)))
 
     # TODO: save results
     conn.close()

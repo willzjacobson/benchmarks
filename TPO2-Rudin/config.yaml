@@ -115,7 +115,7 @@ david :
       threshold: 0.003
 
 
-  sarima:
+  arima:
     order: [1, 1, 0]
     seasonal_order: [1, 1, 3]
     enforce_stationarity: False
@@ -227,7 +227,7 @@ ashish:
     verbose: False
 
 
-  sarima:
+  arima:
     order:
       - 1
       - 1
