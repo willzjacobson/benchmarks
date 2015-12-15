@@ -1,4 +1,5 @@
 # coding=utf-8
+
 __author__ = 'ashishgagneja'
 
 import datetime
@@ -10,7 +11,7 @@ import pandas as pd
 import pymongo
 
 import common.utils
-import electric.utils
+import ts_proc.utils
 import occupancy.utils
 import weather.wet_bulb
 import weather.wund
@@ -380,7 +381,6 @@ def process_building(building_id, host, port, database, username, password,
     # get weather
     weather_df = _get_weather(h5file_name, history_name, forecast_name,
                               granularity)
-    # weather_df = common.utils.interp_tseries(weather_df, granularity)
     common.utils.debug_msg(debug, "weather: %s" % weather_df)
 
     wetbulb_ts = _get_wetbulb_ts(weather_df)
@@ -388,7 +388,7 @@ def process_building(building_id, host, port, database, username, password,
     common.utils.debug_msg(debug, "wetbulb: %s" % wetbulb_ts)
 
     # get occupancy data
-    occ_ts = occupancy.utils.get_occupancy_ts(host, port, database, username,
+    occ_ts = ts_proc.utils.get_occupancy_ts(host, port, database, username,
                                               password, source_db,
                                               collection_name, building_id)
     # interpolation converts occupancy data to float; convert back to int64
@@ -397,11 +397,9 @@ def process_building(building_id, host, port, database, username, password,
     common.utils.debug_msg(debug, "occupancy: %s" % occ_ts)
 
     # query electric data
-    elec_ts = electric.utils.get_electric_ts(host, port, database, username,
-                                             password, source_db,
-                                             collection_name, building_id,
-                                             meter_count)
-    # print(elec_ts)
+    elec_ts = ts_proc.utils.get_electric_ts(host, port, database, username,
+                                            password, source_db,collection_name,
+                                            building_id, meter_count)
     elec_ts = common.utils.interp_tseries(elec_ts, granularity)
     common.utils.debug_msg(debug, "electric: %s" % elec_ts)
 

@@ -6,10 +6,11 @@ driver for obtaining baseline electric demand based on occupancy and weather
 co-variates
 """
 
-import config
-import electric.benchmark as bmark
 import sys
 import datetime
+
+import config
+import electric_benchmark.benchmark as bmark
 
 cfg = config.ashish
 

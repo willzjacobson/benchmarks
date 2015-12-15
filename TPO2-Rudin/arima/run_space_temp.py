@@ -1,4 +1,5 @@
 # coding=utf-8
+
 __author__ = 'ashishgagneja'
 
 """
@@ -7,7 +8,7 @@ temperature data
 """
 
 import config
-import space_temp.utils
+import ts_proc.utils
 import dateutil.relativedelta as relativedelta
 import arima.model
 import common.utils
@@ -37,7 +38,7 @@ for building in buildings:
         floor, quad = floor_quadrant
 
         # get space temp time series
-        ts = space_temp.utils.get_space_temp_ts(db,
+        ts = ts_proc.utils.get_space_temp_ts(db,
                     bldg_params['collection_name_input'],
                     building, floor, quad, granularity)
 

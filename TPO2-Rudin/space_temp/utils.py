@@ -1,59 +1,22 @@
 # coding=utf-8
+
 __author__ = 'ashishgagneja'
 
 """
 driver for generating start-time using a arima model built using space
 temperature data
 """
-import dateutil.parser
 import dateutil.relativedelta as relativedelta
-import pandas as pd
 import pymongo
 
 import arima.model
+from ts_proc.utils import get_space_temp_ts
 
 
-def get_space_temp_ts(db, collection_name, bldg, floor, quad, granularity):
-    """ retrieve all available space temperature data for floor-quad of
-        building_id bldg
 
-    :param db: pymongo database object
-        connected database object
-    :param collection_name: string
-        database collection name
-    :param bldg: string
-        database building_id identifier
-    :param floor: string
-        floor identifier
-    :param quad: string
-        quadrant identifier
-    :param granularity: int
-    sampling frequency of input data and forecast data
-
-    :return: pandas Series
-    """
-
-    ts_list, value_list = [], []
-    collection = db[collection_name]
-    for data in collection.find({"_id.building": bldg,
-                                 "_id.device": "Space_Temp",
-                                 "_id.floor": str(floor),
-                                 "_id.quad": quad}):
-        readings = data['readings']
-        for reading in readings:
-            ts_list.append(
-                    dateutil.parser.parse(reading['time'], ignoretz=True))
-            value_list.append(float(reading['value']))
-
-    gran = "%dmin" % granularity
-    return pd.Series(data=value_list, index=pd.DatetimeIndex(ts_list)
-                     ).sort_index().resample(gran)
-
-
-def process_building(building_id, host, port, username, password,
-                     db_name, collection_name,
-                     floor_quadrants, h5file_name, history_name, forecast_name,
-                     order, granularity):
+def process_building(building_id, host, port, username, password, db_name,
+                     collection_name, floor_quadrants, h5file_name,
+                     history_name, forecast_name, order, granularity):
     """ Generate startup time using SARIMA model for each floor-quadrant
         combination
 
