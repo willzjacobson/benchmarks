@@ -1,4 +1,5 @@
 # coding=utf-8
+import ts_proc.munge
 
 __author__ = 'ashishgagneja'
 
@@ -384,7 +385,7 @@ def process_building(building_id, host, port, database, username, password,
     common.utils.debug_msg(debug, "weather: %s" % weather_df)
 
     wetbulb_ts = _get_wetbulb_ts(weather_df)
-    wetbulb_ts = common.utils.interp_tseries(wetbulb_ts, granularity)
+    wetbulb_ts = ts_proc.munge.interp_tseries(wetbulb_ts, granularity)
     common.utils.debug_msg(debug, "wetbulb: %s" % wetbulb_ts)
 
     # get occupancy data
@@ -392,7 +393,7 @@ def process_building(building_id, host, port, database, username, password,
                                               password, source_db,
                                               collection_name, building_id)
     # interpolation converts occupancy data to float; convert back to int64
-    occ_ts = common.utils.interp_tseries(occ_ts, granularity).astype(
+    occ_ts = ts_proc.munge.interp_tseries(occ_ts, granularity).astype(
         numpy.int64)
     common.utils.debug_msg(debug, "occupancy: %s" % occ_ts)
 
@@ -400,7 +401,7 @@ def process_building(building_id, host, port, database, username, password,
     elec_ts = ts_proc.utils.get_electric_ts(host, port, database, username,
                                             password, source_db,collection_name,
                                             building_id, meter_count)
-    elec_ts = common.utils.interp_tseries(elec_ts, granularity)
+    elec_ts = ts_proc.munge.interp_tseries(elec_ts, granularity)
     common.utils.debug_msg(debug, "electric: %s" % elec_ts)
 
 

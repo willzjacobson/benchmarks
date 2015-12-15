@@ -3,8 +3,7 @@ import pandas as pd
 
 import config
 import arima.model
-import common.utils
-
+import ts_proc.munge
 
 cfg = config.ashish
 
@@ -40,7 +39,7 @@ park_ts = pd.Series(list(park_data.VALUE),
 # park_ts = park_ts.loc[park_ts != 0].resample('15Min').interpolate()
 
 granularity = cfg['sampling']['granularity']
-park_ts = common.utils.interp_tseries(park_ts.resample('%dMin' % granularity),
+park_ts = ts_proc.munge.interp_tseries(park_ts.resample('%dMin' % granularity),
                                       granularity)
 pred_dt = park_ts.index[-1]
 

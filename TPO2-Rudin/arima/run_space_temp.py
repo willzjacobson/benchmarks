@@ -11,8 +11,8 @@ import config
 import ts_proc.utils
 import dateutil.relativedelta as relativedelta
 import arima.model
-import common.utils
 import pymongo
+import ts_proc.munge
 
 cfg = config.ashish
 
@@ -47,7 +47,7 @@ for building in buildings:
 
         # invoke model
         forecast, std_err, conf_int = arima.model.start_time(
-            common.utils.interp_tseries(ts, granularity),
+            ts_proc.munge.interp_tseries(ts, granularity),
             weather_params['h5file'],
             weather_params['history'],
             weather_params['forecast'],
