@@ -1,5 +1,6 @@
 # coding=utf-8
 import datetime
+
 import dateutil.parser
 import numpy
 
@@ -338,3 +339,34 @@ def convert_datatypes(ts_list, value_list, drop_tz=True, val_type=float):
             raise Exception('unsupported transformation')
 
     return [ts_list, value_list]
+
+
+def ts_day_pos(ts, day, time, start, end, freq):
+    """Returns slice of input time series
+
+    Time series subset consists of all points at a specific time between
+    start and end dates, and sampled with an input frequency
+
+    :param ts: pandas.core.series.Series
+    :param day: int
+    Day of week
+    :param time: datetime.datetime
+    Time of day. Defaults to None
+    :param start: datetime.datetime
+    :param end: datetime.datetime
+    :param freq: frequency alias
+    :return: pandas.core.series.Series
+    """
+    temp = ts[pd.date_range(start=start, end=end, freq=freq)]
+    temp = temp[temp.index.weekday == day]
+
+    if time is None:
+        return temp
+    else:
+        return temp.at_time(time)
+
+
+def filter_two_std(ts):
+    stats = ts.describe(percentiles=[.05, .95])
+    low, high = stats['5%'], stats['95%']
+    return ts[ts.between(low, high)]
