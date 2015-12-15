@@ -1,3 +1,4 @@
+# coding=utf-8
 __author__ = 'ashishgagneja'
 
 import data_tools.data_clean

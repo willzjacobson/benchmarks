@@ -1,3 +1,4 @@
+# coding=utf-8
 import codecs
 import json
 from urllib.request import urlopen

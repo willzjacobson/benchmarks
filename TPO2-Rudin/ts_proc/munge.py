@@ -1,3 +1,4 @@
+# coding=utf-8
 __author__ = 'David Karapetyan'
 
 import pandas as pd

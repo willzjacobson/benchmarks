@@ -1,3 +1,4 @@
+# coding=utf-8
 import pandas as pd
 import statsmodels.tsa.arima_model
 import statsmodels.tsa.stattools

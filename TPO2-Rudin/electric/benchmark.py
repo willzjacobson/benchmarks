@@ -1,13 +1,13 @@
-
+# coding=utf-8
 __author__ = 'ashishgagneja'
 
 import datetime
 import itertools
 import sys
 
-import db.connect
 import numpy
 import pandas as pd
+import pymongo
 
 import common.utils
 import electric.utils
@@ -191,8 +191,8 @@ def find_lowest_electric_usage(date_scores, electric_ts, n, debug):
 
 
 def _save_benchmark(bench_dt, base_dt, bench_ts, bench_auc, bench_incr_auc,
-                    db_server, db_name, collection_name, bldg_id, system,
-                    output_type):
+                    host, port, database, username, password, source_db,
+                    collection_name, bldg_id, system, output_type):
 
     """
     Save benchmark time series to database
@@ -206,10 +206,18 @@ def _save_benchmark(bench_dt, base_dt, bench_ts, bench_auc, bench_incr_auc,
     :param bench_incr_auc: list
         list with incremental auc scores, is assumed to be of the same size as
         bench_ts
-    :param db_server: string
+    ::param host: string
         database server name or IP-address
-    :param db_name: string
+    :param port: int
+        database port number
+    :param database: string
         name of the database on server
+    :param username: string
+        database username
+    :param password: string
+        database password
+    :param source_db: string
+        source database for authentication
     :param collection_name: string
         collection name to use
     :param bldg_id: string
@@ -222,9 +230,10 @@ def _save_benchmark(bench_dt, base_dt, bench_ts, bench_auc, bench_incr_auc,
     :return:
     """
 
-    with db.connect.connect(db_server, database=db_name) as conn:
+    with pymongo.MongoClient(host, port) as conn:
 
-        collection = conn[db_name][collection_name]
+        conn[database].authenticate(username, password, source=source_db)
+        collection = conn[database][collection_name]
 
         # delete all existing matching documents
         doc_id = {"_id.building": bldg_id,
@@ -323,21 +332,30 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, electric_ts, gran, debug):
 
 
 
-def process_building(building_id, db_server, db_name, collection_name,
-                     db_name_out, collection_name_out, meter_count, h5file_name,
+def process_building(building_id, host, port, database, username, password,
+                     source_db, collection_name, database_out,
+                     collection_name_out, meter_count, h5file_name,
                      history_name, forecast_name, granularity, base_dt, debug):
 
     """ Find baseline electric usage for building_id
 
     :param building_id: string
         building_id identifier
-    :param db_server: string
+    :param host: string
         database server name or IP-address
-    :param db_name: string
+    :param port: int
+        database port number
+    :param database: string
         name of the database on server
+    :param username: string
+        database username
+    :param password: string
+        database password
+    :param source_db: string
+        source database for authentication
     :param collection_name: string
         name of collection in the database
-    :param db_name_out: string
+    :param database_out: string
         name of the output database on server
     :param collection_name_out: string
         name of output collection in the database
@@ -370,7 +388,8 @@ def process_building(building_id, db_server, db_name, collection_name,
     common.utils.debug_msg(debug, "wetbulb: %s" % wetbulb_ts)
 
     # get occupancy data
-    occ_ts = occupancy.utils.get_occupancy_ts(db_server, db_name,
+    occ_ts = occupancy.utils.get_occupancy_ts(host, port, database, username,
+                                              password, source_db,
                                               collection_name, building_id)
     # interpolation converts occupancy data to float; convert back to int64
     occ_ts = common.utils.interp_tseries(occ_ts, granularity).astype(
@@ -378,7 +397,8 @@ def process_building(building_id, db_server, db_name, collection_name,
     common.utils.debug_msg(debug, "occupancy: %s" % occ_ts)
 
     # query electric data
-    elec_ts = electric.utils.get_electric_ts(db_server, db_name,
+    elec_ts = electric.utils.get_electric_ts(host, port, database, username,
+                                             password, source_db,
                                              collection_name, building_id,
                                              meter_count)
     # print(elec_ts)
@@ -414,6 +434,6 @@ def process_building(building_id, db_server, db_name, collection_name,
     # save results
     if not debug:
         _save_benchmark(bench_dt, base_dt, bench_usage, bench_auc,
-                        bench_incr_auc, db_server, db_name_out,
-                        collection_name_out, building_id, 'Electric_Demand',
-                        'benchmark')
+                        bench_incr_auc, host, port, database_out, username,
+                        password, source_db, collection_name_out, building_id,
+                        'Electric_Demand', 'benchmark')

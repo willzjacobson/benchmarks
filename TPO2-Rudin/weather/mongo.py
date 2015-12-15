@@ -1,3 +1,4 @@
+# coding=utf-8
 import pandas as pd
 import pymongo
 from dateutil.relativedelta import relativedelta

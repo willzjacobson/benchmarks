@@ -1,3 +1,4 @@
+# coding=utf-8
 __author__ = 'ashishgagneja'
 
 import joblib
@@ -42,20 +43,30 @@ def _construct_dataframe(ts_lists, value_lists):
 
 
 
-def get_electric_ts(db_server, db_name, collection_name, bldg_id, meter_count):
+def get_electric_ts(host, port, database, username, password, source_db,
+                    collection_name, bldg_id, meter_count):
     """ retrieves all available electric data from all meters and sums up
     to get total electric usage time series
 
-    :param db_server: string
+    :param host: string
         database server name or IP-address
-    :param db_name: string
+    :param port: int
+        database port number
+    :param database: string
         name of the database on server
+    :param username: string
+        database username
+    :param password: string
+        database password
+    :param source_db: string
+        source database for authentication
     :param collection_name: string
         database collection name to query
     :param bldg_id: string
         database building_id identifier
     :param meter_count: int
         number of distinct meters that need to be summed up
+
     :return: pandas Dataframe
     """
 
@@ -63,7 +74,7 @@ def get_electric_ts(db_server, db_name, collection_name, bldg_id, meter_count):
     # for equip_id in range(1, meter_count+1):
 
         # ts_list, value_list = _get_meter_data(equipment_id, bldg_id, collection)
-    # ts_list, value_list = common.utils.get_ts(host, db_name,
+    # ts_list, value_list = common.utils.get_ts(host, database,
         #                                            collection_name, bldg_id,
         #                                            "Elec-M%d" % equip_id,
         #                                            'SIF_Electric_Demand',
@@ -74,8 +85,9 @@ def get_electric_ts(db_server, db_name, collection_name, bldg_id, meter_count):
 
 
     results = joblib.Parallel(n_jobs=-1)(joblib.delayed(common.utils.get_ts)(
-        db_server, db_name, collection_name, bldg_id, "Elec-M%d" % equip_id,
-        'SIF_Electric_Demand','value') for equip_id in range(1, meter_count+1))
+        host, port, database, username, password, source_db, collection_name,
+        bldg_id, "Elec-M%d" % equip_id, 'SIF_Electric_Demand', 'value')
+            for equip_id in range(1, meter_count+1))
 
     ts_lists, value_lists = zip(*results)
 

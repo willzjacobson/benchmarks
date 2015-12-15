@@ -1,3 +1,4 @@
+# coding=utf-8
 __author__ = 'ashishgagneja'
 
 """
@@ -35,7 +36,11 @@ for building_id in buildings:
     bldg_params = cfg[building_id]
     bmark.process_building(building_id,
                            bldg_params['host'],
+                           bldg_params['port'],
                            bldg_params['database'],
+                           bldg_params['username'],
+                           bldg_params['password'],
+                           bldg_params['source_db'],
                            bldg_params['collection_name_input'],
                            # use the input db for now for output
                            bldg_params['database'],

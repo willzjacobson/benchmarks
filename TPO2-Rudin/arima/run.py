@@ -42,11 +42,13 @@ park_ts = pd.Series(list(park_data.VALUE),
 granularity = cfg['sampling']['granularity']
 park_ts = common.utils.interp_tseries(park_ts.resample('%dMin' % granularity),
                                       granularity)
+pred_dt = park_ts.index[-1]
 
 prediction = arima.model.start_time(park_ts,
                                     cfg['weather']['h5file'],
                                     cfg['weather']['history'],
                                     cfg['weather']['forecast'],
                                     cfg['arima']['order'],
-                                    granularity)
+                                    granularity,
+                                    str(pred_dt))
 print(prediction)

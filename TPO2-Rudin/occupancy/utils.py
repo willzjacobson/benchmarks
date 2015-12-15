@@ -1,3 +1,4 @@
+# coding=utf-8
 __author__ = 'ashishgagneja'
 
 import pandas as pd
@@ -7,25 +8,37 @@ import sys
 
 
 
-def get_occupancy_ts(db_server, db_name, collection_name, bldg_id, drop_tz=True):
+def get_occupancy_ts(host, port, database, username, password, source_db,
+                     collection_name, bldg_id, drop_tz=True):
     """Fetch all available occupancy data from database
 
-    :param db_server: string
+    :param host: string
         database server name or IP-address
-    :param db_name: string
+    :param port: int
+        database port number
+    :param database: string
         name of the database on server
+    :param username: string
+        database username
+    :param password: string
+        database password
+    :param source_db: string
+        source database for authentication
     :param collection_name: string
         collection name to use
     :param bldg_id: string
         building identifier
+    :param drop_tz: bool
+        whether to drop timezone information
 
     :return: pandas DataFrame
         occupancy time series data
     """
 
-    ts_list, val_list = common.utils.get_ts(db_server, db_name, collection_name,
-                                            bldg_id, 'Occupancy', 'Occupancy',
-                                            'value')
+    ts_list, val_list = common.utils.get_ts(host, port, database, username,
+                                            password, source_db,
+                                            collection_name, bldg_id,
+                                            'Occupancy', 'Occupancy', 'value')
 
     # parse timestamp and observation to appropriate datatypes
     ts_list, val_list = common.utils.convert_datatypes(ts_list, val_list,

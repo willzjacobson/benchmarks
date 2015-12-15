@@ -1,19 +1,21 @@
-from IPython.parallel import Client
+# coding=utf-8
+# import IPython.parallel
 
-rc = Client()
-dview = rc[:]
-dview.block = True
+# rc = IPython.parallel.Client()
+# dview = rc[:]
+# dview.block = True
 
-with dview.sync_imports():
-    from statsmodels.tsa.arima_model import ARIMA
-    from scipy.optimize import brute
-    import numpy as np
-    from statsmodels.tsa.statespace.sarimax import SARIMAX
-    import matplotlib.pyplot as plt
-    import seaborn as sns
-    import pandas as pd
-
-    sns.set()
+# with dview.sync_imports():
+from statsmodels.tsa.arima_model import ARIMA
+from scipy.optimize import brute
+import numpy as np
+from statsmodels.tsa.statespace.sarimax import SARIMAX
+import matplotlib.pyplot as plt
+    # import seaborn as sns
+import pandas as pd
+import joblib
+import functools
+    # sns.set()
 
 
 def optimal_order(ts):
@@ -95,11 +97,16 @@ def actual_vs_prediction(ts, order=(1, 1, 0), seasonal_order=(1, 1, 0, 96),
                 5: 'Saturday', 6: 'Sunday'}
     title = ts.name
 
-    fit_list = dview.map_sync(lambda x:
-                              SARIMAX(
-                                  ts[ts.index.weekday == x],
-                                  order=order,
-                                  seasonal_order=seasonal_order).fit(), days)
+    # fit_list = dview.map_sync(lambda x:
+    #                           SARIMAX(
+    #                               ts[ts.index.weekday == x],
+    #                               order=order,
+    #                               seasonal_order=seasonal_order).fit(), days)
+    temp_func = functools.partial(SARIMAX(endog=None,
+                                          order=order,
+                                          seasonal_order=seasonal_order).fit())
+    fit_list = joblib.Parallel(n_jobs=-1)(joblib.delayed(temp_func)(
+                    ts_sub=ts[ts.index.weekday == day]) for day in days)
 
     fit_dict = {day: fit_list[index] for (index, day) in enumerate(days)}
 

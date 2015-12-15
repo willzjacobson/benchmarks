@@ -1,11 +1,12 @@
+# coding=utf-8
 __author__ = 'ashishgagneja'
 
 import dateutil.parser
 import numpy
 import datetime
 import pandas as pd
-import db.connect as connect
 import math
+import pymongo
 
 
 
@@ -238,17 +239,26 @@ def interp_tseries(tseries, gran):
 
 
 
-def get_ts(db_server, db_name, collection_name, bldg_id, device, system, field):
+def get_ts(host, port, database, username, password, source_db,
+           collection_name, bldg_id, device, system, field):
     """
     Get all observation data with the given building, device and system
     combination from the database
 
-    :param db_server: string
+    :param host: string
         database server name or IP-address
-    :param db_name: string
+    :param port: int
+        database port number
+    :param database: string
         name of the database on server
+    :param username: string
+        database username
+    :param password: string
+        database password
+    :param source_db: string
+        source database for authentication
     :param collection_name: string
-        collection name to use
+        database collection name
     :param bldg_id: string
         building identifier
     :param device: string
@@ -261,10 +271,10 @@ def get_ts(db_server, db_name, collection_name, bldg_id, device, system, field):
     :return: tuple with a list of time stamps followed by a list of values
     """
 
+    with pymongo.MongoClient(host, port) as conn:
 
-    with connect.connect(db_server, database=db_name) as conn:
-
-        collection = conn[db_name][collection_name]
+        conn[database].authenticate(username, password, source=source_db)
+        collection = conn[database][collection_name]
 
         ts_list, value_list, daily_dict = [], [], {}
         for data in collection.find({"_id.building": bldg_id,
@@ -311,7 +321,7 @@ def compute_profile_similarity_score(gold_ts, other_ts):
     norm_ts = gold_ts.loc[common_tms] - other_ts.loc[common_tms]
     # L2 norm is normalized by number of overlapping keys to make sure days with
     # more overlapping data available are not at a disadvantage
-    return math.sqrt((norm_ts**2).sum()/len(common_tms))
+    return math.sqrt(sum(norm_ts**2))/len(common_tms)
 
 
 
@@ -395,9 +405,9 @@ def convert_datatypes(ts_list, value_list, drop_tz=True, val_type=float):
         list of timestamps
     :param value_list: list
         list of observations
-    :param drop_tz (optional): bool
+    :param drop_tz: bool
         flag to indicate whether to ignore timezone information
-    :param val_type (optional): function
+    :param val_type: function
         function to use to cast observation to the required type
         If None, no transformation is done
 

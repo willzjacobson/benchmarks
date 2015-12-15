@@ -1,3 +1,4 @@
+# coding=utf-8
 __author__ = 'ashishgagneja'
 
 """
@@ -18,6 +19,8 @@ def get_space_temp_ts(db, collection_name, bldg, floor, quad, granularity):
 
     :param db: pymongo database object
         connected database object
+    :param collection_name: string
+        database collection name
     :param bldg: string
         database building_id identifier
     :param floor: string
@@ -50,7 +53,7 @@ def get_space_temp_ts(db, collection_name, bldg, floor, quad, granularity):
 def process_building(building_id, host, port, username, password,
                      db_name, collection_name,
                      floor_quadrants, h5file_name, history_name, forecast_name,
-                     order, enforce_stationarity, granularity):
+                     order, granularity):
     """ Generate startup time using SARIMA model for each floor-quadrant
         combination
 
@@ -58,6 +61,12 @@ def process_building(building_id, host, port, username, password,
         building_id identifier
     :param host: string
         database server name or IP-address
+    :param port: int
+        database port number
+    :param username: string
+        database username
+    :param password: string
+        database password
     :param db_name: string
         name of the database on server
     :param collection_name: string
@@ -72,8 +81,6 @@ def process_building(building_id, host, port, username, password,
         group identifier for weather forecast within the HDF5 file
     :param order: string
         order params tuple as string for SARIMA model
-    :param enforce_stationarity: boolean
-        whether to enforce stationarity in the SARIMA model
     :param granularity: int
         sampling frequency of input data and forecast data
     :return:
@@ -98,7 +105,6 @@ def process_building(building_id, host, port, username, password,
         predictions.append(
                 arima.model.start_time(ts, h5file_name, history_name,
                                        forecast_name, order,
-                                       enforce_stationarity,
                                        granularity, str(pred_dt)))
 
     # TODO: save results
