@@ -61,7 +61,7 @@ def munge(data, title=None):
 
     # TODO: dropping duplicates based on timestamp alone could result in lost
     # data if the data has readings from more than one meter/equipment
-    if not _is_resamplable(ts.keys(), config.ashish["sampling"]["max_gap"]):
+    if not _is_resamplable(ts.keys(), config.david["sampling"]["max_gap"]):
         raise Exception("data gap longer than threshold encountered")
 
     ts = ts.drop_duplicates(subset="TIMESTAMP").resample(gran)
@@ -80,7 +80,7 @@ def munge(data, title=None):
 
 def filter_day_season(ts, day=pd.datetime.today().weekday(),
                       month=pd.datetime.today().month):
-    seasons = config.david["weather"]["seasons"]
+    seasons = config.david["building_dbs"]["seasons"]
     month_range = (0, 0)
 
     for value in seasons.values():

@@ -45,7 +45,7 @@ def _number_diff(ts, upper=10):
             pvalue = statsmodels.tsa.stattools.adfuller(ts, maxlag=ar_lags)[1:2]
 
     raise ValueError("May not be stationary even after 0-{} lags".format(
-        str(upper)))
+            str(upper)))
 
 
 def _benchmark_ts(ts, date_time):
@@ -59,7 +59,8 @@ def _benchmark_ts(ts, date_time):
     # """
 
     ts_filt = ts_proc.munge.filter_day_season(ts, day=date_time.weekday,
-                                              month=date_time.month)  # check that we have a complete time series
+                                              month=date_time.month)
+    # check that we have a complete time series
     if len(ts_filt.at_time('00:00:00')) != 0:
         raise ValueError("Start of day time missing. Complete benchmark Time"
                          "Series could not be found")
@@ -183,7 +184,8 @@ def start_time(ts, h5file_name, history_name, forecast_name, order,
     #     exog_new,
     #     order=sarima_order,
     #     enforce_stationarity=enforce_stationarity)
-    # mod_new = statsmodels.tsa.arima_model.ARIMA(endog_new, order, exog=exog_new,
+    # mod_new = statsmodels.tsa.arima_model.ARIMA(
+    # endog_new, order, exog=exog_new,
     #                                             freq=freq)
 
     # res = mod_new.filter(np.array(fit_res.params))

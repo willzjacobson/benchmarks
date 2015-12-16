@@ -15,7 +15,7 @@ def _forecast_push(df, host, port, source, username, password,
     combination from the database
 
     :param df: pd.DataFrame
-        Dataframe to push to mongo
+        Dataframe to push to mongo_cred
     :param host: string
         database server name or IP-address
     :param db_name: string
@@ -77,14 +77,15 @@ def forecast_update(city, state, account, host, port, source,
                    collection_name=collection_name)
 
 
-def history_update(city, state, cap, parallel, host, port, source,
-                   username, password, db_name, collection_name):
+def history_update(city, state, account, parallel, host, port, source, username,
+                   password, db_name, collection_name, cap):
     """Pull archived weather information
 
     Weather information is pulled from weather underground from end of
     prescriptive weather database date to today, then added to
     weather database
 
+    :param account:
     :param city: string
     City portion of city-state pair to pull from weather underground
     :param state: string
@@ -125,7 +126,9 @@ def history_update(city, state, cap, parallel, host, port, source,
 
     if parallel:
         frames = Parallel(n_jobs=config.david["parallel"]["processors"])(
-                delayed(weather.wund.history_pull)(date, city, state)
+                delayed(weather.wund.history_pull)(city=city, state=state,
+                                                   account=account,
+                                                   date=date)
                 for date in interval[:cap])
     else:
         frames = [weather.wund.history_pull(date, city, state) for date in
@@ -142,7 +145,7 @@ def history_update(city, state, cap, parallel, host, port, source,
         # entries, not timestamp row indices, so...
         archive = archive.reset_index().drop_duplicates('index').set_index(
                 'index')
-        # push to mongo. Mongo upsert checks if dates already exist,
+        # push to mongo_cred. Mongo upsert checks if dates already exist,
         # and if they don't, new items are pushed
         _mongo_history_push(archive,
                             host=host,

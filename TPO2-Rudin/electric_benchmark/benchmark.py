@@ -32,7 +32,6 @@ def _filter_missing_weather_data(weather_df):
     return weather_df.drop(bad_data[bad_data == True].index)
 
 
-
 def _get_weather(h5file_name, history_name, forecast_name, gran):
     """ Load all available weather data, clean it and drop unneeded columns
 
@@ -50,12 +49,11 @@ def _get_weather(h5file_name, history_name, forecast_name, gran):
 
     with pd.HDFStore(h5file_name) as store:
         munged_history = weather.wund.history_munge(store[history_name],
-                                                       "%dmin" % gran)
+                                                    "%dmin" % gran)
 
         munged_forecast = weather.wund.forecast_munge(store[forecast_name],
-                                                         "%dmin" % gran)
-                                                         # cov, "%dmin" % gran)
-
+                                                      "%dmin" % gran)
+        # cov, "%dmin" % gran)
 
     # drop unnecessary columns
     # TODO: this should be done before munging for efficiency but couldn't make
@@ -68,8 +66,9 @@ def _get_weather(h5file_name, history_name, forecast_name, gran):
                                                       'mslp': 'pressure'})
 
     all_weather = pd.concat([munged_history, munged_forecast])
+    if not isinstance(all_weather, pd.DataFrame):
+        raise ValueError("Concatenation has not returned a DataFrame")
     return _filter_missing_weather_data(all_weather)
-
 
 
 def _get_data_availability_dates(obs_ts, gran):
@@ -92,8 +91,7 @@ def _get_data_availability_dates(obs_ts, gran):
 
     thresh = 0.85 * 24 * 60 / gran
     return set([key for key, cnt in itertools.filterfalse(
-        lambda x: x[1] < thresh, counts)])
-
+            lambda x: x[1] < thresh, counts)])
 
 
 def _get_wetbulb_ts(weather_df):
@@ -104,7 +102,6 @@ def _get_wetbulb_ts(weather_df):
     :return: pandas
     """
     return weather_df.apply(weather.wet_bulb.compute_bulb_helper, axis=1)
-
 
 
 def _incremental_trapz(y, x):
@@ -124,12 +121,12 @@ def _incremental_trapz(y, x):
     if len(y) != len(x):
         raise Exception('length of x and y must match')
 
-    incr_auc, curr_total = [],  0.0
+    incr_auc, curr_total = [], 0.0
 
     for i, y_i in enumerate(y):
 
         if i > 0:
-            curr_total += (y_i + y[i-1]) * (x[i] - x[i-1])/2.0
+            curr_total += (y_i + y[i - 1]) * (x[i] - x[i - 1]) / 2.0
 
         incr_auc.append(curr_total)
 
@@ -172,17 +169,17 @@ def find_lowest_electric_usage(date_scores, electric_ts, n, debug):
             # compute day electric usage by integrating the curve
             # Assumption: Linear interpolation is a reasonable way to fill gaps
             day_elec_ts = common.utils.drop_series_ix_date(
-                common.utils.get_dt_tseries(dt, electric_ts))
+                    common.utils.get_dt_tseries(dt, electric_ts))
 
             # compute total and incremental AUC
             x = list(map(lambda y: y.hour + y.minute / 60.0 + y.second / 3600.0,
                          day_elec_ts.index))
             incr_auc, auc = _incremental_trapz(day_elec_ts.data.tolist(), x)
             # auc = numpy.trapz(day_elec_ts.data, x=list(map(lambda x:
-                                                           # x.hour * 3600
-                                                         # + x.minute * 60
-                                                         # + x.second,
-                                                         #   day_elec_ts.index)))
+            # x.hour * 3600
+            # + x.minute * 60
+            # + x.second,
+            #   day_elec_ts.index)))
             common.utils.debug_msg(debug, "%s, %s" % (dt, auc))
 
             if 0 < auc < min_usage[1]:
@@ -191,11 +188,9 @@ def find_lowest_electric_usage(date_scores, electric_ts, n, debug):
     return min_usage
 
 
-
 def _save_benchmark(bench_dt, base_dt, bench_ts, bench_auc, bench_incr_auc,
                     host, port, database, username, password, source_db,
                     collection_name, bldg_id, system, output_type):
-
     """
     Save benchmark time series to database
 
@@ -233,7 +228,6 @@ def _save_benchmark(bench_dt, base_dt, bench_ts, bench_auc, bench_incr_auc,
     """
 
     with pymongo.MongoClient(host, port) as conn:
-
         conn[database].authenticate(username, password, source=source_db)
         collection = conn[database][collection_name]
 
@@ -256,8 +250,6 @@ def _save_benchmark(bench_dt, base_dt, bench_ts, bench_auc, bench_incr_auc,
         collection.insert(doc)
 
 
-
-
 def _gen_bmark_readings_list(tseries, incr_auc):
     """
     generate list of readings with each item being a dictionary of the form:
@@ -273,8 +265,6 @@ def _gen_bmark_readings_list(tseries, incr_auc):
 
     return [{'time': str(t[0]), 'value': t[1], 'daily': auc}
             for t, auc in zip(tseries.iteritems(), incr_auc)]
-
-
 
 
 def _find_benchmark(base_dt, occ_ts, wetbulb_ts, electric_ts, gran, debug):
@@ -333,12 +323,10 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, electric_ts, gran, debug):
     return find_lowest_electric_usage(occ_scores, electric_ts, 5, debug)
 
 
-
 def process_building(building_id, host, port, database, username, password,
                      source_db, collection_name, database_out,
                      collection_name_out, meter_count, h5file_name,
                      history_name, forecast_name, granularity, base_dt, debug):
-
     """ Find baseline electric usage for building_id
 
     :param building_id: string
@@ -390,25 +378,24 @@ def process_building(building_id, host, port, database, username, password,
 
     # get occupancy data
     occ_ts = ts_proc.utils.get_occupancy_ts(host, port, database, username,
-                                              password, source_db,
-                                              collection_name, building_id)
+                                            password, source_db,
+                                            collection_name, building_id)
     # interpolation converts occupancy data to float; convert back to int64
     occ_ts = ts_proc.munge.interp_tseries(occ_ts, granularity).astype(
-        numpy.int64)
+            numpy.int64)
     common.utils.debug_msg(debug, "occupancy: %s" % occ_ts)
 
     # query electric data
     elec_ts = ts_proc.utils.get_electric_ts(host, port, database, username,
-                                            password, source_db,collection_name,
+                                            password, source_db,
+                                            collection_name,
                                             building_id, meter_count)
     elec_ts = ts_proc.munge.interp_tseries(elec_ts, granularity)
     common.utils.debug_msg(debug, "electric: %s" % elec_ts)
 
-
-
     # find baseline
     bench_info = _find_benchmark(base_dt, occ_ts, wetbulb_ts,
-                                            elec_ts, granularity, debug)
+                                 elec_ts, granularity, debug)
     bench_dt, bench_auc, bench_incr_auc, bench_usage = bench_info
     common.utils.debug_msg(debug, "bench dt: %s, bench usage: %s, auc: %s" % (
         bench_dt, bench_usage, bench_auc))

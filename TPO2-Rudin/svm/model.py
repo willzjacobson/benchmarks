@@ -275,8 +275,9 @@ def predict(endog, weather_history, weather_forecast, cov, gran,
 
         features['index'] = features['index'].apply(
                 lambda date:
-                datetime.timedelta(hours=date.hour,
-                                   minutes=date.minute).total_seconds() / gran_int
+                datetime.timedelta(
+                        hours=date.hour,
+                        minutes=date.minute).total_seconds() / gran_int
         )
 
         features_scaled = scaler.transform(features)

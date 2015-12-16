@@ -3,29 +3,26 @@ import config
 import weather.mongo
 import weather.wund
 
-cfg = config.david
+cfg = config.david["building_dbs"]
 if __name__ == "__main__":
-    city = cfg["weather"]["city"]
-    state = cfg["weather"]["state"]
-    archive_location = cfg["weather"]["h5file"]
-    cov = cfg["weather"]["cov"]
-    history_munged_name = cfg["weather"]["history"]
-    forecast_munged_name = cfg["weather"]["forecast"]
-    history_orig_name = cfg["weather"]["history_orig"]
-    forecast_orig_name = cfg["weather"]["forecast_orig"]
-    cap = cfg["weather"]["cap"]
+    city = cfg["building_dbs"]["city"]
+    state = cfg["building_dbs"]["state"]
+    cov = cfg["building_dbs"]["cov"]
+    cap = cfg["building_dbs"]["cap"]
     gran = cfg["sampling"]["granularity"]
-    account = cfg["weather"]["wund_url"]
+    account = cfg["building_dbs"]["wund_url"]
 
     # whist = pd.read_hdf("/data/weather.h5", "history_orig")
-    # weather.mongo._mongo_history_push(whist,
-    #                                   **(cfg["weather"]["mongo"]["history"]))
+    # weather.mongo_cred._mongo_history_push(
+    # whist, **(cfg["weather"]["mongo_cred"]["history"]))
 
     weather.mongo.history_update(
-            city=city, state=state, cap=cap, parallel=True,
-            **(cfg["weather"]["mongo"]["history"])
-    )
+            cap=90000000000,
+            **(cfg["wund_cred"]),
+            **(cfg["mongo_cred"]),
+            **(cfg["mongo_cred"]["weather_history_loc"]))
 
     weather.mongo.forecast_update(
-            city=city, state=state, account=account,
-            **(cfg["weather"]["mongo"]["forecast"]))
+            **(cfg["wund_cred"]),
+            **(cfg["mongo_cred"]),
+            **(cfg["building_dbs"]["mongo_cred"]["weather_forecast_loc"]))

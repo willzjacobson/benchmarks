@@ -15,8 +15,8 @@ stringcols = ['conds', 'wdire']
 
 
 def _dtype_conv(df=pd.DataFrame(),
-                conds_mapping=config.david["weather"]["conds_mapping"],
-                wdire_mapping=config.david["weather"]["wdire_mapping"]):
+                conds_mapping=config.david["building_dbs"]["conds_mapping"],
+                wdire_mapping=config.david["building_dbs"]["wdire_mapping"]):
     """Relabeling of weather underground columns, and conversion of column
     entries to either float or string data types (forecasting models expect
     float entries to have a type signature of 'float')
@@ -69,6 +69,8 @@ def history_pull(city, state, account, date=pd.datetime.today()):
     Date to pull data for
     :param city: string
     City to pull data for
+    :param account: string
+    Weather underground account url (with key)
     :param state: string
     State to pull data for
     :return: dataframe
@@ -88,7 +90,7 @@ def history_pull(city, state, account, date=pd.datetime.today()):
     f = urlopen(url)
     parsed_json = json.load(reader(f))
     f.close()
-    observations = parsed_json['history']['observations']
+    observations = parsed_json['weather_history_loc']['observations']
 
     # convert to dataframes for easy presentation and manipulation
 

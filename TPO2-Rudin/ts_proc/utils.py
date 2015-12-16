@@ -82,7 +82,8 @@ def get_electric_ts(host, port, database, username, password, source_db,
     # ts_lists, value_lists = [], []
     # for equip_id in range(1, meter_count+1):
 
-        # ts_list, value_list = _get_meter_data(equipment_id, bldg_id, collection)
+    # ts_list, value_list = _get_meter_data(
+    # equipment_id, bldg_id, collection)
     # ts_list, value_list = common.utils.get_ts(host, database,
         #                                            collection_name, bldg_id,
         #                                            "Elec-M%d" % equip_id,

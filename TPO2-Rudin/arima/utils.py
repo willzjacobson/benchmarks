@@ -1,4 +1,6 @@
+# coding=utf-8
 from scipy.optimize import brute
+from statsmodels.tsa.arima_model import ARIMA
 
 
 def optimal_order(ts):

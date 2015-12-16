@@ -12,11 +12,11 @@ __author__ = 'David Karapetyan'
 if __name__ == "__main__":
     # set variables
     params_init = config.david["svm"]["params"]
-    cov = config.david["weather"]["cov"]
+    cov = config.david["building_dbs"]["cov"]
     gran = config.david["sampling"]["granularity"]
-    h5file = config.david["weather"]["h5file"]
-    history_original_name = config.david["weather"]["history_orig"]
-    forecast_original_name = config.david["weather"]["forecast_orig"]
+    h5file = config.david["building_dbs"]["h5file"]
+    history_original_name = config.david["building_dbs"]["history_orig"]
+    forecast_original_name = config.david["building_dbs"]["forecast_orig"]
     store = pd.HDFStore(h5file)
     weather_history = store[history_original_name]
     weather_forecast = store[forecast_original_name]

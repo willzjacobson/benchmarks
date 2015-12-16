@@ -88,8 +88,10 @@ def _calculate_bulb(e_diff, wetbulb_guess, thetemp, press_mb, e, prev_sign,
 
     while abs(e_diff) > 0.05:
 
-        ew_guess = 6.112 * math.exp(17.67 * wetbulb_guess / (wetbulb_guess + 243.5))
-        e_guess = ew_guess - press_mb * (float(thetemp) - float(wetbulb_guess)) * 0.00066 * (
+        ew_guess = 6.112 * math.exp(
+                17.67 * wetbulb_guess / (wetbulb_guess + 243.5))
+        e_guess = ew_guess - press_mb * (
+            float(thetemp) - float(wetbulb_guess)) * 0.00066 * (
             1 + (0.00115 * wetbulb_guess))
         e_diff = float(e) - e_guess
         increase = float(increase)

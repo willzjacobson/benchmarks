@@ -1,20 +1,21 @@
+# coding=utf-8
 import functools
 
 import joblib
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
+from statsmodels.tsa.arima_model import ARIMA
 
 from ts_proc.munge import filter_two_std
 
 
-def actual_vs_prediction(ts, order=(1, 1, 0), seasonal_order=(1, 1, 0, 96),
+def actual_vs_prediction(ts, order=(1, 1, 0),
                          days=(0, 1, 2, 3, 4, 5, 6)):
     """Plots SARIMA predictions against real values for each weekday.
 
     :param ts: pandas.core.series.Series
     :param order: tuple
-    :param seasonal_order: tuple
     :param days: tuple
     :return: None
     """
@@ -43,9 +44,8 @@ def actual_vs_prediction(ts, order=(1, 1, 0), seasonal_order=(1, 1, 0, 96),
     #                               ts[ts.index.weekday == x],
     #                               order=order,
     #                               seasonal_order=seasonal_order).fit(), days)
-    temp_func = functools.partial(SARIMAX(endog=None,
-                                          order=order,
-                                          seasonal_order=seasonal_order).fit())
+    temp_func = functools.partial(ARIMA(endog=None,
+                                        order=order).fit())
     fit_list = joblib.Parallel(n_jobs=-1)(joblib.delayed(temp_func)(
             ts_sub=ts[ts.index.weekday == day]) for day in days)
 

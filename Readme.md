@@ -1,7 +1,8 @@
 # Synopsis
 
-Analytics code base for Project Nonantum. Provides a recommendation, forecast, and
-benchmarking engine to help building managers and operators in decision making.
+Analytics code base for Project Nonantum. Provides a recommendation, forecast, 
+and benchmarking engine to help building managers and operators in 
+decision making.
 
 Intended to provide:
 * Floor start-up recommendation

@@ -4,30 +4,51 @@ david :
     python_prog: /home/davidkarapetyan/anaconda3/bin/python
     data_sources: /data
     log_dir: /var/log
+    buildings:
+      - 345_Park
+    # run mode
+    debug: False
 
-  weather:
-    mongo:
-      forecast:
-        host: 52.91.89.104
+
+    345_Park:
+        floor_quadrants:
+          -
+            - 24
+            - NW
+          -
+            - 24
+            - NE
+
+        # electric
+        electric_meter_count: 6
+        # electric -> benchmark
+        collection_name_out: analytics
+
+  building_dbs:
+    mongo_cred:
+        host: datascience.local
         port: 27017
         source: admin
         username: Analytics
         password: L3x1^gt0n
+    wund_cred:
+        wund_url: http://api.wunderground.com/api/bab4ba5bcbc2dbec/
+      # wund_url: http://api.wunderground.com/api/08d25f404214f50b/
+        city: New_York
+        state: NY
+        parallel: False
+    weather_forecast_loc:
         db_name: weather
         collection_name: forecast
-      history:
-        host: 52.91.89.104
-        port: 27017
-        source: admin
-        username: Analytics
-        password: L3x1^gt0n
+    weather_history_loc:
         db_name: weather
         collection_name: history
+    building_ts_loc:
+        db_name: skynet
+        collection_name: devicetimeseries
 
 
-    h5file: /data/weather.h5
-    # wund_url: http://api.wunderground.com/api/08d25f404214f50b/
-    wund_url: http://api.wunderground.com/api/bab4ba5bcbc2dbec/
+
     #cov: [conds, hum, rain, snow, temp]
     cov: [wetbulb]
     seasons: {spring: [3, 6], summer: [6, 9], fall: [9, 12], winter: [12, 3]}
@@ -71,13 +92,7 @@ david :
       WNW: 9
       WSW: 7
       West: 2
-    history_orig: history_orig
-    history: history
-    forecast_orig: forecast_orig
-    forecast: forecast
-    city: New_York
-    state: NY
-    cap: 90000000
+
 
   sampling:
     granularity: 15min
@@ -117,8 +132,6 @@ david :
 
   arima:
     order: [1, 1, 0]
-    seasonal_order: [1, 1, 3]
-    enforce_stationarity: False
 
   parallel:
     processors: -1
@@ -133,142 +146,142 @@ david :
 
 
 
-ashish:
-
-  default:
-    base_dir: /home/ashishgagneja/Adirondack/analytics/TPO2-Rudin
-    python_prog: /home/davidkarapetyan/anaconda3/bin/python
-    data_sources: /data
-    log_dir: /var/log
-    # run mode
-    debug: False
-
-#     list of building ids. There should be a key corresponding to each
-#     name on this list elsewhere in this configuration spec.
-    buildings: [345_Park, ]
-
-
-  weather:
-    h5file: /home/ashishgagneja/data/weather.h5
-    # wund_url: http://api.wunderground.com/api/08d25f404214f50b/
-    wund_url: http://api.wunderground.com/api/bab4ba5bcbc2dbec/
-    #cov: [conds, hum, rain, snow, temp]
-    cov: [hum, temp]
-    seasons: {spring: [3, 6], summer: [6, 9], fall: [9, 12], winter: [12, 3]}
-    # cov choice is constrained by column entries in wund forecast which is
-    # sparser than those in history data from wund. For example no
-    # tornado or thunder seen so far in forecasts
-    conds_mapping:
-      Clear: 0
-      Cloudy: 16
-      Fog: 9
-      Haze: 3
-      Heavy Rain: 8
-      Heavy Snow: 14
-      Light Freezing Rain: 15
-      Light Rain: 6
-      Light Snow: 11
-      Mist: 13
-      Mostly Cloudy: 4
-      Overcast: 5
-      Partly Cloudy: 2
-      Rain: 7
-      Scattered Clouds: 1
-      Showers: 7 #same as showers, since historical data doesn't have 'showers'
-      Snow: 12
-      Unknown: 10
-    wdire_mapping:
-      ENE: 6
-      ESE: 12
-      East: 15
-      NE: 5
-      NNE: 3
-      NNW: 4
-      NW: 16
-      North: 1
-      SE: 10
-      SSE: 11
-      SSW: 13
-      SW: 8
-      South: 14
-      Variable: 0
-      WNW: 9
-      WSW: 7
-      West: 2
-    history_orig: history_orig
-    history: history
-    forecast_orig: forecast_orig
-    forecast: forecast
-    city: New_York
-    state: NY
-    cap: 90000000
-
-
-  sampling:
-    granularity: 15
-    forecast_length: 24
-    nary_thresh: 100
-    # upper bound for number of unique points before time
-    # series is classed as n-ary instead of continuous
-    max_gap: 2
-    # largest allowed gap in data in hours
-
-
-  svm:
-    gamma: 1
-    C: 1
-    cache_size: 10000
-    kernel: rbf
-    max_iter: -1
-    probability: False
-    random_state: None
-    shrinking: True
-    tol: 0.001
-    verbose: False
-
-
-  arima:
-    order:
-      - 1
-      - 1
-      - 0
-    seasonal_order:
-      - 1
-      - 1
-      - 3
-    enforce_stationarity: False
-
-
-  arima:
-      order: [1, 1, 0]
-
-
-  345_Park:
-    steam_data: /home/davidkarapetyan/data_analysis/data/park345.h5
-    steam_data_group: oa_temp
-
-    # database for input data
-    host: 52.91.89.104
-    port: 27017
-    username: Analytics
-    password: L3x1^gt0n
-    database: skynet
-    source_db: admin
-    collection_name_input: devicetimeseries
-
-
-    floor_quadrants:
-      -
-        - 24
-        - NW
-      -
-        - 24
-        - NE
-
-    # electric
-    electric_meter_count: 6
-    # electric -> benchmark
-    collection_name_out: analytics
+#ashish:
+#
+#  default:
+#    base_dir: /home/ashishgagneja/Adirondack/analytics/TPO2-Rudin
+#    python_prog: /home/davidkarapetyan/anaconda3/bin/python
+#    data_sources: /data
+#    log_dir: /var/log
+#    # run mode
+#    debug: False
+#
+##     list of building ids. There should be a key corresponding to each
+##     name on this list elsewhere in this configuration spec.
+#    buildings: [345_Park, ]
+#
+#
+#  weather:
+#    h5file: /home/ashishgagneja/data/weather.h5
+#    # wund_url: http://api.wunderground.com/api/08d25f404214f50b/
+#    wund_url: http://api.wunderground.com/api/bab4ba5bcbc2dbec/
+#    #cov: [conds, hum, rain, snow, temp]
+#    cov: [hum, temp]
+#    seasons: {spring: [3, 6], summer: [6, 9], fall: [9, 12], winter: [12, 3]}
+#    # cov choice is constrained by column entries in wund forecast which is
+#    # sparser than those in history data from wund. For example no
+#    # tornado or thunder seen so far in forecasts
+#    conds_mapping:
+#      Clear: 0
+#      Cloudy: 16
+#      Fog: 9
+#      Haze: 3
+#      Heavy Rain: 8
+#      Heavy Snow: 14
+#      Light Freezing Rain: 15
+#      Light Rain: 6
+#      Light Snow: 11
+#      Mist: 13
+#      Mostly Cloudy: 4
+#      Overcast: 5
+#      Partly Cloudy: 2
+#      Rain: 7
+#      Scattered Clouds: 1
+#      Showers: 7 #same as showers, since historical data doesn't have 'showers'
+#      Snow: 12
+#      Unknown: 10
+#    wdire_mapping:
+#      ENE: 6
+#      ESE: 12
+#      East: 15
+#      NE: 5
+#      NNE: 3
+#      NNW: 4
+#      NW: 16
+#      North: 1
+#      SE: 10
+#      SSE: 11
+#      SSW: 13
+#      SW: 8
+#      South: 14
+#      Variable: 0
+#      WNW: 9
+#      WSW: 7
+#      West: 2
+#    history_orig: history_orig
+#    history: history
+#    forecast_orig: forecast_orig
+#    forecast: forecast
+#    city: New_York
+#    state: NY
+#    cap: 90000000
+#
+#
+#  sampling:
+#    granularity: 15
+#    forecast_length: 24
+#    nary_thresh: 100
+#    # upper bound for number of unique points before time
+#    # series is classed as n-ary instead of continuous
+#    max_gap: 2
+#    # largest allowed gap in data in hours
+#
+#
+#  svm:
+#    gamma: 1
+#    C: 1
+#    cache_size: 10000
+#    kernel: rbf
+#    max_iter: -1
+#    probability: False
+#    random_state: None
+#    shrinking: True
+#    tol: 0.001
+#    verbose: False
+#
+#
+#  arima:
+#    order:
+#      - 1
+#      - 1
+#      - 0
+#    seasonal_order:
+#      - 1
+#      - 1
+#      - 3
+#    enforce_stationarity: False
+#
+#
+#  arima:
+#      order: [1, 1, 0]
+#
+#
+#  345_Park:
+#    steam_data: /home/davidkarapetyan/data_analysis/data/park345.h5
+#    steam_data_group: oa_temp
+#
+#    # database for input data
+#    host: 52.91.89.104
+#    port: 27017
+#    username: Analytics
+#    password: L3x1^gt0n
+#    database: skynet
+#    source_db: admin
+#    collection_name_input: devicetimeseries
+#
+#
+#    floor_quadrants:
+#      -
+#        - 24
+#        - NW
+#      -
+#        - 24
+#        - NE
+#
+#    # electric
+#    electric_meter_count: 6
+#    # electric -> benchmark
+#    collection_name_out: analytics
 
 
 master: None

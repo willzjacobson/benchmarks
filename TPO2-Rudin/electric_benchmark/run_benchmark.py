@@ -6,13 +6,13 @@ driver for obtaining baseline electric demand based on occupancy and weather
 co-variates
 """
 
-import sys
 import datetime
+import sys
 
 import config
 import electric_benchmark.benchmark as bmark
 
-cfg = config.ashish
+cfg = config.david
 
 buildings = cfg['default']['buildings']
 
@@ -47,9 +47,9 @@ for building_id in buildings:
                            bldg_params['database'],
                            bldg_params['collection_name_out'],
                            bldg_params['electric_meter_count'],
-                           cfg['weather']['h5file'],
-                           cfg['weather']['history_orig'],
-                           cfg['weather']['forecast_orig'],
+                           cfg['building_dbs']['h5file'],
+                           cfg['building_dbs']['history_orig'],
+                           cfg['building_dbs']['forecast_orig'],
                            cfg['sampling']['granularity'],
                            bench_dt,
                            cfg['default']['debug'])

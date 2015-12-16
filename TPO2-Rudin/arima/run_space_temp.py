@@ -7,14 +7,15 @@ driver for generating start-time using a ARIMA model for space
 temperature data
 """
 
-import config
-import ts_proc.utils
 import dateutil.relativedelta as relativedelta
-import arima.model
 import pymongo
-import ts_proc.munge
 
-cfg = config.ashish
+import arima.model
+import config
+import ts_proc.munge
+import ts_proc.utils
+
+cfg = config.david
 
 buildings = cfg['default']['buildings']
 
@@ -22,7 +23,7 @@ buildings = cfg['default']['buildings']
 for building in buildings:
 
     bldg_params = cfg[building]
-    weather_params = cfg['weather']
+    weather_params = cfg['building_dbs']
     arima_params = cfg['arima']
     granularity = cfg['sampling']['granularity']
 
@@ -49,8 +50,8 @@ for building in buildings:
         forecast, std_err, conf_int = arima.model.start_time(
             ts_proc.munge.interp_tseries(ts, granularity),
             weather_params['h5file'],
-            weather_params['history'],
-            weather_params['forecast'],
+                weather_params['weather_history_loc'],
+                weather_params['weather_forecast_loc'],
             arima_params['order'],
             granularity,
             str(pred_dt))
