@@ -68,24 +68,24 @@ def _mongo_history_push(df, host, port, source, db_name, username, password,
         bulk.execute()
 
 
-def forecast_update(city, state, account, host, port, source,
-                    username, password, db_name, collection_name):
+def forecast_update(city, state, wund_url, host, port, source, username,
+                    password, db_name, collection_name):
     data = weather.wund.forecast_pull(city=city, state=state,
-                                      account=account)
+                                      wund_url=wund_url)
     _forecast_push(data, host=host, port=port, source=source,
                    username=username, password=password, db_name=db_name,
                    collection_name=collection_name)
 
 
-def history_update(city, state, account, parallel, host, port, source, username,
-                   password, db_name, collection_name, cap):
+def history_update(city, state, wund_url, parallel, host, port, source,
+                   username, password, db_name, collection_name, cap):
     """Pull archived weather information
 
     Weather information is pulled from weather underground from end of
     prescriptive weather database date to today, then added to
     weather database
 
-    :param account:
+    :param wund_url:
     :param city: string
     City portion of city-state pair to pull from weather underground
     :param state: string
@@ -127,7 +127,7 @@ def history_update(city, state, account, parallel, host, port, source, username,
     if parallel:
         frames = Parallel(n_jobs=config.david["parallel"]["processors"])(
                 delayed(weather.wund.history_pull)(city=city, state=state,
-                                                   account=account,
+                                                   wund_url=wund_url,
                                                    date=date)
                 for date in interval[:cap])
     else:

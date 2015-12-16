@@ -10,5 +10,5 @@ __author__ = "David Karapetyan"
 # dir = os.path.dirname(os.path.abspath(__file__))
 stream = open(os.path.dirname(os.path.abspath(__file__)) + "/config.yaml")
 file = yaml.load(stream)
-david, master = file["david"], file["master"]
+david = file["david"]
 stream.close()

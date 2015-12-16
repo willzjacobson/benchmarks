@@ -61,7 +61,7 @@ def _dtype_conv(df=pd.DataFrame(),
     return df
 
 
-def history_pull(city, state, account, date=pd.datetime.today()):
+def history_pull(city, state, wund_url, date=pd.datetime.today()):
     """Weather information is pulled from weather underground at specified
     day
 
@@ -69,7 +69,7 @@ def history_pull(city, state, account, date=pd.datetime.today()):
     Date to pull data for
     :param city: string
     City to pull data for
-    :param account: string
+    :param wund_url: string
     Weather underground account url (with key)
     :param state: string
     State to pull data for
@@ -83,7 +83,7 @@ def history_pull(city, state, account, date=pd.datetime.today()):
 
     city_path = '%s/%s' % (state, city)
 
-    url = account + \
+    url = wund_url + \
           "%s/q/%s.json" % (date_path, city_path)
 
     reader = codecs.getreader('utf-8')
@@ -147,7 +147,7 @@ def history_munge(df, gran):
     return df
 
 
-def forecast_pull(city, state, account):
+def forecast_pull(city, state, wund_url):
     """Returns forecasts from now until end of day
 
      :param city: string
@@ -158,7 +158,7 @@ def forecast_pull(city, state, account):
     """
 
     city_path = '%s/%s' % (state, city)
-    url = account + "hourly/q/%s.json" % city_path
+    url = wund_url + "hourly/q/%s.json" % city_path
     reader = codecs.getreader('utf-8')
     f = urlopen(url)
     parsed_json = json.load(reader(f))
