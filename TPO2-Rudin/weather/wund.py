@@ -90,7 +90,7 @@ def history_pull(city, state, wund_url, date=pd.datetime.today()):
     f = urlopen(url)
     parsed_json = json.load(reader(f))
     f.close()
-    observations = parsed_json['weather_history_loc']['observations']
+    observations = parsed_json['history']['observations']
 
     # convert to dataframes for easy presentation and manipulation
 

@@ -131,7 +131,9 @@ def history_update(city, state, wund_url, parallel, host, port, source,
                                                    date=date)
                 for date in interval[:cap])
     else:
-        frames = [weather.wund.history_pull(date, city, state) for date in
+        frames = [weather.wund.history_pull(city=city, state=state,
+                                            wund_url=wund_url, date=date) for
+                  date in
                   interval[:cap]]
 
     weather_update = pd.concat(frames)

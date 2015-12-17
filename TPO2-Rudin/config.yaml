@@ -36,7 +36,6 @@ david:
       # wund_url: http://api.wunderground.com/api/08d25f404214f50b/
         city: New_York
         state: NY
-        parallel: False
     weather_forecast_loc:
         db_name: weather
         collection_name: forecast
