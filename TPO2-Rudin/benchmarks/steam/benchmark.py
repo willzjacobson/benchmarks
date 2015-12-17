@@ -7,7 +7,9 @@ import itertools
 import sys
 
 import numpy
+
 import pandas as pd
+
 import pymongo
 
 import common.utils
@@ -15,6 +17,7 @@ import ts_proc.utils
 import ts_proc.munge
 import occupancy.utils
 import weather.wet_bulb
+import weather.mongo
 import weather.wund
 
 
@@ -32,7 +35,8 @@ def _filter_missing_weather_data(weather_df):
     return weather_df.drop(bad_data[bad_data == True].index)
 
 
-def _get_weather(h5file_name, history_name, forecast_name, gran):
+def _get_weather(host, port, username, password, source_db, history_db,
+                 history_collection, forecast_db, forecast_collection, gran):
     """ Load all available weather data, clean it and drop unneeded columns
 
     :param h5file_name: string
@@ -47,14 +51,25 @@ def _get_weather(h5file_name, history_name, forecast_name, gran):
     :return: pandas DataFrame
     """
 
-    with pd.HDFStore(h5file_name) as store:
-        munged_history = weather.wund.history_munge(store[history_name],
-                                                    "%dmin" % gran)
 
-        munged_forecast = weather.wund.forecast_munge(store[forecast_name],
-                                                      "%dmin" % gran)
-        # cov, "%dmin" % gran)
+    # with pd.HDFStore(h5file_name) as store:
+    #     munged_history = weather.wund.history_munge(store[history_name],
+    #                                                 "%dmin" % gran)
 
+    # munged_forecast = weather.wund.forecast_munge(store[forecast_name],
+    #                                               "%dmin" % gran)
+    # cov, "%dmin" % gran)
+
+    whist = weather.mongo.get_history(host, port, source_db, history_db,
+                                      username, password, history_collection)
+    whist_munged = weather.wund.history_munge(whist, gran)
+    print(whist_munged)
+    wfcst = weather.mongo.get_latest_forecast(host, port, source_db,
+                                              forecast_db, username, password,
+                                              forecast_collection)
+    wfcst_munged = weather.wund.forecast_munge(wfcst, gran)
+    print(wfcst_munged)
+    sys.exit(0)
     # drop unnecessary columns
     # TODO: this should be done before munging for efficiency but couldn't make
     # it work
@@ -91,7 +106,7 @@ def _get_data_availability_dates(obs_ts, gran):
 
     thresh = 0.85 * 24 * 60 / gran
     return set([key for key, cnt in itertools.filterfalse(
-            lambda x: x[1] < thresh, counts)])
+        lambda x: x[1] < thresh, counts)])
 
 
 def _get_wetbulb_ts(weather_df):
@@ -169,7 +184,7 @@ def find_lowest_electric_usage(date_scores, electric_ts, n, debug):
             # compute day electric usage by integrating the curve
             # Assumption: Linear interpolation is a reasonable way to fill gaps
             day_elec_ts = common.utils.drop_series_ix_date(
-                    common.utils.get_dt_tseries(dt, electric_ts))
+                common.utils.get_dt_tseries(dt, electric_ts))
 
             # compute total and incremental AUC
             x = list(map(lambda y: y.hour + y.minute / 60.0 + y.second / 3600.0,
@@ -324,9 +339,11 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, electric_ts, gran, debug):
 
 
 def process_building(building_id, host, port, db_name, username, password,
-                     source, collection_name, database_out,
-                     collection_name_out, h5file_name, history_name,
-                     forecast_name, granularity, base_dt, debug):
+                     source, collection_name, db_name_out,
+                     collection_name_out, weather_hist_db,
+                     weather_hist_collection, weather_fcst_db,
+                     weather_fcst_collection, granularity,
+                     base_dt, debug):
     """ Find baseline electric usage for building_id
 
     :param building_id: string
@@ -345,7 +362,7 @@ def process_building(building_id, host, port, db_name, username, password,
         source db_name for authentication
     :param collection_name: string
         name of collection in the db_name
-    :param database_out: string
+    :param db_name_out: string
         name of the output db_name on server
     :param collection_name_out: string
         name of output collection in the db_name
@@ -355,8 +372,8 @@ def process_building(building_id, host, port, db_name, username, password,
         group identifier for historical weather data within the HDF5 file
     :param forecast_name: string
         group identifier for weather forecast within the HDF5 file
-    :param granularity: int
-        expected frequency of observations and forecast in minutes
+    :param granularity: string
+        expected frequency of observations and forecast
     :param base_dt: datetime.date
         date for which benchmark electric usage is to be found
     :param debug: bool
@@ -365,23 +382,26 @@ def process_building(building_id, host, port, db_name, username, password,
     :return:
     """
 
-    sys.exit(0)
     # get weather
-    weather_df = _get_weather(h5file_name, history_name, forecast_name,
+    weather_df = _get_weather(host, port, username, password, source,
+                              weather_hist_db, weather_hist_collection,
+                              weather_fcst_db, weather_fcst_collection,
                               granularity)
     common.utils.debug_msg(debug, "weather: %s" % weather_df)
 
+    sys.exit(0)
     wetbulb_ts = _get_wetbulb_ts(weather_df)
     wetbulb_ts = ts_proc.munge.interp_tseries(wetbulb_ts, granularity)
     common.utils.debug_msg(debug, "wetbulb: %s" % wetbulb_ts)
 
+    sys.exit(0)
     # get occupancy data
     occ_ts = ts_proc.utils.get_occupancy_ts(host, port, db_name, username,
                                             password, source,
                                             collection_name, building_id)
     # interpolation converts occupancy data to float; convert back to int64
     occ_ts = ts_proc.munge.interp_tseries(occ_ts, granularity).astype(
-            numpy.int64)
+        numpy.int64)
     common.utils.debug_msg(debug, "occupancy: %s" % occ_ts)
 
     # query electric data
@@ -419,6 +439,6 @@ def process_building(building_id, host, port, db_name, username, password,
     # save results
     if not debug:
         _save_benchmark(bench_dt, base_dt, bench_usage, bench_auc,
-                        bench_incr_auc, host, port, database_out, username,
+                        bench_incr_auc, host, port, db_name_out, username,
                         password, source, collection_name_out, building_id,
                         'Electric_Demand', 'benchmark')

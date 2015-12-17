@@ -31,30 +31,28 @@ elif arg_count == 4:
 
 print("looking up benchmark for %s" % bench_dt)
 
-bldg_results = cfg['building_dbs']['results']
+kw_args = dict(dict(cfg['building_dbs']['mongo_cred'],
+                    **cfg['building_dbs']['building_ts_loc']),
+               **cfg['building_dbs']['results'])
+
+weather_hist = cfg['building_dbs']['weather_history_loc']
+weather_fcst = cfg['building_dbs']['weather_forecast_loc']
+
+kw_args['weather_hist_db'] = weather_hist['db_name']
+kw_args['weather_hist_collection'] = weather_hist['collection_name']
+
+kw_args['weather_fcst_db'] = weather_fcst['db_name']
+kw_args['weather_fcst_collection'] = weather_fcst['collection_name']
+
+kw_args['granularity'] = cfg['sampling']['granularity']
+kw_args['base_dt'] = bench_dt
+kw_args['debug'] = cfg['default']['debug']
+
+
+print(kw_args)
 
 # iterate over all buildings
 for building_id in buildings:
 
     bldg_params = cfg['default'][building_id]
-    bmark.process_building(
-        building_id,
-        # host=bldg_params['host'],
-        # port=bldg_params['port'],
-        # db_name=bldg_params['database'],
-        # username=bldg_params['username'],
-        # password=bldg_params['password'],
-        # source=bldg_params['source_db'],
-        # collection_name=bldg_params['collection_name_input'],
-        # use the input db for now for output
-        # database_out=bldg_params['database'],
-        database_out=bldg_results[''],
-        collection_name_out=bldg_params['collection_name_out'],
-        # h5file_name=cfg['building_dbs']['h5file'],
-        # history_name=cfg['building_dbs']['history_orig'],
-        # forecast_name=cfg['building_dbs']['forecast_orig'],
-        granularity=cfg['sampling']['granularity'],
-        base_dt=bench_dt,
-        debug=cfg['default']['debug']
-        **cfg['building_dbs']['mongo_cred']
-        **cfg['building_id']['building_ts_loc'])
+    bmark.process_building(building_id, **kw_args)

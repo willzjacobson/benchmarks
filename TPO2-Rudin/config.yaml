@@ -47,8 +47,8 @@ david:
         db_name: skynet
         collection_name: devicetimeseries
     results:
-        db_name: skynet
-        collection_name: analytics
+        db_name_out: skynet
+        collection_name_out: analytics
 
 
 
