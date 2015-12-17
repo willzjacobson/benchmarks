@@ -24,6 +24,7 @@ david:
         # electric -> benchmark
         collection_name_out: analytics
 
+
   building_dbs:
     mongo_cred:
         host: datascience.local
@@ -45,6 +46,9 @@ david:
     building_ts_loc:
         db_name: skynet
         collection_name: devicetimeseries
+    results:
+        db_name: skynet
+        collection_name: analytics
 
 
 

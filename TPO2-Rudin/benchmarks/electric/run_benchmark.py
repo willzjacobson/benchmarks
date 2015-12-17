@@ -10,7 +10,7 @@ import datetime
 import sys
 
 import config
-import electric_benchmark.benchmark as bmark
+import benchmarks.electric.benchmark as bmark
 
 cfg = config.david
 
