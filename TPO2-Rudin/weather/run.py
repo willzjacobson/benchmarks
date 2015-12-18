@@ -9,6 +9,9 @@ if __name__ == "__main__":
     # weather.mongo_cred._mongo_history_push(
     # whist, **(cfg["weather"]["mongo_cred"]["history"]))
 
+    # bobo = weather.mongo.get_history(**(cfg["mongo_cred"]),
+    #                              **(cfg["weather_history_loc"]))
+    # hello = "string"
     weather.mongo.history_update(
             cap=90000000000,
             parallel=False,

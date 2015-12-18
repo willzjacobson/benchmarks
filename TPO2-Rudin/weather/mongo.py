@@ -164,20 +164,24 @@ def history_update(city, state, wund_url, parallel, host, port, source,
 
 def get_history(host, port, source, db_name, username, password,
                 collection_name):
-    whist = pd.DataFrame()
     with pymongo.MongoClient(host=host, port=port) as conn:
         conn[db_name].authenticate(username, password, source=source)
         collection = conn[db_name][collection_name]
-        for data in collection.find():
-            reading = data['readings']
-            whist = whist.append(pd.DataFrame(reading))
+        for data in collection.aggregate([
+            {"$group": {"_id": None, "readings": {
+                "$push": "$readings"}}},
+        ], allowDiskUse=True):
+            readings = data['readings']
+            # readings is list of list of dicts. Extract just list of dicts
+            extract = [j for i in readings for j in i]
+        whist = pd.DataFrame(extract)
 
     if len(whist) == 0:
         return whist
     else:
         whist.set_index('time', inplace=True)
         whist = whist.sort_index()
-        return whist
+    return whist
 
 
 def get_latest_forecast(host, port, source, db_name, username, password,
