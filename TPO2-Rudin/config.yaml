@@ -7,7 +7,7 @@ david:
     buildings:
       - 345_Park
     # run mode
-    debug: False
+    debug: True
 
 
     345_Park:
@@ -27,7 +27,7 @@ david:
 
   building_dbs:
     mongo_cred:
-        host: datascience.local
+        host: 52.91.89.104
         port: 27017
         source: admin
         username: Analytics
@@ -47,8 +47,8 @@ david:
         db_name: skynet
         collection_name: devicetimeseries
     results:
-        db_name: skynet
-        collection_name: analytics
+        db_name_out: skynet
+        collection_name_out: analytics
 
 
 
