@@ -1,14 +1,12 @@
 # coding=utf-8
 
+
 __author__ = 'ashishgagneja'
 
 import datetime
 import itertools
 import sys
-
-import numpy
-
-import pandas as pd
+import re
 
 import pymongo
 
@@ -19,71 +17,7 @@ import occupancy.utils
 import weather.wet_bulb
 import weather.mongo
 import weather.wund
-
-
-def _filter_missing_weather_data(weather_df):
-    """
-    Filter/remove rows with missing data like -9999's
-
-    :param weather_df: pandas DataFrame
-    :return: pandas DataFrame
-    """
-
-    # TODO: it might be better to not ignore good data in records with
-    # some missing data
-    bad_data = weather_df.where(weather_df < -998).any(axis=1)
-    return weather_df.drop(bad_data[bad_data == True].index)
-
-
-def _get_weather(host, port, username, password, source_db, history_db,
-                 history_collection, forecast_db, forecast_collection, gran):
-    """ Load all available weather data, clean it and drop unneeded columns
-
-    :param h5file_name: string
-        path to HDF5 file containing weather data
-    :param history_name: string
-        group identifier for historical weather data within the HDF5 file
-    :param forecast_name: string
-        group identifier for weather forecast within the HDF5 file
-    :param gran: int
-        sampling frequency of input data and forecast data
-
-    :return: pandas DataFrame
-    """
-
-
-    # with pd.HDFStore(h5file_name) as store:
-    #     munged_history = weather.wund.history_munge(store[history_name],
-    #                                                 "%dmin" % gran)
-
-    # munged_forecast = weather.wund.forecast_munge(store[forecast_name],
-    #                                               "%dmin" % gran)
-    # cov, "%dmin" % gran)
-
-    whist = weather.mongo.get_history(host, port, source_db, history_db,
-                                      username, password, history_collection)
-    whist_munged = weather.wund.history_munge(whist, gran)
-    print(whist_munged)
-    wfcst = weather.mongo.get_latest_forecast(host, port, source_db,
-                                              forecast_db, username, password,
-                                              forecast_collection)
-    wfcst_munged = weather.wund.forecast_munge(wfcst, gran)
-    print(wfcst_munged)
-    sys.exit(0)
-    # drop unnecessary columns
-    # TODO: this should be done before munging for efficiency but couldn't make
-    # it work
-    munged_history = munged_history[['temp', 'dewpt', 'pressure']]
-    munged_forecast = munged_forecast[['temp', 'dewpt', 'pressure']]
-
-    # rename forecast columns to match the corresponding historical columns
-    munged_forecast = munged_forecast.rename(columns={'dewpoint': 'dewpt',
-                                                      'mslp': 'pressure'})
-
-    all_weather = pd.concat([munged_history, munged_forecast])
-    if not isinstance(all_weather, pd.DataFrame):
-        raise ValueError("Concatenation has not returned a DataFrame")
-    return _filter_missing_weather_data(all_weather)
+import benchmarks.utils
 
 
 def _get_data_availability_dates(obs_ts, gran):
@@ -104,7 +38,7 @@ def _get_data_availability_dates(obs_ts, gran):
     ts_list = list(map(datetime.datetime.date, obs_ts.index))
     counts = [[key, len(list(grp))] for key, grp in itertools.groupby(ts_list)]
 
-    thresh = 0.85 * 24 * 60 / gran
+    thresh = 0.85 * 24 * 60 / int(re.findall('\d+', gran)[0])
     return set([key for key, cnt in itertools.filterfalse(
         lambda x: x[1] < thresh, counts)])
 
@@ -382,47 +316,48 @@ def process_building(building_id, host, port, db_name, username, password,
     :return:
     """
 
-    # get weather
-    weather_df = _get_weather(host, port, username, password, source,
-                              weather_hist_db, weather_hist_collection,
-                              weather_fcst_db, weather_fcst_collection,
-                              granularity)
-    common.utils.debug_msg(debug, "weather: %s" % weather_df)
-
-    sys.exit(0)
-    wetbulb_ts = _get_wetbulb_ts(weather_df)
-    wetbulb_ts = ts_proc.munge.interp_tseries(wetbulb_ts, granularity)
+    # get wetbulb
+    wetbulb_ts = benchmarks.utils.get_weather(host, port, username, password,
+                                              source,
+                                              weather_hist_db,
+                                              weather_hist_collection,
+                                              weather_fcst_db,
+                                              weather_fcst_collection,
+                                              granularity)
     common.utils.debug_msg(debug, "wetbulb: %s" % wetbulb_ts)
+    print(type(wetbulb_ts))
 
-    sys.exit(0)
     # get occupancy data
     occ_ts = ts_proc.utils.get_occupancy_ts(host, port, db_name, username,
                                             password, source,
                                             collection_name, building_id)
     # interpolation converts occupancy data to float; convert back to int64
-    occ_ts = ts_proc.munge.interp_tseries(occ_ts, granularity).astype(
-        numpy.int64)
+    # occ_ts = ts_proc.munge.interp_tseries(occ_ts, granularity).astype(
+    #     numpy.int64)
+    # occ_ts = ts_proc.munge.munge(occ_ts, 100, 2, '1min', granularity).astype(
+    #     numpy.int64)
     common.utils.debug_msg(debug, "occupancy: %s" % occ_ts)
 
-    # query electric data
-    elec_ts = ts_proc.utils.get_electric_ts(host, port, db_name, username,
-                                            password, source,
-                                            collection_name,
-                                            building_id, meter_count)
-    elec_ts = ts_proc.munge.interp_tseries(elec_ts, granularity)
-    common.utils.debug_msg(debug, "electric: %s" % elec_ts)
+    # query steam data
+    steam_ts = ts_proc.utils.get_parsed_ts(host, port, db_name, username,
+                                           password, source, collection_name,
+                                           building_id, 'TotalInstant',
+                                           'SIF_Steam_Demand')
+    common.utils.debug_msg(debug, "steam: %s" % steam_ts)
 
     # find baseline
     bench_info = _find_benchmark(base_dt, occ_ts, wetbulb_ts,
-                                 elec_ts, granularity, debug)
+                                 steam_ts, granularity, debug)
     bench_dt, bench_auc, bench_incr_auc, bench_usage = bench_info
     common.utils.debug_msg(debug, "bench dt: %s, bench usage: %s, auc: %s" % (
         bench_dt, bench_usage, bench_auc))
 
+    sys.exit(0)
+
     # TODO: delete display code
     # plot
     # get actual, if available
-    # actual_ts = common.utils.get_dt_tseries(base_dt, elec_ts)
+    # actual_ts = common.utils.get_dt_tseries(base_dt, steam_ts)
     # actual_ts_nodate = common.utils.drop_series_ix_date(actual_ts)
     # print("actual: %s" % actual_ts)
     # disp_df = bench_usage.to_frame(name='benchmark')

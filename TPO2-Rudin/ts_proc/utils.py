@@ -17,7 +17,7 @@ import joblib
 import ts_proc.munge
 
 
-def _construct_dataframe(ts_lists, value_lists):
+def _construct_electric_dataframe(ts_lists, value_lists):
     """
     Construct a pandas DataFrame using the time series data on individual
     meter can compute the total instantaneous usage
@@ -102,7 +102,7 @@ def get_electric_ts(host, port, database, username, password, source_db,
     ts_lists, value_lists = zip(*results)
 
     # gran = "%dmin" % granularity
-    return _construct_dataframe(ts_lists, value_lists)
+    return _construct_electric_dataframe(ts_lists, value_lists)
 
 
 
@@ -186,7 +186,56 @@ def get_space_temp_ts(db, collection_name, bldg, floor, quad, granularity):
 
     gran = "%dmin" % granularity
     return pd.Series(data=value_list, index=pd.DatetimeIndex(ts_list)
-                     ).sort_index().resample(gran)
+                     ).sort_index()
+
+
+
+def get_parsed_ts(host, port, database, username, password, source_db,
+                  collection_name, bldg_id, device, system, val_type=None,
+                  drop_tz=False):
+    """Fetch all available timeseries data from database
+
+    :param host: string
+        database server name or IP-address
+    :param port: int
+        database port number
+    :param database: string
+        name of the database on server
+    :param username: string
+        database username
+    :param password: string
+        database password
+    :param source_db: string
+        source database for authentication
+    :param collection_name: string
+        collection name to use
+    :param bldg_id: string
+        building identifier
+    :param drop_tz: bool
+        whether to drop timezone information
+
+    :return: pandas DataFrame
+        occupancy time series data
+    """
+
+    ts_list, val_list = get_ts(host, port, database, username, password,
+                               source_db, collection_name, bldg_id, device,
+                               system, 'value')
+
+    # parse timestamp and observation to appropriate datatypes
+    ts_list, val_list = ts_proc.munge.convert_datatypes(ts_list, val_list,
+                                                        drop_tz=drop_tz,
+                                                        val_type=val_type)
+
+    # it is not possible to create a pandas Series object directly as
+    # placeholder entries may be there for missing data. these are usually
+    # in the form of time:0 associated with value:0
+    obs_df = pd.DataFrame({'tstamp': ts_list, 'obs': val_list})
+
+    # drop missing values, set timestamp as the new index and sort by index
+    return obs_df.dropna().set_index('tstamp',
+                                     verify_integrity=True).sort_index()['obs']
+
 
 
 def get_ts(host, port, database, username, password, source_db,
