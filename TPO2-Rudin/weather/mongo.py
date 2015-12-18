@@ -164,6 +164,7 @@ def history_update(city, state, wund_url, parallel, host, port, source,
 
 def get_history(host, port, source, db_name, username, password,
                 collection_name):
+    whist = pd.DataFrame()
     with pymongo.MongoClient(host=host, port=port) as conn:
         conn[db_name].authenticate(username, password, source=source)
         collection = conn[db_name][collection_name]
@@ -174,7 +175,7 @@ def get_history(host, port, source, db_name, username, password,
             readings = data['readings']
             # readings is list of list of dicts. Extract just list of dicts
             extract = [j for i in readings for j in i]
-        whist = pd.DataFrame(extract)
+            whist = pd.DataFrame(extract)
 
     if len(whist) == 0:
         return whist
