@@ -1,6 +1,4 @@
 # coding=utf-8
-import datetime
-import re
 
 import numpy as np
 import pandas as pd
@@ -8,9 +6,6 @@ import sklearn.grid_search
 import sklearn.preprocessing
 import sklearn.svm
 import sklearn.svm.classes
-
-import ts_proc.munge
-import weather.wund
 
 __author__ = 'David Karapetyan'
 
@@ -39,42 +34,6 @@ def _build(endog, weather_orig, cov, gran, params, param_grid, cv, threshold,
     normalization scaling parameters
     """
 
-    # get only dates from weather data that coincide with endog dates
-    weather_cond = weather.wund.history_munge(df=weather_orig,
-                                              gran=gran)[cov]
-
-    endog_filt = ts_proc.munge.filter_day_season(endog)
-    # only include dates (as integers)that are both in features and
-    # endog in training
-    # of model
-    dates = endog_filt.index.intersection(weather_cond.index)
-
-    endog_filt = endog_filt[dates]
-    features_filt = weather_cond.loc[dates]
-    # add column with datetime information, sans year or day (convert
-    # time since midnight to minutes)
-    features_filt = features_filt.reset_index()
-    #
-    # need granularity as integer, to convert seconds to minutes
-    gran_int = int(re.findall('\d+', gran)[0])
-
-    features_filt['index'] = features_filt['index'].apply(
-            lambda date:
-            datetime.timedelta(hours=date.hour,
-                               minutes=date.minute).total_seconds() / gran_int
-    )
-
-    scaler = sklearn.preprocessing.MinMaxScaler().fit(features_filt)
-    features_filt_scaled = scaler.transform(features_filt)
-
-    x = features_filt_scaled
-    y = np.array(endog_filt.astype(int))
-    # if 0 and 1s are classed as floats
-    # in time series, scikitlearn will complain.
-    # Similarly, must reshape to let scikitlearn know we are dealing
-    # with multiple samplings, with outputs in 1-space
-
-
     if discrete is True:
         svm = sklearn.svm.SVC(**params)
 
@@ -93,6 +52,7 @@ def _build(endog, weather_orig, cov, gran, params, param_grid, cv, threshold,
         new_params["gamma"] = param_grid_opt["gamma"]
         svm.set_params(**new_params)
         # fit the optimal build
+        # TODO inputs come from svm_dframe prep module
         fit = svm.fit(x, y)
     else:
         if type(svm) == sklearn.svm.classes.SVC:
@@ -114,7 +74,7 @@ def _build(endog, weather_orig, cov, gran, params, param_grid, cv, threshold,
         print("The best parameters are {} with a score of {}".format(
                 fit.best_params_, fit.best_score_))
 
-    return [fit, scaler]
+    return fit
 
 
 def _best_gamma_fit(endog, features, estimator, c, param_grid_gamma, cv, n_jobs,
@@ -256,32 +216,15 @@ def predict(endog, weather_history, weather_forecast, cov, gran,
     :return: Series
     """
     if discrete is True:
-        model, scaler = _build(endog=endog, weather_orig=weather_history,
-                               cov=cov, gran=gran, params=params,
-                               param_grid=param_grid, cv=cv,
-                               threshold=threshold,
-                               n_jobs=n_jobs,
-                               bin_search=bin_search,
-                               discrete=discrete,
-                               )
-
-        features = weather.wund.forecast_munge(weather_forecast, gran)[
-            cov]
-        prediction_index = features.index
-        features = features.reset_index()
-
-        # need granularity as integer, to convert seconds to minutes
-        gran_int = int(re.findall('\d+', gran)[0])
-
-        features['index'] = features['index'].apply(
-                lambda date:
-                datetime.timedelta(
-                        hours=date.hour,
-                        minutes=date.minute).total_seconds() / gran_int
-        )
-
-        features_scaled = scaler.transform(features)
-
+        model = _build(endog=endog, weather_orig=weather_history,
+                       cov=cov, gran=gran, params=params,
+                       param_grid=param_grid, cv=cv,
+                       threshold=threshold,
+                       n_jobs=n_jobs,
+                       bin_search=bin_search,
+                       discrete=discrete,
+                       )
+        # TODO predicted series inputs come from svm_dframe module
         predicted_series = pd.Series(
                 data=model.predict(features_scaled),
                 index=prediction_index)
