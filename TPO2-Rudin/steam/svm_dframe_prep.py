@@ -17,7 +17,7 @@ def get_covars(endog, mongo_cred, wund_cred, weather_history_loc,
     weather_orig = weather.mongo.get_history(**(mongo_cred),
                                              **(weather_history_loc))
     forecast_orig = weather.mongo.get_latest_forecast(**(mongo_cred),
-                                                      **(mongo_cred))
+                                                      **(weather_forecast_loc))
     weather_cond = weather.wund.history_munge(df=weather_orig,
                                               gran=gran)[cov]
     forecast_cond = weather.wund.forecast_munge(df=forecast_orig,
@@ -74,4 +74,5 @@ def get_covars(endog, mongo_cred, wund_cred, weather_history_loc,
 
     x_future = scaler.transform(future_features)
 
-    return [y_train, x_train, x_future, prediction_index, scaler]
+    return {y_train: y_train, x_train: x_train, x_future: x_future,
+            prediction_index: prediction_index, scaler: scaler}
