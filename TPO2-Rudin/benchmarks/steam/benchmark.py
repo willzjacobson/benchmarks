@@ -5,32 +5,20 @@ __author__ = 'ashishgagneja'
 import sys
 import re
 
-import pymongo
-
 import numpy
 
 import common.utils
 import ts_proc.utils
 import ts_proc.munge
 import occupancy.utils
-import weather.wet_bulb
-import weather.mongo
-import weather.wund
 import benchmarks.utils
+
 
 
 # TODO: delete this
 import stash.todel as todel
 
 
-def _get_wetbulb_ts(weather_df):
-    """
-    Compute wet bulb temperature time series from weather data
-
-    :param weather_df: pandas DataFrame
-    :return: pandas
-    """
-    return weather_df.apply(weather.wet_bulb.compute_bulb_helper, axis=1)
 
 
 def find_lowest_electric_usage(date_scores, electric_ts, n, debug):
@@ -82,69 +70,6 @@ def find_lowest_electric_usage(date_scores, electric_ts, n, debug):
                 min_usage = [dt, auc, incr_auc, day_elec_ts]
 
     return min_usage
-
-
-def _save_benchmark(bench_dt, base_dt, bench_ts, bench_auc, bench_incr_auc,
-                    host, port, database, username, password, source_db,
-                    collection_name, bldg_id, system, output_type):
-    """
-    Save benchmark time series to database
-
-    :param bench_dt: datetime.date
-        date from the past most similar to base date
-    :param base_dt: datetime.date
-        base date
-    :param bench_ts: pandas Series
-        observation time series from bench_dt
-    :param bench_incr_auc: list
-        list with incremental auc scores, is assumed to be of the same size as
-        bench_ts
-    ::param host: string
-        database server name or IP-address
-    :param port: int
-        database port number
-    :param database: string
-        name of the database on server
-    :param username: string
-        database username
-    :param password: string
-        database password
-    :param source_db: string
-        source database for authentication
-    :param collection_name: string
-        collection name to use
-    :param bldg_id: string
-        building identifier
-    :param system: string
-        system name for identifying time series
-    :param output_type: string
-        field name for identifying time series
-
-    :return:
-    """
-
-    with pymongo.MongoClient(host, port) as conn:
-        conn[database].authenticate(username, password, source=source_db)
-        collection = conn[database][collection_name]
-
-        # delete all existing matching documents
-        doc_id = {"_id.building": bldg_id,
-                  "_id.system": system,
-                  "_id.type": output_type,
-                  "_id.date": base_dt.isoformat()}
-        collection.remove(doc_id)
-
-        # insert
-        doc = {"_id": {"building": bldg_id,
-                       "system": system,
-                       "type": output_type,
-                       "date": base_dt.isoformat()
-                       },
-               "comment": bench_dt.isoformat(),
-               "readings": benchmarks.utils.gen_bmark_readings_list(
-                   bench_ts, bench_incr_auc),
-               'daily_total': bench_auc}
-        collection.insert(doc)
 
 
 def _find_benchmark(base_dt, occ_ts, wetbulb_ts, electric_ts, gran, debug):
@@ -308,7 +233,9 @@ def process_building(building_id, host, port, db_name, username, password,
 
     # save results
     if not debug:
-        _save_benchmark(bench_dt, base_dt, bench_usage, bench_auc,
-                        bench_incr_auc, host, port, db_name_out, username,
-                        password, source, collection_name_out, building_id,
-                        'Electric_Demand', 'benchmark')
+        benchmarks.utils.save_benchmark(bench_dt, base_dt, bench_usage,
+                                         bench_auc, bench_incr_auc, host, port,
+                                         db_name_out, username, password,
+                                         source, collection_name_out,
+                                         building_id, 'Stean_Usage',
+                                         'benchmark')

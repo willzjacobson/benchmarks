@@ -2,8 +2,7 @@
 __author__ = 'ashishgagneja'
 
 """
-driver for obtaining baseline steam demand based on occupancy and weather
-co-variates
+driver for finding benchmark steam usage
 """
 
 import datetime

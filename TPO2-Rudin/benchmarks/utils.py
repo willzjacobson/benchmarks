@@ -2,16 +2,19 @@
 
 """ Utility functions for benchmarks
 """
-import datetime
-import itertools
 
 __author__ = 'ashishgagneja'
 
+import datetime
+import itertools
+import sys
 
 import pandas as pd
+import pymongo
 
 import weather.mongo
 import weather.wund
+import common.utils
 
 
 def filter_missing_weather_data(weather_df):
@@ -144,3 +147,117 @@ def incremental_trapz(y, x):
         incr_auc.append(curr_total)
 
     return incr_auc, curr_total
+
+
+
+def find_lowest_auc_day(date_scores, obs_ts, n, debug):
+    """
+    Finds the day with the lowest total electric usage from among the n most
+    similar occupancy days
+
+    :param date_scores: tuple of tuples
+        Each tuple is datetime.date followed by its L2 norm score compared to
+        the occupancy forecast for the base date
+    :param obs_ts: pandas Series
+        Total electric demand time series
+    :param n: int
+        number of most similar occupancy days to consider
+    :param debug: bool
+        debug flag
+
+    :return: tuple with benchmark date and pandas Series object with usage data
+        from benchmark date
+    """
+
+    dates, sim_scores = zip(*date_scores)
+
+    if not len(dates):
+        return None
+
+    min_usage = [dates[0], sys.maxsize, None, None]
+    for i, dt in enumerate(dates):
+
+        if i >= n:
+            break
+
+        score = sim_scores[i]
+        if score:
+
+            # compute day electric usage by integrating the curve
+            # Assumption: Linear interpolation is a reasonable way to fill gaps
+            day_elec_ts = common.utils.drop_series_ix_date(
+                common.utils.get_dt_tseries(dt, obs_ts))
+
+            # compute total and incremental AUC
+            x = list(map(lambda y: y.hour + y.minute / 60.0 + y.second / 3600.0,
+                         day_elec_ts.index))
+            incr_auc, auc = incremental_trapz(day_elec_ts.data.tolist(), x)
+            common.utils.debug_msg(debug, "%s, %s" % (dt, auc))
+
+            if 0 < auc < min_usage[1]:
+                min_usage = [dt, auc, incr_auc, day_elec_ts]
+
+    return min_usage
+
+
+
+def save_benchmark(bench_dt, base_dt, bench_ts, bench_auc, bench_incr_auc,
+                    host, port, database, username, password, source_db,
+                    collection_name, bldg_id, system, output_type):
+    """
+    Save benchmark time series to database
+
+    :param bench_dt: datetime.date
+        date from the past most similar to base date
+    :param base_dt: datetime.date
+        base date
+    :param bench_ts: pandas Series
+        observation time series from bench_dt
+    :param bench_incr_auc: list
+        list with incremental auc scores, is assumed to be of the same size as
+        bench_ts
+    ::param host: string
+        database server name or IP-address
+    :param port: int
+        database port number
+    :param database: string
+        name of the database on server
+    :param username: string
+        database username
+    :param password: string
+        database password
+    :param source_db: string
+        source database for authentication
+    :param collection_name: string
+        collection name to use
+    :param bldg_id: string
+        building identifier
+    :param system: string
+        system name for identifying time series
+    :param output_type: string
+        field name for identifying time series
+
+    :return:
+    """
+
+    with pymongo.MongoClient(host, port) as conn:
+        conn[database].authenticate(username, password, source=source_db)
+        collection = conn[database][collection_name]
+
+        # delete all existing matching documents
+        doc_id = {"_id.building": bldg_id,
+                  "_id.system": system,
+                  "_id.type": output_type,
+                  "_id.date": base_dt.isoformat()}
+        collection.remove(doc_id)
+
+        # insert
+        doc = {"_id": {"building": bldg_id,
+                       "system": system,
+                       "type": output_type,
+                       "date": base_dt.isoformat()
+                       },
+               "comment": bench_dt.isoformat(),
+               "readings": gen_bmark_readings_list(bench_ts, bench_incr_auc),
+               'daily_total': bench_auc}
+        collection.insert(doc)
