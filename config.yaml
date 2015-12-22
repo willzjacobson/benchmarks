@@ -25,7 +25,7 @@ default:
 
 building_dbs:
   mongo_cred:
-      host: 52.91.89.104
+      host: datascience.local #52.91.89.104
       port: 27017
       source: admin
       username: Analytics
