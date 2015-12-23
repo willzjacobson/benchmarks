@@ -51,6 +51,9 @@ def _mongo_history_push(df, host, port, source, db_name, username, password,
         collection = conn[db_name][collection_name]
         df.index.name = 'time'
         # don't have to check if collection exists, due to upsert below
+        # this helper function is only pushing dates that don't exist in the db,
+        # due to checking in calling function. Hence, using upsert should not
+        # cost additional computation power vs just an insert
 
         bulk = collection.initialize_unordered_bulk_op()
         for date in pd.Series(df.index.date).unique():
