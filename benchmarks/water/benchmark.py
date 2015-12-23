@@ -100,14 +100,10 @@ def process_building(building_id, host, port, db_name, username, password,
         name of the output db_name on server
     :param collection_name_out: string
         name of output collection in the db_name
-    :param weather_hist_db: string
-        database name for historical weather
-    :param weather_hist_collection: string
-        collection name for historical weather
-    :param weather_fcst_db: string
-        database name for weather forecast
-    :param weather_fcst_collection: string
-        collection name for weather forecast
+    :param weather_hist_db:
+    :param weather_hist_collection:
+    :param weather_fcst_db:
+    :param weather_fcst_collection:
     :param granularity: string
         expected frequency of observations and forecast
     :param base_dt: datetime.date

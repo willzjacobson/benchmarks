@@ -1,21 +1,29 @@
 # coding=utf-8
-import ts_proc.munge
 
 __author__ = 'ashishgagneja'
 
 import datetime
 import itertools
 import sys
+import re
 
 import numpy
 import pandas as pd
+
 import pymongo
 
 import common.utils
+import ts_proc.munge
 import ts_proc.utils
 import occupancy.utils
 import weather.wet_bulb
 import weather.wund
+import benchmarks.utils
+
+
+
+# TODO: delete
+import stash.todel as todel
 
 
 def _filter_missing_weather_data(weather_df):
@@ -174,7 +182,8 @@ def find_lowest_electric_usage(date_scores, electric_ts, n, debug):
             # compute total and incremental AUC
             x = list(map(lambda y: y.hour + y.minute / 60.0 + y.second / 3600.0,
                          day_elec_ts.index))
-            incr_auc, auc = _incremental_trapz(day_elec_ts.data.tolist(), x)
+            incr_auc, auc = benchmarks.utils.incremental_trapz(
+                day_elec_ts.data.tolist(), x)
             # auc = numpy.trapz(day_elec_ts.data, x=list(map(lambda x:
             # x.hour * 3600
             # + x.minute * 60
@@ -293,9 +302,11 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, electric_ts, gran, debug):
     """
 
     # get data availability
-    elec_avlblty = _get_data_availability_dates(electric_ts, gran)
-    occ_avlblty = _get_data_availability_dates(occ_ts, gran)
-    wetbulb_avlblty = _get_data_availability_dates(wetbulb_ts, gran)
+    elec_avlblty = benchmarks.utils.get_data_availability_dates(electric_ts,
+                                                                gran)
+    occ_avlblty = benchmarks.utils.get_data_availability_dates(occ_ts, gran)
+    wetbulb_avlblty = benchmarks.utils.get_data_availability_dates(wetbulb_ts,
+                                                                   gran)
     data_avlblty = occ_avlblty.intersection(elec_avlblty, wetbulb_avlblty)
 
     # check if all required data is available for base dt
@@ -320,43 +331,48 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, electric_ts, gran, debug):
                                                       occ_ts)
     common.utils.debug_msg(debug, occ_scores)
     # find the date with the lowest electric usage
-    return find_lowest_electric_usage(occ_scores, electric_ts, 5, debug)
+    return benchmarks.utils.find_lowest_auc_day(occ_scores, electric_ts, 5,
+                                                debug)
 
 
-def process_building(building_id, host, port, database, username, password,
-                     source_db, collection_name, database_out,
-                     collection_name_out, meter_count, h5file_name,
-                     history_name, forecast_name, granularity, base_dt, debug):
+
+def process_building(building_id, host, port, db_name, username, password,
+                     source, collection_name, db_name_out,
+                     collection_name_out, meter_count, weather_hist_db,
+                     weather_hist_collection, weather_fcst_db,
+                     weather_fcst_collection, granularity, base_dt, debug):
     """ Find baseline electric usage for building_id
 
     :param building_id: string
         building_id identifier
     :param host: string
-        database server name or IP-address
+        db_name server name or IP-address
     :param port: int
-        database port number
-    :param database: string
-        name of the database on server
+        db_name port number
+    :param db_name: string
+        name of the db_name on server
     :param username: string
-        database username
+        db_name username
     :param password: string
-        database password
-    :param source_db: string
-        source database for authentication
+        db_name password
+    :param source: string
+        source db_name for authentication
     :param collection_name: string
-        name of collection in the database
-    :param database_out: string
-        name of the output database on server
+        name of collection in the db_name
+    :param db_name_out: string
+        name of the output db_name on server
     :param collection_name_out: string
-        name of output collection in the database
+        name of output collection in the db_name
     :param meter_count: int
         number of electric meters
-    :param h5file_name: string
-        path to HDF5 file containing weather data
-    :param history_name: string
-        group identifier for historical weather data within the HDF5 file
-    :param forecast_name: string
-        group identifier for weather forecast within the HDF5 file
+    :param weather_hist_db: string
+        database name for historical weather
+    :param weather_hist_collection: string
+        collection name for historical weather
+    :param weather_fcst_db: string
+        database name for weather forecast
+    :param weather_fcst_collection: string
+        collection name for weather forecast
     :param granularity: int
         expected frequency of observations and forecast in minutes
     :param base_dt: datetime.date
@@ -368,34 +384,42 @@ def process_building(building_id, host, port, database, username, password,
     """
 
     # get weather
-    weather_df = _get_weather(h5file_name, history_name, forecast_name,
-                              granularity)
-    common.utils.debug_msg(debug, "weather: %s" % weather_df)
+    # weather_df = _get_weather(h5file_name, history_name, forecast_name,
+    #                           granularity)
+    # common.utils.debug_msg(debug, "weather: %s" % weather_df)
 
-    wetbulb_ts = _get_wetbulb_ts(weather_df)
-    wetbulb_ts = ts_proc.munge.interp_tseries(wetbulb_ts, granularity)
+    # wetbulb_ts = _get_wetbulb_ts(weather_df)
+    # wetbulb_ts = ts_proc.munge.interp_tseries(wetbulb_ts, granularity)
+    # common.utils.debug_msg(debug, "wetbulb: %s" % wetbulb_ts)
+    gran_int = int(re.findall('\d+', granularity)[0])
+    wetbulb_ts = benchmarks.utils.get_weather(host, port, username, password,
+                                              source,
+                                              weather_hist_db,
+                                              weather_hist_collection,
+                                              weather_fcst_db,
+                                              weather_fcst_collection,
+                                              granularity)
     common.utils.debug_msg(debug, "wetbulb: %s" % wetbulb_ts)
 
     # get occupancy data
-    occ_ts = ts_proc.utils.get_occupancy_ts(host, port, database, username,
-                                            password, source_db,
+    occ_ts = ts_proc.utils.get_occupancy_ts(host, port, db_name, username,
+                                            password, source,
                                             collection_name, building_id)
     # interpolation converts occupancy data to float; convert back to int64
-    occ_ts = ts_proc.munge.interp_tseries(occ_ts, granularity).astype(
-            numpy.int64)
+    occ_ts = todel.interp_tseries(occ_ts, gran_int).astype(numpy.int64)
     common.utils.debug_msg(debug, "occupancy: %s" % occ_ts)
 
     # query electric data
-    elec_ts = ts_proc.utils.get_electric_ts(host, port, database, username,
-                                            password, source_db,
+    elec_ts = ts_proc.utils.get_electric_ts(host, port, db_name, username,
+                                            password, source,
                                             collection_name,
                                             building_id, meter_count)
-    elec_ts = ts_proc.munge.interp_tseries(elec_ts, granularity)
+    elec_ts = todel.interp_tseries(elec_ts, gran_int)
     common.utils.debug_msg(debug, "electric: %s" % elec_ts)
 
     # find baseline
     bench_info = _find_benchmark(base_dt, occ_ts, wetbulb_ts,
-                                 elec_ts, granularity, debug)
+                                 elec_ts, gran_int, debug)
     bench_dt, bench_auc, bench_incr_auc, bench_usage = bench_info
     common.utils.debug_msg(debug, "bench dt: %s, bench usage: %s, auc: %s" % (
         bench_dt, bench_usage, bench_auc))
@@ -419,7 +443,8 @@ def process_building(building_id, host, port, database, username, password,
 
     # save results
     if not debug:
-        _save_benchmark(bench_dt, base_dt, bench_usage, bench_auc,
-                        bench_incr_auc, host, port, database_out, username,
-                        password, source_db, collection_name_out, building_id,
-                        'Electric_Demand', 'benchmark')
+        benchmarks.utils.save_benchmark(bench_dt, base_dt, bench_usage,
+                                        bench_auc, bench_incr_auc, host, port,
+                                        db_name_out, username, password, source,
+                                        collection_name_out, building_id,
+                                        'Electric_Demand', 'benchmark')
