@@ -5,8 +5,6 @@ __author__ = 'ashishgagneja'
 import sys
 import re
 
-import numpy
-
 import common.utils
 import ts_proc.utils
 import ts_proc.munge
@@ -14,65 +12,7 @@ import occupancy.utils
 import benchmarks.utils
 
 
-
-# TODO: delete this
-import stash.todel as todel
-
-
-
-
-def find_lowest_electric_usage(date_scores, electric_ts, n, debug):
-    """
-    Finds the day with the lowest total electric usage from among the n most
-    similar occupancy days
-
-    :param date_scores: tuple of tuples
-        Each tuple is datetime.date followed by its L2 norm score compared to
-        the occupancy forecast for the base date
-    :param electric_ts: pandas Series
-        Total electric demand time series
-    :param n: int
-        number of most similar occupancy days to consider
-    :param debug: bool
-        debug flag
-
-    :return: tuple with benchmark date and pandas Series object with usage data
-        from benchmark date
-    """
-
-    dates, sim_scores = zip(*date_scores)
-
-    if not len(dates):
-        return None
-
-    min_usage = [dates[0], sys.maxsize, None, None]
-    for i, dt in enumerate(dates):
-
-        if i >= n:
-            break
-
-        score = sim_scores[i]
-        if score:
-
-            # compute day electric usage by integrating the curve
-            # Assumption: Linear interpolation is a reasonable way to fill gaps
-            day_elec_ts = common.utils.drop_series_ix_date(
-                common.utils.get_dt_tseries(dt, electric_ts))
-
-            # compute total and incremental AUC
-            x = list(map(lambda y: y.hour + y.minute / 60.0 + y.second / 3600.0,
-                         day_elec_ts.index))
-            incr_auc, auc = benchmarks.utils.incremental_trapz(
-                day_elec_ts.data.tolist(), x)
-            common.utils.debug_msg(debug, "%s, %s" % (dt, auc))
-
-            if 0 < auc < min_usage[1]:
-                min_usage = [dt, auc, incr_auc, day_elec_ts]
-
-    return min_usage
-
-
-def _find_benchmark(base_dt, occ_ts, wetbulb_ts, electric_ts, gran, debug):
+def _find_benchmark(base_dt, occ_ts, wetbulb_ts, obs_ts, gran, debug):
     """
         Find benchmark electric usage for the date base_dt. Benchmark
         electric usage is defined as the electric usage profile from a similar
@@ -86,7 +26,7 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, electric_ts, gran, debug):
         occupancy time series
     :param wetbulb_ts: pandas Series
         wet bulb time series
-    :param electric_ts: pandas Series
+    :param obs_ts: pandas Series
         total electric usage time series
     :param gran: int
         expected frequency of observations and forecast in minutes
@@ -98,7 +38,7 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, electric_ts, gran, debug):
     """
 
     # get data availability
-    elec_avlblty = benchmarks.utils.get_data_availability_dates(electric_ts,
+    elec_avlblty = benchmarks.utils.get_data_availability_dates(obs_ts,
                                                                  gran)
     occ_avlblty = benchmarks.utils.get_data_availability_dates(occ_ts, gran)
     wetbulb_avlblty = benchmarks.utils.get_data_availability_dates(wetbulb_ts,
@@ -127,7 +67,7 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, electric_ts, gran, debug):
                                                       occ_ts)
     common.utils.debug_msg(debug, occ_scores)
     # find the date with the lowest electric usage
-    return find_lowest_electric_usage(occ_scores, electric_ts, 5, debug)
+    return benchmarks.utils.find_lowest_obs_usage(occ_scores, obs_ts, 5, debug)
 
 
 
@@ -183,7 +123,7 @@ def process_building(building_id, host, port, db_name, username, password,
                                               weather_fcst_db,
                                               weather_fcst_collection,
                                               granularity)
-    wetbulb_ts = todel.interp_tseries(wetbulb_ts, gran_int)
+    # wetbulb_ts = todel.interp_tseries(wetbulb_ts, gran_int)
     common.utils.debug_msg(debug, "wetbulb: %s" % wetbulb_ts)
     print(type(wetbulb_ts))
 
@@ -192,7 +132,7 @@ def process_building(building_id, host, port, db_name, username, password,
                                             password, source,
                                             collection_name, building_id)
     # interpolation converts occupancy data to float; convert back to int64
-    occ_ts = todel.interp_tseries(occ_ts, gran_int).astype(numpy.int64)
+    # occ_ts = todel.interp_tseries(occ_ts, gran_int).astype(numpy.int64)
     # occ_ts = ts_proc.munge.munge(occ_ts, 100, 2, '1min', granularity).astype(
     #     numpy.int64)
     common.utils.debug_msg(debug, "occupancy: %s" % occ_ts)
@@ -202,7 +142,7 @@ def process_building(building_id, host, port, db_name, username, password,
                                            password, source, collection_name,
                                            building_id, 'TotalInstant',
                                            'SIF_Steam_Demand')
-    steam_ts = todel.interp_tseries(steam_ts, gran_int)
+    # steam_ts = todel.interp_tseries(steam_ts, gran_int)
     common.utils.debug_msg(debug, "steam: %s" % steam_ts)
 
     # find baseline
