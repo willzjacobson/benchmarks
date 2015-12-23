@@ -14,7 +14,7 @@ if __name__ == "__main__":
     # hello = "string"
     weather.mongo.history_update(
             cap=90000000000,
-            parallel=False,
+            parallel=True,
             **(cfg["wund_cred"]),
             **(cfg["mongo_cred"]),
             **(cfg["weather_history_loc"]))
