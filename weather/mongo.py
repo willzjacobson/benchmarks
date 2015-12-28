@@ -56,7 +56,7 @@ def _mongo_history_push(df, host, port, source, db_name, username, password,
         # cost additional computation power vs just an insert
         bulk = collection.initialize_unordered_bulk_op()
         for date in pd.Series(df.index.date).unique():
-            readings = df.ix[
+            readings = df.loc[
                        date:date + relativedelta(days=1)].reset_index().to_dict(
                     "records")
             daytime = pd.Timestamp(date)
