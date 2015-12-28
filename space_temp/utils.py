@@ -13,7 +13,6 @@ import arima.model
 from ts_proc.utils import get_space_temp_ts
 
 
-
 def process_building(building_id, host, port, username, password, db_name,
                      collection_name, floor_quadrants, h5file_name,
                      history_name, forecast_name, order, granularity):
@@ -70,6 +69,5 @@ def process_building(building_id, host, port, username, password, db_name,
                                        forecast_name, order,
                                        granularity, str(pred_dt)))
 
-    # TODO: save results
     conn.close()
     return predictions
