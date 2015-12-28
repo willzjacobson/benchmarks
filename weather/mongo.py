@@ -54,10 +54,10 @@ def _mongo_history_push(df, host, port, source, db_name, username, password,
         # this helper function is only pushing dates that don't exist in the db,
         # due to checking in calling function. Hence, using upsert should not
         # cost additional computation power vs just an insert
-
         bulk = collection.initialize_unordered_bulk_op()
         for date in pd.Series(df.index.date).unique():
-            readings = df[df.index.date == date].reset_index().to_dict(
+            readings = df.ix[
+                       date:date + relativedelta(days=1)].reset_index().to_dict(
                     "records")
             daytime = pd.Timestamp(date)
             bulk.find({"date": daytime}).upsert().update(
