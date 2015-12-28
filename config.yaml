@@ -25,7 +25,7 @@ default:
 
 building_dbs:
   mongo_cred:
-      host: 52.90.177.221 #datascience.local #52.91.89.104
+      host: 52.21.246.131 #R3.Xlarge
       port: 27017
       source: admin
       username: Analytics
@@ -136,7 +136,4 @@ arima:
     - 1
     - 1
     - 0
-
-parallel:
-processors: -1
 
