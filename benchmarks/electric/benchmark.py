@@ -13,7 +13,7 @@ import pymongo
 
 import common.utils
 import ts_proc.utils
-import occupancy.utils
+import benchmarks.occupancy.utils
 import weather.wet_bulb
 import weather.wund
 
@@ -316,8 +316,8 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, electric_ts, gran, debug):
     common.utils.debug_msg(debug, "sim days: %s" % str(sim_wetbulb_days))
 
     # compute occupancy similarity score for the k most similar weather days
-    occ_scores = occupancy.utils.score_occ_similarity(base_dt, sim_wetbulb_days,
-                                                      occ_ts)
+    occ_scores = benchmarks.occupancy.utils.score_occ_similarity(base_dt, sim_wetbulb_days,
+                                                                 occ_ts)
     common.utils.debug_msg(debug, occ_scores)
     # find the date with the lowest electric usage
     return find_lowest_electric_usage(occ_scores, electric_ts, 5, debug)
