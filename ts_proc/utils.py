@@ -15,6 +15,9 @@ import pandas as pd
 import joblib
 # sns.set()
 import ts_proc.munge
+import dateutil.parser
+import datetime
+import numpy
 
 
 def _construct_electric_dataframe(ts_lists, value_lists):
@@ -278,6 +281,122 @@ def get_ts(host, port, database, username, password, source_db, collection_name,
 
             ts_list_t, val_list_t = zip(*zipped)
 
+            ts_list.extend(ts_list_t)
+            value_list.extend(val_list_t)
+
+    return ts_list, value_list
+
+
+
+def get_parsed_ts_new_schema(host, port, database, username, password,
+                             source_db, collection_name, bldg_id, device,
+                             system, val_type=None, drop_tz=False):
+    """Fetch all available timeseries data from database
+
+    :param host: string
+        database server name or IP-address
+    :param port: int
+        database port number
+    :param database: string
+        name of the database on server
+    :param username: string
+        database username
+    :param password: string
+        database password
+    :param source_db: string
+        source database for authentication
+    :param collection_name: string
+        collection name to use
+    :param bldg_id: string
+        building identifier
+    :param drop_tz: bool
+        whether to drop timezone information
+
+    :return: pandas DataFrame
+        occupancy time series data
+    """
+
+    ts_list, val_list = get_ts_new_schema(host, port, database, username,
+                                          password, source_db, collection_name,
+                                          bldg_id, device, system)
+
+    # parse timestamp and observation to appropriate datatypes
+    ts_list, val_list = ts_proc.munge.convert_dtypes_new_schema(ts_list,
+                                val_list, drop_tz=drop_tz, val_type=val_type)
+
+    # it is not possible to create a pandas Series object directly as
+    # placeholder entries may be there for missing data. these are usually
+    # in the form of time:0 associated with value:0
+    obs_df = pd.DataFrame({'tstamp': ts_list, 'obs': val_list})
+
+    # drop missing values, set timestamp as the new index and sort by index
+    # some duplicates seen in SIF steam data
+    return obs_df.dropna().set_index('tstamp').sort_index()['obs']
+
+
+
+def get_ts_new_schema(host, port, database, username, password, source_db,
+                      collection_name, bldg_id, device, system):
+    """
+    Get all observation data with the given building, device and system
+    combination from the database
+
+    :param host: string
+        database server name or IP-address
+    :param port: int
+        database port number
+    :param database: string
+        name of the database on server
+    :param username: string
+        database username
+    :param password: string
+        database password
+    :param source_db: string
+        source database for authentication
+    :param collection_name: string
+        database collection name
+    :param bldg_id: string
+        building identifier
+    :param device: string
+        device name for identifying time series
+    :param system: string
+        system name for identifying time series
+    # :param field: string
+    #     field name for identifying time series
+
+    :return: tuple with a list of time stamps followed by a list of values
+    """
+
+    print("%s:%s:%s:%s" % (host, port,collection_name, database))
+    with pymongo.MongoClient(host, port) as conn:
+
+        conn[database].authenticate(username, password, source=source_db)
+        collection = conn[database][collection_name]
+
+        ts_list, value_list, daily_dict = [], [], {}
+        for data in collection.find({"building": bldg_id,
+                                     "device": device,
+                                     "system": system}):
+
+            readings = data['readings']
+            dt = dateutil.parser.parse(data['date']).date()
+
+            # zipped = map(lambda x: (x['time'], x['value']) if 'value' in x, readings)
+            # some occupancy data has reading entries with just the timestamp
+            # with missing value
+            zipped = [(x['time'], x['value']) for x in readings if 'value' in x]
+
+            ts_list_t, val_list_t = zip(*zipped)
+
+            # in the new schema, the readings do not have a date, only a time
+            # this can make parsing incoming data more efficient since the
+            # date part needs to be parsed only once for each day
+            # print(ts_list_t)
+            ts_list_t = map(lambda x: datetime.datetime.combine(dt,
+                                dateutil.parser.parse(x).time())
+                                if type(x) is not int else numpy.nan,
+                            ts_list_t)
+            # sys.exit(0)
             ts_list.extend(ts_list_t)
             value_list.extend(val_list_t)
 

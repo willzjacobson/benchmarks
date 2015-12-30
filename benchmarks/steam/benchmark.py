@@ -68,7 +68,7 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, obs_ts, gran, debug):
                                                                  occ_ts)
     common.utils.debug_msg(debug, occ_scores)
     # find the date with the lowest electric usage
-    return benchmarks.utils.find_lowest_obs_usage(occ_scores, obs_ts, 5, debug)
+    return benchmarks.utils.find_lowest_auc_day(occ_scores, obs_ts, 5, debug)
 
 
 
@@ -130,12 +130,17 @@ def process_building(building_id, host, port, db_name, username, password,
                                               granularity)
     # wetbulb_ts = todel.interp_tseries(wetbulb_ts, gran_int)
     common.utils.debug_msg(debug, "wetbulb: %s" % wetbulb_ts)
-    print(type(wetbulb_ts))
 
     # get occupancy data
-    occ_ts = ts_proc.utils.get_occupancy_ts(host, port, db_name, username,
-                                            password, source,
-                                            collection_name, building_id)
+    # occ_ts = ts_proc.utils.get_occupancy_ts(host, port, db_name, username,
+    #                                         password, source,
+    #                                         collection_name, building_id)
+    occ_ts = ts_proc.utils.get_parsed_ts_new_schema(host, port, db_name,
+                                                    username, password,
+                                                    source, collection_name,
+                                                    building_id,
+                                                    'Occupancy',
+                                                    'Occupancy')
     # interpolation converts occupancy data to float; convert back to int64
     # occ_ts = todel.interp_tseries(occ_ts, gran_int).astype(numpy.int64)
     # occ_ts = ts_proc.munge.munge(occ_ts, 100, 2, '1min', granularity).astype(
@@ -143,10 +148,14 @@ def process_building(building_id, host, port, db_name, username, password,
     common.utils.debug_msg(debug, "occupancy: %s" % occ_ts)
 
     # query steam data
-    steam_ts = ts_proc.utils.get_parsed_ts(host, port, db_name, username,
-                                           password, source, collection_name,
-                                           building_id, 'TotalInstant',
-                                           'SIF_Steam_Demand')
+    steam_ts = ts_proc.utils.get_parsed_ts_new_schema(host, port, db_name,
+                                                      username, password,
+                                                      source, collection_name,
+                                                      building_id,
+                                                      'TotalInstant',
+                                                      'SIF_Steam_Demand',
+                                                      val_type=float)
+    print(steam_ts)
     # steam_ts = todel.interp_tseries(steam_ts, gran_int)
     common.utils.debug_msg(debug, "steam: %s" % steam_ts)
 

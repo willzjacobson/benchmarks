@@ -7,7 +7,6 @@ import itertools
 import sys
 import re
 
-import numpy
 import pandas as pd
 
 import pymongo
@@ -19,11 +18,6 @@ import benchmarks.occupancy.utils
 import weather.wet_bulb
 import weather.wund
 import benchmarks.utils
-
-
-
-# TODO: delete
-import stash.todel as todel
 
 
 def _filter_missing_weather_data(weather_df):
@@ -101,44 +95,6 @@ def _get_data_availability_dates(obs_ts, gran):
     return set([key for key, cnt in itertools.filterfalse(
             lambda x: x[1] < thresh, counts)])
 
-
-def _get_wetbulb_ts(weather_df):
-    """
-    Compute wet bulb temperature time series from weather data
-
-    :param weather_df: pandas DataFrame
-    :return: pandas
-    """
-    return weather_df.apply(weather.wet_bulb.compute_bulb_helper, axis=1)
-
-
-def _incremental_trapz(y, x):
-    """
-    compute area under the curve incrementally
-
-    :param y: list
-        list of y co-ordinates
-    :param x: list
-        list of  co-ordinates
-
-    :return: tuple
-        (<list of incremental AUCs>, <total auc>)
-        the length of the list of incremental AUCs matches that of y
-    """
-
-    if len(y) != len(x):
-        raise Exception('length of x and y must match')
-
-    incr_auc, curr_total = [], 0.0
-
-    for i, y_i in enumerate(y):
-
-        if i > 0:
-            curr_total += (y_i + y[i - 1]) * (x[i] - x[i - 1]) / 2.0
-
-        incr_auc.append(curr_total)
-
-    return incr_auc, curr_total
 
 
 def find_lowest_electric_usage(date_scores, electric_ts, n, debug):
@@ -406,7 +362,7 @@ def process_building(building_id, host, port, db_name, username, password,
                                             password, source,
                                             collection_name, building_id)
     # interpolation converts occupancy data to float; convert back to int64
-    occ_ts = todel.interp_tseries(occ_ts, gran_int).astype(numpy.int64)
+    # occ_ts = todel.interp_tseries(occ_ts, gran_int).astype(numpy.int64)
     common.utils.debug_msg(debug, "occupancy: %s" % occ_ts)
 
     # query electric data
@@ -414,7 +370,7 @@ def process_building(building_id, host, port, db_name, username, password,
                                             password, source,
                                             collection_name,
                                             building_id, meter_count)
-    elec_ts = todel.interp_tseries(elec_ts, gran_int)
+    # elec_ts = todel.interp_tseries(elec_ts, gran_int)
     common.utils.debug_msg(debug, "electric: %s" % elec_ts)
 
     # find baseline
