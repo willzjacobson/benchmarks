@@ -4,7 +4,6 @@ import pymongo
 from dateutil.relativedelta import relativedelta
 from joblib import Parallel, delayed
 
-import config
 import weather.wund
 
 
@@ -56,7 +55,7 @@ def _mongo_history_push(df, host, port, source, db_name, username, password,
         # cost additional computation power vs just an insert
         bulk = collection.initialize_unordered_bulk_op()
         for date in pd.Series(df.index.date).unique():
-            readings = df.ix[
+            readings = df.loc[
                        date:date + relativedelta(days=1)].reset_index().to_dict(
                     "records")
             daytime = pd.Timestamp(date)
@@ -132,7 +131,7 @@ def history_update(city, state, wund_url, parallel, host, port, source,
     wdata_days_comp = weather_data[:start]
 
     if parallel:
-        frames = Parallel(n_jobs=config.david["parallel"]["processors"])(
+        frames = Parallel(n_jobs=-1)(
                 delayed(weather.wund.history_pull)(city=city, state=state,
                                                    wund_url=wund_url,
                                                    date=date)

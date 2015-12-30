@@ -25,7 +25,7 @@ default:
 
 building_dbs:
   mongo_cred:
-      host: 54.173.216.14 #52.91.89.104 #datascience.local
+      host: 52.21.246.131 #R3.Xlarge
       port: 27017
       source: admin
       username: Analytics
@@ -43,7 +43,7 @@ building_dbs:
       collection_name: history
   building_ts_loc:
       db_name: skynet
-      collection_name: timeseries
+      collection_name: devicetimeseries
   results:
       db_name_out: skynet
       collection_name_out: analytics
@@ -136,7 +136,4 @@ arima:
     - 1
     - 1
     - 0
-
-parallel:
-processors: -1
 

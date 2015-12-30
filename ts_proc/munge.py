@@ -1,7 +1,6 @@
 # coding=utf-8
 import datetime
 
-import dateutil.parser
 import numpy
 
 __author__ = 'David Karapetyan'
@@ -58,26 +57,7 @@ def munge(df, nary_thresh, gap_threshold, accuracy, gran):
     return df_thresh_gran
 
 
-
-def _parse_tstamp(tstamp, drop_tz):
-    """
-    parse timestamp from database
-    sample input "2015-09-21T19:45:00-04:00"
-
-    :param tstamp: string
-        timestamp as string
-    :param drop_tz: bool
-        flag to indicate whether to ignore/drop timezone information
-
-    :return: datetime.datetime
-    """
-    if type(tstamp) == int:
-        return numpy.nan
-    return dateutil.parser.parse(tstamp, ignoretz=drop_tz)
-    # return datetime.datetime.strptime(tstamp, "%Y-%m-%dT%H:%M:%S%z")
-
-
-def convert_datatypes(ts_list, value_list, drop_tz=True, val_type=float):
+def convert_datatypes(ts_list, value_list, val_type=float):
     """
     Parse timestamp and observation data read from database. Timestamps
     are converted to datetime.datetime ignoring timezone information.
@@ -87,8 +67,6 @@ def convert_datatypes(ts_list, value_list, drop_tz=True, val_type=float):
         list of timestamps
     :param value_list: list
         list of observations
-    :param drop_tz: bool
-        flag to indicate whether to ignore timezone information
     :param val_type: function
         function to use to cast observation to the required type
         If None, no transformation is done
@@ -99,13 +77,7 @@ def convert_datatypes(ts_list, value_list, drop_tz=True, val_type=float):
 
     """
 
-    # parse timestamps to datetime and drop timezone
-    # placeholder readings could have '0' as time, replace with NaN
-    # ts_list = joblib.Parallel(n_jobs=2)(joblib.delayed(
-    #     _parse_tstamp)(x, drop_tz) for x in ts_list)
-
-    ts_list = list(map(lambda x: dateutil.parser.parse(
-            x, ignoretz=drop_tz) if type(x) is not int else numpy.nan, ts_list))
+    ts_list = list(map(lambda x: numpy.nan if type(x) is int else x, ts_list))
 
     # convert str to val_type
     if val_type:

@@ -41,13 +41,12 @@ def _construct_electric_dataframe(ts_lists, value_lists):
     for i, ts_list in enumerate(ts_lists):
         # convert column data and index to appropriate type
         ts_idx_t, value_list_t = ts_proc.munge.convert_datatypes(ts_list,
-                                                                value_lists[i])
+                                                                 value_lists[i])
         # create new column
         master_df = master_df.join(pd.DataFrame(data=value_list_t,
                                                 index=ts_idx_t,
-                                                columns=[str(i+1)]).dropna(),
+                                                columns=[str(i + 1)]).dropna(),
                                    how='outer')
-
 
     return master_df.sum(axis=1).sort_index()
 
@@ -85,25 +84,26 @@ def get_electric_ts(host, port, database, username, password, source_db,
     # ts_list, value_list = _get_meter_data(
     # equipment_id, bldg_id, collection)
     # ts_list, value_list = common.utils.get_ts(host, database,
-        #                                            collection_name, bldg_id,
-        #                                            "Elec-M%d" % equip_id,
-        #                                            'SIF_Electric_Demand',
-        #                                            'value')
+    #                                            collection_name, bldg_id,
+    #                                            "Elec-M%d" % equip_id,
+    #                                            'SIF_Electric_Demand',
+    #                                            'value')
 
-        # ts_lists.append(ts_list)
-        # value_lists.append(value_list)
+    # ts_lists.append(ts_list)
+    # value_lists.append(value_list)
 
 
     results = joblib.Parallel(n_jobs=-1)(joblib.delayed(get_ts)(
-        host, port, database, username, password, source_db, collection_name,
-        bldg_id, "Elec-M%d" % equip_id, 'SIF_Electric_Demand', 'value')
-            for equip_id in range(1, meter_count + 1))
+            host, port, database, username, password, source_db,
+            collection_name,
+            bldg_id, "Elec-M%d" % equip_id, 'SIF_Electric_Demand', 'value')
+                                         for equip_id in
+                                         range(1, meter_count + 1))
 
     ts_lists, value_lists = zip(*results)
 
     # gran = "%dmin" % granularity
     return _construct_electric_dataframe(ts_lists, value_lists)
-
 
 
 def get_occupancy_ts(host, port, database, username, password, source_db,
@@ -139,7 +139,8 @@ def get_occupancy_ts(host, port, database, username, password, source_db,
 
     # parse timestamp and observation to appropriate datatypes
     ts_list, val_list = ts_proc.munge.convert_datatypes(ts_list, val_list,
-                            drop_tz=drop_tz, val_type=None)
+                                                        drop_tz=drop_tz,
+                                                        val_type=None)
 
     # it is not possible to create a pandas Series object directly as
     # placeholder entries may be there for missing data. these are usually
@@ -149,7 +150,7 @@ def get_occupancy_ts(host, port, database, username, password, source_db,
     # drop missing values, set timestamp as the new index and sort by index
     occ_df = occ_df.dropna().set_index('tstamp',
                                        verify_integrity=True).sort_index()
-    return occ_df['occupancy']
+    return occ_df.loc['occupancy']
 
 
 def get_space_temp_ts(db, collection_name, bldg, floor, quad, granularity):
@@ -173,21 +174,19 @@ def get_space_temp_ts(db, collection_name, bldg, floor, quad, granularity):
     """
 
     ts_list, value_list = [], []
-    collection = db[collection_name]
+    collection = db.loc[collection_name]
     for data in collection.find({"_id.building": bldg,
                                  "_id.device": "Space_Temp",
                                  "_id.floor": str(floor),
                                  "_id.quad": quad}):
-        readings = data['readings']
+        readings = data.loc['readings']
         for reading in readings:
             ts_list.append(
                     dateutil.parser.parse(reading['time'], ignoretz=True))
             value_list.append(float(reading['value']))
 
-    gran = "%dmin" % granularity
     return pd.Series(data=value_list, index=pd.DatetimeIndex(ts_list)
                      ).sort_index()
-
 
 
 def get_parsed_ts(host, port, database, username, password, source_db,
@@ -233,13 +232,12 @@ def get_parsed_ts(host, port, database, username, password, source_db,
     obs_df = pd.DataFrame({'tstamp': ts_list, 'obs': val_list})
 
     # drop missing values, set timestamp as the new index and sort by index
-    return obs_df.dropna().set_index('tstamp',
-                                     verify_integrity=True).sort_index()['obs']
+    return obs_df.dropna().set_index(
+            'tstamp', verify_integrity=True).sort_index().loc['obs']
 
 
-
-def get_ts(host, port, database, username, password, source_db,
-           collection_name, bldg_id, device, system, field):
+def get_ts(host, port, database, username, password, source_db, collection_name,
+           bldg_id, device, system):
     """
     Get all observation data with the given building, device and system
     combination from the database
@@ -264,14 +262,10 @@ def get_ts(host, port, database, username, password, source_db,
         device name for identifying time series
     :param system: string
         system name for identifying time series
-    :param field: string
-        field name for identifying time series
-
     :return: tuple with a list of time stamps followed by a list of values
     """
 
     with pymongo.MongoClient(host, port) as conn:
-
         conn[database].authenticate(username, password, source=source_db)
         collection = conn[database][collection_name]
 
@@ -279,9 +273,8 @@ def get_ts(host, port, database, username, password, source_db,
         for data in collection.find({"_id.building": bldg_id,
                                      "_id.device": device,
                                      "_id.system": system}):
-
-            readings = data['readings']
-            zipped = map(lambda x: (x['time'], x[field]), readings)
+            readings = data.loc['readings']
+            zipped = map(lambda x: (x.loc['time'], x.loc["value"]), readings)
 
             ts_list_t, val_list_t = zip(*zipped)
 

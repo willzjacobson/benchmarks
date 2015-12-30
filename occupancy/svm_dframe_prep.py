@@ -12,7 +12,7 @@ import weather.wund
 
 
 def get_covars(endog, mongo_cred, wund_cred, weather_history_loc,
-               weather_forecast_loc, building_ts_loc, cov, gran):
+               weather_forecast_loc, cov, gran):
     # get weather information
     weather_orig = weather.mongo.get_history(**(mongo_cred),
                                              **(weather_history_loc))
