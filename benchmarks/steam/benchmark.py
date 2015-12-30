@@ -12,6 +12,10 @@ import ts_proc.munge
 import ts_proc.utils
 
 
+# TODO: delete this
+import matplotlib.pyplot
+
+
 def _find_benchmark(base_dt, occ_ts, wetbulb_ts, obs_ts, gran, debug):
     """
         Find benchmark electric usage for the date base_dt. Benchmark
@@ -58,7 +62,7 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, obs_ts, gran, debug):
     sim_wetbulb_days = common.utils.find_similar_profile_days(base_dt_wetbulb,
                                                               dow_type,
                                                               wetbulb_ts,
-                                                              20,
+                                                              2,
                                                               data_avlblty)
     common.utils.debug_msg(debug, "sim days: %s" % str(sim_wetbulb_days))
 
@@ -68,7 +72,7 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, obs_ts, gran, debug):
                                                                  occ_ts)
     common.utils.debug_msg(debug, occ_scores)
     # find the date with the lowest electric usage
-    return benchmarks.utils.find_lowest_auc_day(occ_scores, obs_ts, 5, debug)
+    return benchmarks.utils.find_lowest_auc_day(occ_scores, obs_ts, 1, debug)
 
 
 
@@ -166,25 +170,24 @@ def process_building(building_id, host, port, db_name, username, password,
     common.utils.debug_msg(debug, "bench dt: %s, bench usage: %s, auc: %s" % (
         bench_dt, bench_usage, bench_auc))
 
-    sys.exit(0)
-
     # TODO: delete display code
     # plot
     # get actual, if available
-    # actual_ts = common.utils.get_dt_tseries(base_dt, steam_ts)
-    # actual_ts_nodate = common.utils.drop_series_ix_date(actual_ts)
+    actual_ts = common.utils.get_dt_tseries(base_dt, steam_ts)
+    actual_ts_nodate = common.utils.drop_series_ix_date(actual_ts)
     # print("actual: %s" % actual_ts)
-    # disp_df = bench_usage.to_frame(name='benchmark')
-    # disp_df = disp_df.join(actual_ts_nodate.to_frame(name='actual'),
-    #                        how='outer')
+    disp_df = bench_usage.to_frame(name='benchmark')
+    disp_df = disp_df.join(actual_ts_nodate.to_frame(name='actual'),
+                           how='outer')
     # print("disp df: %s" % disp_df)
 
-    # matplotlib.pyplot.style.use('ggplot')
-    # matplotlib.pyplot.figure()
-    # chart = disp_df.plot()
-    # fig = chart.get_figure()
-    # fig.savefig("bmark_%s.png" % base_dt)
+    matplotlib.pyplot.style.use('ggplot')
+    matplotlib.pyplot.figure()
+    chart = disp_df.plot()
+    fig = chart.get_figure()
+    fig.savefig("bmark_%s.png" % base_dt)
 
+    sys.exit(0)
     # save results
     if not debug:
         benchmarks.utils.save_benchmark(bench_dt, base_dt, bench_usage,

@@ -383,8 +383,9 @@ def get_ts_new_schema(host, port, database, username, password, source_db,
 
             # zipped = map(lambda x: (x['time'], x['value']) if 'value' in x, readings)
             # some occupancy data has reading entries with just the timestamp
-            # with missing value
+            # and no "value" key
             zipped = [(x['time'], x['value']) for x in readings if 'value' in x]
+            # zipped = [(x['time'], x['value']) for x in readings]
 
             ts_list_t, val_list_t = zip(*zipped)
 
