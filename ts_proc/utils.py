@@ -387,18 +387,19 @@ def get_ts_new_schema(host, port, database, username, password, source_db,
             zipped = [(x['time'], x['value']) for x in readings if 'value' in x]
             # zipped = [(x['time'], x['value']) for x in readings]
 
-            ts_list_t, val_list_t = zip(*zipped)
+            if len(zipped):
+                ts_list_t, val_list_t = zip(*zipped)
 
-            # in the new schema, the readings do not have a date, only a time
-            # this can make parsing incoming data more efficient since the
-            # date part needs to be parsed only once for each day
-            # print(ts_list_t)
-            ts_list_t = map(lambda x: datetime.datetime.combine(dt,
-                                dateutil.parser.parse(x).time())
-                                if type(x) is not int else numpy.nan,
-                            ts_list_t)
-            # sys.exit(0)
-            ts_list.extend(ts_list_t)
-            value_list.extend(val_list_t)
+                # in the new schema, the readings do not have a date, only a time
+                # this can make parsing incoming data more efficient since the
+                # date part needs to be parsed only once for each day
+                # print(ts_list_t)
+                ts_list_t = map(lambda x: datetime.datetime.combine(dt,
+                                                dateutil.parser.parse(x).time())
+                if type(x) is not int else numpy.nan,
+                                ts_list_t)
+                # sys.exit(0)
+                ts_list.extend(ts_list_t)
+                value_list.extend(val_list_t)
 
     return ts_list, value_list

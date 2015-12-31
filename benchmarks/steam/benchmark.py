@@ -12,8 +12,11 @@ import ts_proc.munge
 import ts_proc.utils
 
 
+
 # TODO: delete this
+import numpy
 import matplotlib.pyplot
+import stash.todel as todel
 
 
 def _find_benchmark(base_dt, occ_ts, wetbulb_ts, obs_ts, gran, debug):
@@ -62,7 +65,7 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, obs_ts, gran, debug):
     sim_wetbulb_days = common.utils.find_similar_profile_days(base_dt_wetbulb,
                                                               dow_type,
                                                               wetbulb_ts,
-                                                              2,
+                                                              3,
                                                               data_avlblty)
     common.utils.debug_msg(debug, "sim days: %s" % str(sim_wetbulb_days))
 
@@ -132,7 +135,7 @@ def process_building(building_id, host, port, db_name, username, password,
                                               weather_fcst_db,
                                               weather_fcst_collection,
                                               granularity)
-    # wetbulb_ts = todel.interp_tseries(wetbulb_ts, gran_int)
+    wetbulb_ts = todel.interp_tseries(wetbulb_ts, gran_int)
     common.utils.debug_msg(debug, "wetbulb: %s" % wetbulb_ts)
 
     # get occupancy data
@@ -146,7 +149,7 @@ def process_building(building_id, host, port, db_name, username, password,
                                                     'Occupancy',
                                                     'Occupancy')
     # interpolation converts occupancy data to float; convert back to int64
-    # occ_ts = todel.interp_tseries(occ_ts, gran_int).astype(numpy.int64)
+    occ_ts = todel.interp_tseries(occ_ts, gran_int).astype(numpy.int64)
     # occ_ts = ts_proc.munge.munge(occ_ts, 100, 2, '1min', granularity).astype(
     #     numpy.int64)
     common.utils.debug_msg(debug, "occupancy: %s" % occ_ts)
@@ -159,8 +162,7 @@ def process_building(building_id, host, port, db_name, username, password,
                                                       'TotalInstant',
                                                       'SIF_Steam_Demand',
                                                       val_type=float)
-    print(steam_ts)
-    # steam_ts = todel.interp_tseries(steam_ts, gran_int)
+    steam_ts = todel.interp_tseries(steam_ts, gran_int)
     common.utils.debug_msg(debug, "steam: %s" % steam_ts)
 
     # find baseline
