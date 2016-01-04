@@ -12,6 +12,34 @@ import ts_proc.munge
 import ts_proc.utils
 
 
+# TODO: delete this
+import numpy
+import matplotlib.pyplot
+import stash.todel as todel
+
+
+def _dow_type(dt):
+    """
+    Find day of week type.
+    Type 1: Mondays are different from other weekdays because the
+            building was off over the weekend
+    Type 2: Tue-Friday are categorized as one type
+    Type 3: weekend has it own type
+
+    :param dt: datetime.date
+    :return: int in [1, 2, 3]
+    """
+
+    dow = dt.isoweekday()
+
+    if dow in [1]: # Monday
+        return 1
+    elif dow in [2, 3, 4, 5]: # Tue - Fri
+        return 2
+    else: # weekend
+        return 3
+
+
 def _find_benchmark(base_dt, occ_ts, wetbulb_ts, obs_ts, gran, debug):
     """
         Find benchmark electric usage for the date base_dt. Benchmark
@@ -54,11 +82,11 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, obs_ts, gran, debug):
 
     # find k closest weather days for which electric and occupancy data is
     # available
-    dow_type = common.utils.dow_type(base_dt)
+    dow_type = _dow_type(base_dt)
     sim_wetbulb_days = common.utils.find_similar_profile_days(base_dt_wetbulb,
                                                               dow_type,
                                                               wetbulb_ts,
-                                                              20,
+                                                              7,
                                                               data_avlblty)
     common.utils.debug_msg(debug, "sim days: %s" % str(sim_wetbulb_days))
 
@@ -68,7 +96,7 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, obs_ts, gran, debug):
                                                                  occ_ts)
     common.utils.debug_msg(debug, occ_scores)
     # find the date with the lowest electric usage
-    return benchmarks.utils.find_lowest_auc_day(occ_scores, obs_ts, 5, debug)
+    return benchmarks.utils.find_lowest_auc_day(occ_scores, obs_ts, 2, debug)
 
 
 
@@ -128,7 +156,7 @@ def process_building(building_id, host, port, db_name, username, password,
                                               weather_fcst_db,
                                               weather_fcst_collection,
                                               granularity)
-    # wetbulb_ts = todel.interp_tseries(wetbulb_ts, gran_int)
+    wetbulb_ts = todel.interp_tseries(wetbulb_ts, gran_int)
     common.utils.debug_msg(debug, "wetbulb: %s" % wetbulb_ts)
 
     # get occupancy data
@@ -142,7 +170,7 @@ def process_building(building_id, host, port, db_name, username, password,
                                                     'Occupancy',
                                                     'Occupancy')
     # interpolation converts occupancy data to float; convert back to int64
-    # occ_ts = todel.interp_tseries(occ_ts, gran_int).astype(numpy.int64)
+    occ_ts = todel.interp_tseries(occ_ts, gran_int).astype(numpy.int64)
     # occ_ts = ts_proc.munge.munge(occ_ts, 100, 2, '1min', granularity).astype(
     #     numpy.int64)
     common.utils.debug_msg(debug, "occupancy: %s" % occ_ts)
@@ -155,8 +183,7 @@ def process_building(building_id, host, port, db_name, username, password,
                                                       'TotalInstant',
                                                       'SIF_Steam_Demand',
                                                       val_type=float)
-    print(steam_ts)
-    # steam_ts = todel.interp_tseries(steam_ts, gran_int)
+    steam_ts = todel.interp_tseries(steam_ts, gran_int)
     common.utils.debug_msg(debug, "steam: %s" % steam_ts)
 
     # find baseline
@@ -166,25 +193,24 @@ def process_building(building_id, host, port, db_name, username, password,
     common.utils.debug_msg(debug, "bench dt: %s, bench usage: %s, auc: %s" % (
         bench_dt, bench_usage, bench_auc))
 
-    sys.exit(0)
-
     # TODO: delete display code
     # plot
     # get actual, if available
-    # actual_ts = common.utils.get_dt_tseries(base_dt, steam_ts)
-    # actual_ts_nodate = common.utils.drop_series_ix_date(actual_ts)
+    actual_ts = common.utils.get_dt_tseries(base_dt, steam_ts)
+    actual_ts_nodate = common.utils.drop_series_ix_date(actual_ts)
     # print("actual: %s" % actual_ts)
-    # disp_df = bench_usage.to_frame(name='benchmark')
-    # disp_df = disp_df.join(actual_ts_nodate.to_frame(name='actual'),
-    #                        how='outer')
+    disp_df = bench_usage.to_frame(name='benchmark')
+    disp_df = disp_df.join(actual_ts_nodate.to_frame(name='actual'),
+                           how='outer')
     # print("disp df: %s" % disp_df)
 
-    # matplotlib.pyplot.style.use('ggplot')
-    # matplotlib.pyplot.figure()
-    # chart = disp_df.plot()
-    # fig = chart.get_figure()
-    # fig.savefig("bmark_%s.png" % base_dt)
+    matplotlib.pyplot.style.use('ggplot')
+    matplotlib.pyplot.figure()
+    chart = disp_df.plot()
+    fig = chart.get_figure()
+    fig.savefig("bmark_%s.png" % base_dt)
 
+    sys.exit(0)
     # save results
     if not debug:
         benchmarks.utils.save_benchmark(bench_dt, base_dt, bench_usage,

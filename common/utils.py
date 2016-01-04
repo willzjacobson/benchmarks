@@ -11,10 +11,9 @@ def dow_type(dt):
     """
     Find day of week type.
     Type 1: Mondays are usually different from other weekdays
-    Type 2:Tue-Thu are categorized as one type
+    Type 2: Tue-Thu are categorized as one type
     Type 3: Fridays are different from other days as some people leave early
-    Type 4: weekend has it
-    own type
+    Type 4: weekend has it own type
 
     :param dt: datetime.date
     :return: int in [1, 2, 3, 4]
@@ -76,7 +75,8 @@ def compute_profile_similarity_score(gold_ts, other_ts):
 
 
 
-def find_similar_profile_days(gold_ts, gold_dow_type, all_ts, k, data_avlblty):
+def find_similar_profile_days(gold_ts, gold_dow_type, all_ts, k, data_avlblty,
+                              dow_type_fn=dow_type):
     """
     Find k most similar profile days within all_ts with day-of-week type
     matching gold_dow_type and profile/time-series most similar to gold_ts such
@@ -92,6 +92,9 @@ def find_similar_profile_days(gold_ts, gold_dow_type, all_ts, k, data_avlblty):
         number of most similar days to returns
     :param data_avlblty: set
         set of dates which must contain the k most similar days selected
+    :param dow_type_fn: function
+        function with signature:
+         int fn(<date>)
 
     :return: list of top k dates with most similar profiles
     """
@@ -105,7 +108,7 @@ def find_similar_profile_days(gold_ts, gold_dow_type, all_ts, k, data_avlblty):
 
     # drop future dates and dates from other day of week types
     all_dates = set([t for t in all_dates if t < cutoff_dt and
-                     dow_type(t) == gold_dow_type])
+                     dow_type_fn(t) == gold_dow_type])
 
     # compute similarity score for each date
     one_day = datetime.timedelta(days=1)

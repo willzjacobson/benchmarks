@@ -358,7 +358,7 @@ def get_ts_new_schema(host, port, database, username, password, source_db,
     :return: tuple with a list of time stamps followed by a list of values
     """
 
-    print("%s:%s:%s:%s" % (host, port,collection_name, database))
+    # print("%s:%s:%s:%s" % (host, port,collection_name, database))
     with pymongo.MongoClient(host, port) as conn:
 
         conn[database].authenticate(username, password, source=source_db)
@@ -375,21 +375,59 @@ def get_ts_new_schema(host, port, database, username, password, source_db,
             # zipped = map(lambda x: (x['time'], x['value']) if
             # 'value' in x, readings)
             # some occupancy data has reading entries with just the timestamp
-            # with missing value
+            # and no "value" key
             zipped = [(x['time'], x['value']) for x in readings if 'value' in x]
+            # zipped = [(x['time'], x['value']) for x in readings]
 
-            ts_list_t, val_list_t = zip(*zipped)
+            if len(zipped):
+                ts_list_t, val_list_t = zip(*zipped)
 
-            # in the new schema, the readings do not have a date, only a time
-            # this can make parsing incoming data more efficient since the
-            # date part needs to be parsed only once for each day
-            # print(ts_list_t)
-            ts_list_t = map(lambda x: datetime.datetime.combine(dt,
-                                dateutil.parser.parse(x).time())
-                                if type(x) is not int else numpy.nan,
-                            ts_list_t)
-            # sys.exit(0)
-            ts_list.extend(ts_list_t)
-            value_list.extend(val_list_t)
+                # in the new schema, the readings do not have a date, only a time
+                # this can make parsing incoming data more efficient since the
+                # date part needs to be parsed only once for each day
+                # print(ts_list_t)
+                ts_list_t = map(lambda x: datetime.datetime.combine(dt,
+                                                dateutil.parser.parse(x).time())
+                if type(x) is not int else numpy.nan,
+                                ts_list_t)
+                # sys.exit(0)
+                ts_list.extend(ts_list_t)
+                value_list.extend(val_list_t)
 
     return ts_list, value_list
+
+
+
+def get_steam_ts(host, port, database, username, password, source_db,
+                 collection_name, bldg_id, device, system):
+    """
+    Get all observation data with the given building, device and system
+    combination from the database
+
+    :param host: string
+        database server name or IP-address
+    :param port: int
+        database port number
+    :param database: string
+        name of the database on server
+    :param username: string
+        database username
+    :param password: string
+        database password
+    :param source_db: string
+        source database for authentication
+    :param collection_name: string
+        database collection name
+    :param bldg_id: string
+        building identifier
+    :param device: string
+        device name for identifying time series
+    :param system: string
+        system name for identifying time series
+    # :param field: string
+    #     field name for identifying time series
+
+    :return: tuple with a list of time stamps followed by a list of values
+    """
+
+    pass
