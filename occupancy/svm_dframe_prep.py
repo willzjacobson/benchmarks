@@ -11,14 +11,26 @@ import weather.mongo
 import weather.wund
 
 
-def get_covars(endog, mongo_cred, wund_cred, weather_history_loc,
-               weather_forecast_loc, cov, gran):
-
+def get_covars(endog, host, port, source, username, password, db_name,
+               collection_name, cov, gran):
     # get weather information
-    weather_orig = weather.mongo.get_history(**(mongo_cred),
-                                             **(weather_history_loc))
-    forecast_orig = weather.mongo.get_forecast(**(mongo_cred),
-                                               **(weather_forecast_loc))
+    weather_orig = weather.mongo.get_history(
+            host=host,
+            port=port,
+            source=source,
+            username=username,
+            password=password,
+            db_name=db_name,
+            collection_name=collection_name
+    )
+    forecast_orig = weather.mongo.get_forecast(host=host,
+                                               port=port,
+                                               source=source,
+                                               db_name=db_name,
+                                               username=username,
+                                               password=password,
+                                               collection_name=collection_name
+                                               )
     weather_cond = weather.wund.history_munge(df=weather_orig,
                                               gran=gran)[cov]
     forecast_cond = weather.wund.forecast_munge(df=forecast_orig,
