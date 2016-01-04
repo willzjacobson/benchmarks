@@ -2,14 +2,14 @@
 
 __author__ = 'ashishgagneja'
 
-import re
 import sys
+import re
 
-import benchmarks.occupancy.utils
-import benchmarks.utils
 import common.utils
-import ts_proc.munge
 import ts_proc.utils
+import ts_proc.munge
+import occupancy.utils
+import benchmarks.utils
 
 
 def _find_benchmark(base_dt, occ_ts, wetbulb_ts, obs_ts, gran, debug):
@@ -63,12 +63,11 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, obs_ts, gran, debug):
     common.utils.debug_msg(debug, "sim days: %s" % str(sim_wetbulb_days))
 
     # compute occupancy similarity score for the k most similar weather days
-    occ_scores = benchmarks.occupancy.utils.score_occ_similarity(base_dt,
-                                                                 sim_wetbulb_days,
-                                                                 occ_ts)
+    occ_scores = occupancy.utils.score_occ_similarity(base_dt, sim_wetbulb_days,
+                                                      occ_ts)
     common.utils.debug_msg(debug, occ_scores)
     # find the date with the lowest electric usage
-    return benchmarks.utils.find_lowest_auc_day(occ_scores, obs_ts, 5, debug)
+    return benchmarks.utils.find_lowest_obs_usage(occ_scores, obs_ts, 5, debug)
 
 
 
@@ -101,14 +100,10 @@ def process_building(building_id, host, port, db_name, username, password,
         name of the output db_name on server
     :param collection_name_out: string
         name of output collection in the db_name
-    :param weather_hist_db: string
-        database name for historical weather
-    :param weather_hist_collection: string
-        collection name for historical weather
-    :param weather_fcst_db: string
-        database name for weather forecast
-    :param weather_fcst_collection: string
-        collection name for weather forecast
+    :param weather_hist_db:
+    :param weather_hist_collection:
+    :param weather_fcst_db:
+    :param weather_fcst_collection:
     :param granularity: string
         expected frequency of observations and forecast
     :param base_dt: datetime.date
@@ -130,17 +125,12 @@ def process_building(building_id, host, port, db_name, username, password,
                                               granularity)
     # wetbulb_ts = todel.interp_tseries(wetbulb_ts, gran_int)
     common.utils.debug_msg(debug, "wetbulb: %s" % wetbulb_ts)
+    print(type(wetbulb_ts))
 
     # get occupancy data
-    # occ_ts = ts_proc.utils.get_occupancy_ts(host, port, db_name, username,
-    #                                         password, source,
-    #                                         collection_name, building_id)
-    occ_ts = ts_proc.utils.get_parsed_ts_new_schema(host, port, db_name,
-                                                    username, password,
-                                                    source, collection_name,
-                                                    building_id,
-                                                    'Occupancy',
-                                                    'Occupancy')
+    occ_ts = ts_proc.utils.get_occupancy_ts(host, port, db_name, username,
+                                            password, source,
+                                            collection_name, building_id)
     # interpolation converts occupancy data to float; convert back to int64
     # occ_ts = todel.interp_tseries(occ_ts, gran_int).astype(numpy.int64)
     # occ_ts = ts_proc.munge.munge(occ_ts, 100, 2, '1min', granularity).astype(
@@ -148,14 +138,10 @@ def process_building(building_id, host, port, db_name, username, password,
     common.utils.debug_msg(debug, "occupancy: %s" % occ_ts)
 
     # query steam data
-    steam_ts = ts_proc.utils.get_parsed_ts_new_schema(host, port, db_name,
-                                                      username, password,
-                                                      source, collection_name,
-                                                      building_id,
-                                                      'TotalInstant',
-                                                      'SIF_Steam_Demand',
-                                                      val_type=float)
-    print(steam_ts)
+    steam_ts = ts_proc.utils.get_parsed_ts(host, port, db_name, username,
+                                           password, source, collection_name,
+                                           building_id, 'TotalInstant',
+                                           'SIF_Steam_Demand')
     # steam_ts = todel.interp_tseries(steam_ts, gran_int)
     common.utils.debug_msg(debug, "steam: %s" % steam_ts)
 

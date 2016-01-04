@@ -96,6 +96,56 @@ def convert_datatypes(ts_list, value_list, val_type=float):
     return [ts_list, value_list]
 
 
+
+def convert_dtypes_new_schema(ts_list, value_list, drop_tz=True,
+                              val_type=float):
+    """
+    Parse timestamp and observation data read from database. Timestamps
+    are converted to datetime.datetime ignoring timezone information.
+    Observations are cast to val_type
+
+    :param ts_list: list
+        list of timestamps
+    :param value_list: list
+        list of observations
+    :param drop_tz: bool
+        flag to indicate whether to ignore timezone information
+    :param val_type: function
+        function to use to cast observation to the required type
+        If None, no transformation is done
+
+    :return: list of lists
+        list containing a list with parsed timestamps followed by another one
+        with transformed/casted observation data
+
+    """
+
+    # parse timestamps to datetime and drop timezone
+    # placeholder readings could have '0' as time, replace with NaN
+    # ts_list = joblib.Parallel(n_jobs=2)(joblib.delayed(
+    #     _parse_tstamp)(x, drop_tz) for x in ts_list)
+
+    # ts_list = list(map(lambda x: x if type(x) is not int else numpy.nan,
+    #                    ts_list))
+
+    # convert str to val_type
+    if val_type:
+        # value_list = list(map(val_type, value_list))
+        # print(numpy.asarray(value_list)[:100])
+
+        arr = numpy.asarray(value_list)
+        if val_type == float:
+            value_list = arr.astype(numpy.float)
+        elif val_type == int:
+            value_list = arr.astype(numpy.int64)
+        else:
+            raise Exception('unsupported transformation')
+
+    return [ts_list, value_list]
+
+
+
+
 def ts_day_pos(ts, day, time, start, end, freq):
     """Returns slice of input time series
 
