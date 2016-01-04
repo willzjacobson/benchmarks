@@ -230,7 +230,7 @@ def get_parsed_ts(host, port, database, username, password, source,
             'tstamp', verify_integrity=True).sort_index().loc['obs']
 
 
-def get_ts(host, port, database, username, password, source_db, collection_name,
+def get_ts(host, port, database, username, password, source, collection_name,
            building, device, system):
     """
     Get all observation data with the given building, device and system
@@ -246,7 +246,7 @@ def get_ts(host, port, database, username, password, source_db, collection_name,
         database username
     :param password: string
         database password
-    :param source_db: string
+    :param source: string
         source database for authentication
     :param collection_name: string
         database collection name
@@ -260,7 +260,7 @@ def get_ts(host, port, database, username, password, source_db, collection_name,
     """
 
     with pymongo.MongoClient(host, port) as conn:
-        conn[database].authenticate(username, password, source=source_db)
+        conn[database].authenticate(username, password, source=source)
         collection = conn[database][collection_name]
 
         ts_list, value_list, daily_dict = [], [], {}
@@ -280,8 +280,8 @@ def get_ts(host, port, database, username, password, source_db, collection_name,
 
 
 def get_parsed_ts_new_schema(host, port, database, username, password,
-                             source_db, collection_name, building, device,
-                             system, val_type=None, drop_tz=False):
+                             source, collection_name, building, device,
+                             system, val_type=None):
     """Fetch all available timeseries data from database
 
     :param host: string
@@ -294,26 +294,24 @@ def get_parsed_ts_new_schema(host, port, database, username, password,
         database username
     :param password: string
         database password
-    :param source_db: string
+    :param source: string
         source database for authentication
     :param collection_name: string
         collection name to use
     :param building: string
         building identifier
-    :param drop_tz: bool
-        whether to drop timezone information
 
     :return: pandas DataFrame
         occupancy time series data
     """
 
     ts_list, val_list = get_ts_new_schema(host, port, database, username,
-                                          password, source_db, collection_name,
+                                          password, source, collection_name,
                                           building, device, system)
 
     # parse timestamp and observation to appropriate datatypes
     ts_list, val_list = ts_proc.munge.convert_dtypes_new_schema(ts_list,
-                                val_list, drop_tz=drop_tz, val_type=val_type)
+                                val_list, val_type=val_type)
 
     # it is not possible to create a pandas Series object directly as
     # placeholder entries may be there for missing data. these are usually
@@ -326,7 +324,7 @@ def get_parsed_ts_new_schema(host, port, database, username, password,
 
 
 
-def get_ts_new_schema(host, port, database, username, password, source_db,
+def get_ts_new_schema(host, port, database, username, password, source,
                       collection_name, building, device, system):
     """
     Get all observation data with the given building, device and system
@@ -342,7 +340,7 @@ def get_ts_new_schema(host, port, database, username, password, source_db,
         database username
     :param password: string
         database password
-    :param source_db: string
+    :param source: string
         source database for authentication
     :param collection_name: string
         database collection name
@@ -361,7 +359,7 @@ def get_ts_new_schema(host, port, database, username, password, source_db,
     # print("%s:%s:%s:%s" % (host, port,collection_name, database))
     with pymongo.MongoClient(host, port) as conn:
 
-        conn[database].authenticate(username, password, source=source_db)
+        conn[database].authenticate(username, password, source=source)
         collection = conn[database][collection_name]
 
         ts_list, value_list, daily_dict = [], [], {}
@@ -376,8 +374,8 @@ def get_ts_new_schema(host, port, database, username, password, source_db,
             # 'value' in x, readings)
             # some occupancy data has reading entries with just the timestamp
             # and no "value" key
-            zipped = [(x['time'], x['value']) for x in readings if 'value' in x]
-            # zipped = [(x['time'], x['value']) for x in readings]
+            # zipped = [(x['time'], x['value']) for x in readings if 'value' in x]
+            zipped = [(x['time'], x['value']) for x in readings]
 
             if len(zipped):
                 ts_list_t, val_list_t = zip(*zipped)
@@ -387,7 +385,7 @@ def get_ts_new_schema(host, port, database, username, password, source_db,
                 # date part needs to be parsed only once for each day
                 # print(ts_list_t)
                 ts_list_t = map(lambda x: datetime.datetime.combine(dt,
-                                                dateutil.parser.parse(x).time())
+                                            dateutil.parser.parse(x).time())
                 if type(x) is not int else numpy.nan,
                                 ts_list_t)
                 # sys.exit(0)

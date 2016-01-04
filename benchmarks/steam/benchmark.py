@@ -3,7 +3,6 @@
 __author__ = 'ashishgagneja'
 
 import re
-import sys
 
 import benchmarks.occupancy.utils
 import benchmarks.utils
@@ -14,7 +13,6 @@ import ts_proc.utils
 
 # TODO: delete this
 import numpy
-import matplotlib.pyplot
 import stash.todel as todel
 
 
@@ -99,18 +97,17 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, obs_ts, gran, debug):
     return benchmarks.utils.find_lowest_auc_day(occ_scores, obs_ts, 2, debug)
 
 
-
-def process_building(building_id, host, port, db_name, username, password,
+def process_building(building, host, port, db_name, username, password,
                      source, collection_name, db_name_out,
                      collection_name_out, weather_hist_db,
                      weather_hist_collection, weather_fcst_db,
                      weather_fcst_collection, granularity,
                      base_dt, debug):
-    """ Find baseline electric usage for building_id
+    """ Find baseline electric usage for building
 
 
-    :param building_id: string
-        building_id identifier
+    :param building: string
+        building identifier
     :param host: string
         db_name server name or IP-address
     :param port: int
@@ -162,11 +159,11 @@ def process_building(building_id, host, port, db_name, username, password,
     # get occupancy data
     # occ_ts = ts_proc.utils.get_occupancy_ts(host, port, db_name, username,
     #                                         password, source,
-    #                                         collection_name, building_id)
+    #                                         collection_name, building)
     occ_ts = ts_proc.utils.get_parsed_ts_new_schema(host, port, db_name,
                                                     username, password,
                                                     source, collection_name,
-                                                    building_id,
+                                                    building,
                                                     'Occupancy',
                                                     'Occupancy')
     # interpolation converts occupancy data to float; convert back to int64
@@ -179,7 +176,7 @@ def process_building(building_id, host, port, db_name, username, password,
     steam_ts = ts_proc.utils.get_parsed_ts_new_schema(host, port, db_name,
                                                       username, password,
                                                       source, collection_name,
-                                                      building_id,
+                                                      building,
                                                       'TotalInstant',
                                                       'SIF_Steam_Demand',
                                                       val_type=float)
@@ -196,26 +193,25 @@ def process_building(building_id, host, port, db_name, username, password,
     # TODO: delete display code
     # plot
     # get actual, if available
-    actual_ts = common.utils.get_dt_tseries(base_dt, steam_ts)
-    actual_ts_nodate = common.utils.drop_series_ix_date(actual_ts)
+    # actual_ts = common.utils.get_dt_tseries(base_dt, steam_ts)
+    # actual_ts_nodate = common.utils.drop_series_ix_date(actual_ts)
     # print("actual: %s" % actual_ts)
-    disp_df = bench_usage.to_frame(name='benchmark')
-    disp_df = disp_df.join(actual_ts_nodate.to_frame(name='actual'),
-                           how='outer')
+    # disp_df = bench_usage.to_frame(name='benchmark')
+    # disp_df = disp_df.join(actual_ts_nodate.to_frame(name='actual'),
+    #                        how='outer')
     # print("disp df: %s" % disp_df)
 
-    matplotlib.pyplot.style.use('ggplot')
-    matplotlib.pyplot.figure()
-    chart = disp_df.plot()
-    fig = chart.get_figure()
-    fig.savefig("bmark_%s.png" % base_dt)
+    # matplotlib.pyplot.style.use('ggplot')
+    # matplotlib.pyplot.figure()
+    # chart = disp_df.plot()
+    # fig = chart.get_figure()
+    # fig.savefig("bmark_%s.png" % base_dt)
 
-    sys.exit(0)
     # save results
     if not debug:
         benchmarks.utils.save_benchmark(bench_dt, base_dt, bench_usage,
-                                         bench_auc, bench_incr_auc, host, port,
-                                         db_name_out, username, password,
-                                         source, collection_name_out,
-                                         building_id, 'Stean_Usage',
-                                         'benchmark')
+                                        bench_auc, bench_incr_auc, host, port,
+                                        db_name_out, username, password,
+                                        source, collection_name_out,
+                                        building, 'Steam_Usage',
+                                        'benchmark')

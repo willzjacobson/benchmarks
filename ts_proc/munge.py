@@ -97,8 +97,7 @@ def convert_datatypes(ts_list, value_list, val_type=float):
 
 
 
-def convert_dtypes_new_schema(ts_list, value_list, drop_tz=True,
-                              val_type=float):
+def convert_dtypes_new_schema(ts_list, value_list, val_type=float):
     """
     Parse timestamp and observation data read from database. Timestamps
     are converted to datetime.datetime ignoring timezone information.
@@ -108,8 +107,6 @@ def convert_dtypes_new_schema(ts_list, value_list, drop_tz=True,
         list of timestamps
     :param value_list: list
         list of observations
-    :param drop_tz: bool
-        flag to indicate whether to ignore timezone information
     :param val_type: function
         function to use to cast observation to the required type
         If None, no transformation is done
