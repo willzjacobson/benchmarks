@@ -15,7 +15,7 @@ import config
 import ts_proc.munge
 import ts_proc.utils
 
-cfg = config.david
+cfg = config.config
 
 buildings = cfg['default']['buildings']
 

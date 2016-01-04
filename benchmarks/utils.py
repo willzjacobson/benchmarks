@@ -12,9 +12,9 @@ import sys
 import pandas as pd
 import pymongo
 
+import common.utils
 import weather.mongo
 import weather.wund
-import common.utils
 
 
 def filter_missing_weather_data(weather_df):
@@ -66,9 +66,9 @@ def get_weather(host, port, username, password, source_db, history_db,
                                      username, password, history_collection)
     hist_munged = (weather.wund.history_munge(hist, gran))['wetbulb']
 
-    fcst = weather.mongo.get_latest_forecast(host, port, source_db, forecast_db,
-                                             username, password,
-                                             forecast_collection)
+    fcst = weather.mongo.get_forecast(host, port, source_db, forecast_db,
+                                      username, password,
+                                      forecast_collection)
     fcst_munged = (weather.wund.forecast_munge(fcst, gran))['wetbulb']
 
     # concatenate history and forecast into one series; prefer history over
