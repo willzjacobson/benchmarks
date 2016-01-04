@@ -8,10 +8,10 @@ driver for finding benchmark steam usage
 import datetime
 import sys
 
-import config
 import benchmarks.steam.benchmark
+import config
 
-cfg = config.david
+cfg = config.config
 
 # determine base date
 bench_dt = datetime.date.today()

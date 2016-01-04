@@ -112,23 +112,23 @@ svm:
   tol: 0.001
   verbose: False
 
-param_search:
-grid:
-  C:
-    start: 1 # arr_start = base ** start
-    stop : 5 # arr_stop = base ** stop
-    base : 10 #logarithmic base
-    num : 50 #number of samples to generate
-  gamma:
-    start: -5
-    stop: 1
-    base: 10
-    num: 50
-  kernel:
-    - rbf
-cv: 3 #number of Kfold cross validation folds
-n_jobs: -1
-threshold: 0.003
+  param_search:
+    grid:
+      C:
+        start: 1 # arr_start = base ** start
+        stop : 5 # arr_stop = base ** stop
+        base : 10 #logarithmic base
+        num : 50 #number of samples to generate
+      gamma:
+        start: -5
+        stop: 1
+        base: 10
+        num: 50
+      kernel:
+        - rbf
+    cv: 3 #number of Kfold cross validation folds
+    n_jobs: -1
+    threshold: 0.003
 
 
 arima:

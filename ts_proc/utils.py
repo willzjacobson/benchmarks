@@ -110,7 +110,7 @@ def get_electric_ts(host, port, database, username, password, source_db,
 
 
 def get_occupancy_ts(host, port, database, username, password, source_db,
-                     collection_name, bldg_id, drop_tz=True):
+                     collection_name, bldg_id):
     """Fetch all available occupancy data from database
 
     :param host: string
@@ -129,20 +129,16 @@ def get_occupancy_ts(host, port, database, username, password, source_db,
         collection name to use
     :param bldg_id: string
         building identifier
-    :param drop_tz: bool
-        whether to drop timezone information
-
     :return: pandas DataFrame
         occupancy time series data
     """
 
     ts_list, val_list = get_ts(host, port, database, username, password,
                                source_db, collection_name, bldg_id, 'Occupancy',
-                               'Occupancy', 'value')
+                               'Occupancy')
 
     # parse timestamp and observation to appropriate datatypes
     ts_list, val_list = ts_proc.munge.convert_datatypes(ts_list, val_list,
-                                                        drop_tz=drop_tz,
                                                         val_type=None)
 
     # it is not possible to create a pandas Series object directly as
@@ -193,8 +189,7 @@ def get_space_temp_ts(db, collection_name, bldg, floor, quad, granularity):
 
 
 def get_parsed_ts(host, port, database, username, password, source_db,
-                  collection_name, bldg_id, device, system, val_type=None,
-                  drop_tz=False):
+                  collection_name, bldg_id, device, system, val_type=None):
     """Fetch all available timeseries data from database
 
     :param host: string
@@ -213,20 +208,16 @@ def get_parsed_ts(host, port, database, username, password, source_db,
         collection name to use
     :param bldg_id: string
         building identifier
-    :param drop_tz: bool
-        whether to drop timezone information
-
     :return: pandas DataFrame
         occupancy time series data
     """
 
     ts_list, val_list = get_ts(host, port, database, username, password,
                                source_db, collection_name, bldg_id, device,
-                               system, 'value')
+                               system)
 
     # parse timestamp and observation to appropriate datatypes
     ts_list, val_list = ts_proc.munge.convert_datatypes(ts_list, val_list,
-                                                        drop_tz=drop_tz,
                                                         val_type=val_type)
 
     # it is not possible to create a pandas Series object directly as

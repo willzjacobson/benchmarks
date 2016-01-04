@@ -9,10 +9,10 @@ co-variates
 import datetime
 import sys
 
-import config
 import benchmarks.electric.benchmark as bmark
+import config
 
-cfg = config.david
+cfg = config.config
 
 buildings = cfg['default']['buildings']
 

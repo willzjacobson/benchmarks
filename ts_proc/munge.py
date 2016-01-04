@@ -76,8 +76,9 @@ def convert_datatypes(ts_list, value_list, val_type=float):
         with transformed/casted observation data
 
     """
-
-    ts_list = list(map(lambda x: numpy.nan if type(x) is int else x, ts_list))
+    # line below not needed anymore due to change in database from 0 padding
+    # nonexisting time/data values to null
+    # ts_list = list(map(lambda x: numpy.nan if type(x) is int else x, ts_list))
 
     # convert str to val_type
     if val_type:
@@ -178,7 +179,7 @@ def filter_two_std(ts):
 
 def filter_day_season(ts, day=pd.datetime.today().weekday(),
                       month=pd.datetime.today().month):
-    seasons = config.david["building_dbs"]["seasons"]
+    seasons = config.config["building_dbs"]["seasons"]
     month_range = (0, 0)
 
     for value in seasons.values():

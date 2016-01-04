@@ -11,28 +11,28 @@ __author__ = 'David Karapetyan'
 
 if __name__ == "__main__":
     # set variables
-    params_init = config.david["svm"]["params"]
-    cov = config.david["building_dbs"]["cov"]
-    gran = config.david["sampling"]["granularity"]
-    h5file = config.david["building_dbs"]["h5file"]
-    history_original_name = config.david["building_dbs"]["history_orig"]
-    forecast_original_name = config.david["building_dbs"]["forecast_orig"]
+    params_init = config.config["svm"]["params"]
+    cov = config.config["building_dbs"]["cov"]
+    gran = config.config["sampling"]["granularity"]
+    h5file = config.config["building_dbs"]["h5file"]
+    history_original_name = config.config["building_dbs"]["history_orig"]
+    forecast_original_name = config.config["building_dbs"]["forecast_orig"]
     store = pd.HDFStore(h5file)
     weather_history = store[history_original_name]
     weather_forecast = store[forecast_original_name]
     store.close()
 
-    granularity = config.david["sampling"]["granularity"]
-    pg = config.david["svm"]["param_search"]["grid"]
+    granularity = config.config["sampling"]["granularity"]
+    pg = config.config["svm"]["param_search"]["grid"]
     param_grid = {"C": np.logspace(**(pg["C"])),
                   "gamma": np.logspace(**(pg["gamma"])),
                   "kernel": pg["kernel"]}
-    threshold = config.david["svm"]["param_search"]["threshold"]
-    cv = config.david["svm"]["param_search"]["cv"]
-    n_jobs = config.david["svm"]["param_search"]["n_jobs"]
+    threshold = config.config["svm"]["param_search"]["threshold"]
+    cv = config.config["svm"]["param_search"]["cv"]
+    n_jobs = config.config["svm"]["param_search"]["n_jobs"]
 
     fandata_store = pd.HDFStore(
-            config.david["default"]["data_sources"] + "/lex560.h5")
+            config.config["default"]["data_sources"] + "/lex560.h5")
     fandata = fandata_store.bms_hva_fan
     fandata_store.close()
     cleandata = fandata[(fandata.FLOOR == 'F02') & (fandata.ZONE == 'Z00')]

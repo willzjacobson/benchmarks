@@ -191,8 +191,8 @@ def get_history(host, port, source, db_name, username, password,
     return whist
 
 
-def get_latest_forecast(host, port, source, db_name, username, password,
-                        collection_name):
+def get_forecast(host, port, source, db_name, username, password,
+                 collection_name):
     with pymongo.MongoClient(host=host, port=port) as conn:
         conn[db_name].authenticate(username, password, source=source)
         collection = conn[db_name][collection_name]

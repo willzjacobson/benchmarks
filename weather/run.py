@@ -4,7 +4,7 @@ import config
 import weather.mongo
 import weather.wund
 
-cfg = config.david["building_dbs"]
+cfg = config.config["building_dbs"]
 if __name__ == "__main__":
     # whist = pd.read_hdf("/data/weather.h5", "history_orig")
     # weather.mongo._mongo_history_push(whist, **(cfg["mongo_cred"]),
