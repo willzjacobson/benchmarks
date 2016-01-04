@@ -55,7 +55,7 @@ def _construct_electric_dataframe(ts_lists, value_lists):
 
 
 def get_electric_ts(host, port, database, username, password, source_db,
-                    collection_name, bldg_id, meter_count):
+                    collection_name, building, meter_count):
     """ retrieves all available electric data from all meters and sums up
     to get total electric usage time series
 
@@ -73,7 +73,7 @@ def get_electric_ts(host, port, database, username, password, source_db,
         source database for authentication
     :param collection_name: string
         database collection name to query
-    :param bldg_id: string
+    :param building: string
         database building_id identifier
     :param meter_count: int
         number of distinct meters that need to be summed up
@@ -99,7 +99,7 @@ def get_electric_ts(host, port, database, username, password, source_db,
     results = joblib.Parallel(n_jobs=-1)(joblib.delayed(get_ts)(
             host, port, database, username, password, source_db,
             collection_name,
-            bldg_id, "Elec-M%d" % equip_id, 'SIF_Electric_Demand', 'value')
+            building, "Elec-M%d" % equip_id, 'SIF_Electric_Demand', 'value')
                                          for equip_id in
                                          range(1, meter_count + 1))
 
@@ -109,32 +109,32 @@ def get_electric_ts(host, port, database, username, password, source_db,
     return _construct_electric_dataframe(ts_lists, value_lists)
 
 
-def get_occupancy_ts(host, port, database, username, password, source_db,
-                     collection_name, bldg_id):
+def get_occupancy_ts(host, port, source, username, password, db_name,
+                     collection_name, building):
     """Fetch all available occupancy data from database
 
     :param host: string
         database server name or IP-address
     :param port: int
         database port number
-    :param database: string
+    :param db_name: string
         name of the database on server
     :param username: string
         database username
     :param password: string
         database password
-    :param source_db: string
+    :param source: string
         source database for authentication
     :param collection_name: string
         collection name to use
-    :param bldg_id: string
+    :param building: string
         building identifier
     :return: pandas DataFrame
         occupancy time series data
     """
 
-    ts_list, val_list = get_ts(host, port, database, username, password,
-                               source_db, collection_name, bldg_id, 'Occupancy',
+    ts_list, val_list = get_ts(host, port, db_name, username, password,
+                               source, collection_name, building, 'Occupancy',
                                'Occupancy')
 
     # parse timestamp and observation to appropriate datatypes
@@ -188,8 +188,8 @@ def get_space_temp_ts(db, collection_name, bldg, floor, quad, granularity):
                      ).sort_index()
 
 
-def get_parsed_ts(host, port, database, username, password, source_db,
-                  collection_name, bldg_id, device, system, val_type=None):
+def get_parsed_ts(host, port, database, username, password, source,
+                  collection_name, building, device, system, val_type=None):
     """Fetch all available timeseries data from database
 
     :param host: string
@@ -202,18 +202,18 @@ def get_parsed_ts(host, port, database, username, password, source_db,
         database username
     :param password: string
         database password
-    :param source_db: string
+    :param source: string
         source database for authentication
     :param collection_name: string
         collection name to use
-    :param bldg_id: string
+    :param building: string
         building identifier
     :return: pandas DataFrame
         occupancy time series data
     """
 
     ts_list, val_list = get_ts(host, port, database, username, password,
-                               source_db, collection_name, bldg_id, device,
+                               source, collection_name, building, device,
                                system)
 
     # parse timestamp and observation to appropriate datatypes
@@ -231,7 +231,7 @@ def get_parsed_ts(host, port, database, username, password, source_db,
 
 
 def get_ts(host, port, database, username, password, source_db, collection_name,
-           bldg_id, device, system):
+           building, device, system):
     """
     Get all observation data with the given building, device and system
     combination from the database
@@ -250,7 +250,7 @@ def get_ts(host, port, database, username, password, source_db, collection_name,
         source database for authentication
     :param collection_name: string
         database collection name
-    :param bldg_id: string
+    :param building: string
         building identifier
     :param device: string
         device name for identifying time series
@@ -264,7 +264,7 @@ def get_ts(host, port, database, username, password, source_db, collection_name,
         collection = conn[database][collection_name]
 
         ts_list, value_list, daily_dict = [], [], {}
-        for data in collection.find({"_id.building": bldg_id,
+        for data in collection.find({"_id.building": building,
                                      "_id.device": device,
                                      "_id.system": system}):
             readings = data.loc['readings']
@@ -280,7 +280,7 @@ def get_ts(host, port, database, username, password, source_db, collection_name,
 
 
 def get_parsed_ts_new_schema(host, port, database, username, password,
-                             source_db, collection_name, bldg_id, device,
+                             source_db, collection_name, building, device,
                              system, val_type=None, drop_tz=False):
     """Fetch all available timeseries data from database
 
@@ -298,7 +298,7 @@ def get_parsed_ts_new_schema(host, port, database, username, password,
         source database for authentication
     :param collection_name: string
         collection name to use
-    :param bldg_id: string
+    :param building: string
         building identifier
     :param drop_tz: bool
         whether to drop timezone information
@@ -309,7 +309,7 @@ def get_parsed_ts_new_schema(host, port, database, username, password,
 
     ts_list, val_list = get_ts_new_schema(host, port, database, username,
                                           password, source_db, collection_name,
-                                          bldg_id, device, system)
+                                          building, device, system)
 
     # parse timestamp and observation to appropriate datatypes
     ts_list, val_list = ts_proc.munge.convert_dtypes_new_schema(ts_list,
@@ -327,7 +327,7 @@ def get_parsed_ts_new_schema(host, port, database, username, password,
 
 
 def get_ts_new_schema(host, port, database, username, password, source_db,
-                      collection_name, bldg_id, device, system):
+                      collection_name, building, device, system):
     """
     Get all observation data with the given building, device and system
     combination from the database
@@ -346,7 +346,7 @@ def get_ts_new_schema(host, port, database, username, password, source_db,
         source database for authentication
     :param collection_name: string
         database collection name
-    :param bldg_id: string
+    :param building: string
         building identifier
     :param device: string
         device name for identifying time series
@@ -365,14 +365,15 @@ def get_ts_new_schema(host, port, database, username, password, source_db,
         collection = conn[database][collection_name]
 
         ts_list, value_list, daily_dict = [], [], {}
-        for data in collection.find({"building": bldg_id,
+        for data in collection.find({"building": building,
                                      "device": device,
                                      "system": system}):
 
             readings = data['readings']
             dt = dateutil.parser.parse(data['date']).date()
 
-            # zipped = map(lambda x: (x['time'], x['value']) if 'value' in x, readings)
+            # zipped = map(lambda x: (x['time'], x['value']) if
+            # 'value' in x, readings)
             # some occupancy data has reading entries with just the timestamp
             # with missing value
             zipped = [(x['time'], x['value']) for x in readings if 'value' in x]
