@@ -12,11 +12,32 @@ import ts_proc.munge
 import ts_proc.utils
 
 
-
 # TODO: delete this
 import numpy
 import matplotlib.pyplot
 import stash.todel as todel
+
+
+def _dow_type(dt):
+    """
+    Find day of week type.
+    Type 1: Mondays are different from other weekdays because the
+            building was off over the weekend
+    Type 2: Tue-Friday are categorized as one type
+    Type 3: weekend has it own type
+
+    :param dt: datetime.date
+    :return: int in [1, 2, 3]
+    """
+
+    dow = dt.isoweekday()
+
+    if dow in [1]: # Monday
+        return 1
+    elif dow in [2, 3, 4, 5]: # Tue - Fri
+        return 2
+    else: # weekend
+        return 3
 
 
 def _find_benchmark(base_dt, occ_ts, wetbulb_ts, obs_ts, gran, debug):
@@ -61,11 +82,11 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, obs_ts, gran, debug):
 
     # find k closest weather days for which electric and occupancy data is
     # available
-    dow_type = common.utils.dow_type(base_dt)
+    dow_type = _dow_type(base_dt)
     sim_wetbulb_days = common.utils.find_similar_profile_days(base_dt_wetbulb,
                                                               dow_type,
                                                               wetbulb_ts,
-                                                              3,
+                                                              7,
                                                               data_avlblty)
     common.utils.debug_msg(debug, "sim days: %s" % str(sim_wetbulb_days))
 
@@ -75,7 +96,7 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, obs_ts, gran, debug):
                                                                  occ_ts)
     common.utils.debug_msg(debug, occ_scores)
     # find the date with the lowest electric usage
-    return benchmarks.utils.find_lowest_auc_day(occ_scores, obs_ts, 1, debug)
+    return benchmarks.utils.find_lowest_auc_day(occ_scores, obs_ts, 2, debug)
 
 
 

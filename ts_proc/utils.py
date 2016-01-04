@@ -367,7 +367,7 @@ def get_ts_new_schema(host, port, database, username, password, source_db,
     :return: tuple with a list of time stamps followed by a list of values
     """
 
-    print("%s:%s:%s:%s" % (host, port,collection_name, database))
+    # print("%s:%s:%s:%s" % (host, port,collection_name, database))
     with pymongo.MongoClient(host, port) as conn:
 
         conn[database].authenticate(username, password, source=source_db)
@@ -403,3 +403,39 @@ def get_ts_new_schema(host, port, database, username, password, source_db,
                 value_list.extend(val_list_t)
 
     return ts_list, value_list
+
+
+
+def get_steam_ts(host, port, database, username, password, source_db,
+                 collection_name, bldg_id, device, system):
+    """
+    Get all observation data with the given building, device and system
+    combination from the database
+
+    :param host: string
+        database server name or IP-address
+    :param port: int
+        database port number
+    :param database: string
+        name of the database on server
+    :param username: string
+        database username
+    :param password: string
+        database password
+    :param source_db: string
+        source database for authentication
+    :param collection_name: string
+        database collection name
+    :param bldg_id: string
+        building identifier
+    :param device: string
+        device name for identifying time series
+    :param system: string
+        system name for identifying time series
+    # :param field: string
+    #     field name for identifying time series
+
+    :return: tuple with a list of time stamps followed by a list of values
+    """
+
+    pass
