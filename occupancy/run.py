@@ -17,33 +17,57 @@ for building in buildings:
                              source=dbs["mongo_cred"]["source"],
                              username=dbs["mongo_cred"][
                                  "username"],
+                             password=dbs["mongo_cred"]["password"],
                              db_name=dbs["building_ts_loc"][
                                  "db_name"],
                              collection_name=dbs["building_ts_loc"][
                                  "collection_name"],
-                             building=)
+                             building=building)
 
     covars = get_covars(endog=endog,
+                        host=dbs["mongo_cred"]["host"],
+                        port=dbs["mongo_cred"]["port"],
+                        source=dbs["mongo_cred"]["source"],
+                        username=dbs["mongo_cred"][
+                            "username"],
+                        password=dbs["mongo_cred"]["password"],
+                        db_name=dbs["building_ts_loc"][
+                            "db_name"],
+                        collection_name=dbs["building_ts_loc"][
+                            "collection_name"],
+                        cov=config["weather"]["cov"],
                         gran=config.config["sampling"][
-                            "granularity"],
-                        **(dbs["mongo_cred"]),
-                        **(dbs["wund_cred"]),
-                        **(dbs["weather_forecast_loc"]),
-                        **(dbs["weather_history_loc"]),
+                            "granularity"]
                         )
 
-    weather_history = get_history(**(dbs["mongo_cred"]),
-                                  **(dbs["weather_history_loc"]))
+    weather_history = get_history(host=dbs["mongo_cred"]["host"],
+                                  port=dbs["mongo_cred"]["port"],
+                                  source=dbs["mongo_cred"]["source"],
+                                  username=dbs["mongo_cred"][
+                                      "username"],
+                                  password=dbs["mongo_cred"]["password"],
+                                  db_name=dbs["weather_history_loc"]["db_name"],
+                                  collection_name=dbs["weather_history_loc"][
+                                      "collection_name"])
 
-    weather_forecast = get_forecast(**(dbs["mongo_cred"]),
-                                    **(dbs["weather_forecast_loc"]))
+    weather_forecast = get_forecast(host=dbs["mongo_cred"]["host"],
+                                    port=dbs["mongo_cred"]["port"],
+                                    source=dbs["mongo_cred"]["source"],
+                                    username=dbs["mongo_cred"][
+                                        "username"],
+                                    password=dbs["mongo_cred"]["password"],
+                                    db_name=dbs["weather_forecast_loc"][
+                                        "db_name"],
+                                    collection_name=dbs["weather_forecast_loc"][
+                                        "collection_name"])
 
-    cov = config.config["weather"]["cov"]
-
-svm.model.predict(endog=endog,
-                  weather_history=weather_history,
-                  weather_forecast=weather_forecast,
-                  cov=cov
-                  )
-
-svm.model.predict(**(config["predict"]))
+    svm.model.predict(endog=endog,
+                      weather_history=weather_history,
+                      weather_forecast=weather_forecast,
+                      cov=config["weather"]["cov"],
+                      gran=config["sampling"][
+                          "granularity"],
+                      **(config["svm"]["param_search"])
+                        ** (config["svm"]["params"]),
+                      discrete=True
+                      )
