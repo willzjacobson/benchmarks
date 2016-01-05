@@ -43,11 +43,11 @@ def _dow_type(dt):
 
 def _find_benchmark(base_dt, occ_ts, wetbulb_ts, obs_ts, gran, debug):
     """
-        Find benchmark electric usage for the date base_dt. Benchmark
-        electric usage is defined as the electric usage profile from a similar
+        Find benchmark steam usage for the date base_dt. Benchmark
+        steam usage is defined as the steam usage profile from a similar
         weather and occupancy day in the past with the lowest total daily
-        electric usage. weather and occupancy forecasts are used to find such
-        a day. Benchmark electric usage for any given day can not go up, it can
+        steam usage. weather and occupancy forecasts are used to find such
+        a day. Benchmark steam usage for any given day can not go up, it can
         only go down as the building operation becomes more efficient
 
     :param base_dt:
@@ -56,14 +56,14 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, obs_ts, gran, debug):
     :param wetbulb_ts: pandas Series
         wet bulb time series
     :param obs_ts: pandas Series
-        total electric usage time series
+        total usage time series
     :param gran: int
         expected frequency of observations and forecast in minutes
     :param debug: bool
         debug flag
 
     :return: tuple containing benchmark date and a pandas Series object with
-        electric usage data from that date
+        steam usage data from that date
     """
 
     # get data availability
@@ -81,7 +81,7 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, obs_ts, gran, debug):
     # get weather for base_dt
     base_dt_wetbulb = common.utils.get_dt_tseries(base_dt, wetbulb_ts)
 
-    # find k closest weather days for which electric and occupancy data is
+    # find k closest weather days for which steam and occupancy data is
     # available
     dow_type = _dow_type(base_dt)
     sim_wetbulb_days = common.utils.find_similar_profile_days(base_dt_wetbulb,
@@ -96,7 +96,7 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, obs_ts, gran, debug):
                                                                  sim_wetbulb_days,
                                                                  occ_ts)
     common.utils.debug_msg(debug, occ_scores)
-    # find the date with the lowest electric usage
+    # find the date with the lowest steam usage
     return benchmarks.utils.find_lowest_auc_day(occ_scores, obs_ts, 2, debug)
 
 
@@ -106,7 +106,7 @@ def process_building(building, host, port, db_name, username, password,
                      weather_hist_collection, weather_fcst_db,
                      weather_fcst_collection, granularity,
                      base_dt, timezone, debug):
-    """ Find baseline electric usage for building
+    """ Find baseline steam usage for building
 
 
     :param building: string
@@ -140,7 +140,7 @@ def process_building(building, host, port, db_name, username, password,
     :param granularity: string
         expected frequency of observations and forecast
     :param base_dt: datetime.date
-        date for which benchmark electric usage is to be found
+        date for which benchmark usage is to be found
     :param debug: bool
         debug flag
 
