@@ -261,3 +261,6 @@ def save_benchmark(bench_dt, base_dt, bench_ts, bench_auc, bench_incr_auc,
                "readings": gen_bmark_readings_list(bench_ts, bench_incr_auc),
                'daily_total': bench_auc}
         collection.insert(doc)
+
+
+

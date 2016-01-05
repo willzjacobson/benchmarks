@@ -7,6 +7,7 @@ __author__ = 'David Karapetyan'
 
 import pandas as pd
 import config
+import dateutil.parser
 
 
 def munge(df, nary_thresh, gap_threshold, accuracy, gran):
@@ -79,6 +80,9 @@ def convert_datatypes(ts_list, value_list, val_type=float):
     # line below not needed anymore due to change in database from 0 padding
     # nonexisting time/data values to null
     # ts_list = list(map(lambda x: numpy.nan if type(x) is int else x, ts_list))
+
+    ts_list = list(map(lambda x: dateutil.parser.parse(x, ignoretz=False),
+                       ts_list))
 
     # convert str to val_type
     if val_type:

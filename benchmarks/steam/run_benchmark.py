@@ -48,4 +48,6 @@ kw_args['debug']       = cfg['default']['debug']
 for building_id in cfg['default']['buildings']:
 
     bldg_params = cfg['default'][building_id]
-    benchmarks.steam.benchmark.process_building(building_id, **kw_args)
+    benchmarks.steam.benchmark.process_building(building_id,
+                                                timezone=bldg_params['timezone']
+                                                , **kw_args)

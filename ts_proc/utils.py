@@ -16,8 +16,6 @@ import joblib
 # sns.set()
 import ts_proc.munge
 import dateutil.parser
-import datetime
-import numpy
 
 
 def _construct_electric_dataframe(ts_lists, value_lists):
@@ -189,7 +187,7 @@ def get_space_temp_ts(db, collection_name, bldg, floor, quad, granularity):
 
 
 def get_parsed_ts(host, port, database, username, password, source,
-                  collection_name, building, device, system, val_type=None):
+                  collection_name, building, device, system):
     """Fetch all available timeseries data from database
 
     :param host: string
@@ -208,6 +206,10 @@ def get_parsed_ts(host, port, database, username, password, source,
         collection name to use
     :param building: string
         building identifier
+    :param device: string
+        device name for identifying time series
+    :param system: string
+        system name for identifying time series
     :return: pandas DataFrame
         occupancy time series data
     """
@@ -217,17 +219,19 @@ def get_parsed_ts(host, port, database, username, password, source,
                                system)
 
     # parse timestamp and observation to appropriate datatypes
-    ts_list, val_list = ts_proc.munge.convert_datatypes(ts_list, val_list,
-                                                        val_type=val_type)
+    # this is no longer needed
+    # ts_list, val_list = ts_proc.munge.convert_datatypes(ts_list, val_list,
+    #                                                     val_type=val_type)
 
     # it is not possible to create a pandas Series object directly as
     # placeholder entries may be there for missing data. these are usually
     # in the form of time:0 associated with value:0
     obs_df = pd.DataFrame({'tstamp': ts_list, 'obs': val_list})
 
-    # drop missing values, set timestamp as the new index and sort by index
+    # drop missing values, set tstamp as the new index and sort by index
     return obs_df.dropna().set_index(
-            'tstamp', verify_integrity=True).sort_index().loc['obs']
+        'tstamp').drop_duplicates().sort_index()['obs']
+    # 'tstamp', verify_integrity=True).sort_index()['obs']
 
 
 def get_ts(host, port, database, username, password, source, collection_name,
@@ -267,13 +271,21 @@ def get_ts(host, port, database, username, password, source, collection_name,
         for data in collection.find({"_id.building": building,
                                      "_id.device": device,
                                      "_id.system": system}):
-            readings = data.loc['readings']
-            zipped = map(lambda x: (x.loc['time'], x.loc["value"]), readings)
+            readings = data['readings']
 
-            ts_list_t, val_list_t = zip(*zipped)
+            # zipped = map(lambda x: (x.loc['time'], x.loc["value"]), readings)
+            # print(readings)
+            # sys.exit(0)
+            zipped = [(x['time'], x['value']) for x in readings
+                      if (x['time'] is not None
+                          and type(x['time']) is not int
+                          and 'value' in x)]
 
-            ts_list.extend(ts_list_t)
-            value_list.extend(val_list_t)
+            if len(zipped):
+                ts_list_t, val_list_t = zip(*zipped)
+
+                ts_list.extend(ts_list_t)
+                value_list.extend(val_list_t)
 
     return ts_list, value_list
 
@@ -281,7 +293,7 @@ def get_ts(host, port, database, username, password, source, collection_name,
 
 def get_parsed_ts_new_schema(host, port, database, username, password,
                              source, collection_name, building, device,
-                             system, val_type=None):
+                             system):
     """Fetch all available timeseries data from database
 
     :param host: string
@@ -300,6 +312,10 @@ def get_parsed_ts_new_schema(host, port, database, username, password,
         collection name to use
     :param building: string
         building identifier
+    :param device: string
+        device name for identifying time series
+    :param system: string
+        system name for identifying time series
 
     :return: pandas DataFrame
         occupancy time series data
@@ -310,12 +326,14 @@ def get_parsed_ts_new_schema(host, port, database, username, password,
                                           building, device, system)
 
     # parse timestamp and observation to appropriate datatypes
-    ts_list, val_list = ts_proc.munge.convert_dtypes_new_schema(ts_list,
-                                val_list, val_type=val_type)
+    # 2016-01-05: the old schema has been changed to have timestamps as
+    # ISOTime objects so parsing timestamps is no longer needed
+    # ts_list, val_list = ts_proc.munge.convert_dtypes_new_schema(ts_list,
+    #                             val_list, val_type=val_type)
 
     # it is not possible to create a pandas Series object directly as
     # placeholder entries may be there for missing data. these are usually
-    # in the form of time:0 associated with value:0
+    # in the form of time:0 associated with value:0 and/or NAs
     obs_df = pd.DataFrame({'tstamp': ts_list, 'obs': val_list})
 
     # drop missing values, set timestamp as the new index and sort by index
@@ -356,7 +374,6 @@ def get_ts_new_schema(host, port, database, username, password, source,
     :return: tuple with a list of time stamps followed by a list of values
     """
 
-    # print("%s:%s:%s:%s" % (host, port,collection_name, database))
     with pymongo.MongoClient(host, port) as conn:
 
         conn[database].authenticate(username, password, source=source)
@@ -368,64 +385,20 @@ def get_ts_new_schema(host, port, database, username, password, source,
                                      "system": system}):
 
             readings = data['readings']
-            dt = dateutil.parser.parse(data['date']).date()
 
             # zipped = map(lambda x: (x['time'], x['value']) if
             # 'value' in x, readings)
             # some occupancy data has reading entries with just the timestamp
             # and no "value" key
             # zipped = [(x['time'], x['value']) for x in readings if 'value' in x]
-            zipped = [(x['time'], x['value']) for x in readings]
+            zipped = [(x['time'], x['value']) for x in readings
+                                                if x['time'] is not None]
 
             if len(zipped):
                 ts_list_t, val_list_t = zip(*zipped)
-
-                # in the new schema, the readings do not have a date, only a time
-                # this can make parsing incoming data more efficient since the
-                # date part needs to be parsed only once for each day
-                # print(ts_list_t)
-                ts_list_t = map(lambda x: datetime.datetime.combine(dt,
-                                            dateutil.parser.parse(x).time())
-                if type(x) is not int else numpy.nan,
-                                ts_list_t)
-                # sys.exit(0)
                 ts_list.extend(ts_list_t)
                 value_list.extend(val_list_t)
 
     return ts_list, value_list
 
 
-
-def get_steam_ts(host, port, database, username, password, source_db,
-                 collection_name, bldg_id, device, system):
-    """
-    Get all observation data with the given building, device and system
-    combination from the database
-
-    :param host: string
-        database server name or IP-address
-    :param port: int
-        database port number
-    :param database: string
-        name of the database on server
-    :param username: string
-        database username
-    :param password: string
-        database password
-    :param source_db: string
-        source database for authentication
-    :param collection_name: string
-        database collection name
-    :param bldg_id: string
-        building identifier
-    :param device: string
-        device name for identifying time series
-    :param system: string
-        system name for identifying time series
-    # :param field: string
-    #     field name for identifying time series
-
-    :return: tuple with a list of time stamps followed by a list of values
-    """
-
-    pass

@@ -4,6 +4,9 @@ __author__ = 'ashishgagneja'
 
 import re
 
+import numpy
+import pytz
+
 import benchmarks.occupancy.utils
 import benchmarks.utils
 import common.utils
@@ -11,8 +14,8 @@ import ts_proc.munge
 import ts_proc.utils
 
 
+
 # TODO: delete this
-import numpy
 import stash.todel as todel
 
 
@@ -102,7 +105,7 @@ def process_building(building, host, port, db_name, username, password,
                      collection_name_out, weather_hist_db,
                      weather_hist_collection, weather_fcst_db,
                      weather_fcst_collection, granularity,
-                     base_dt, debug):
+                     base_dt, timezone, debug):
     """ Find baseline electric usage for building
 
 
@@ -145,6 +148,7 @@ def process_building(building, host, port, db_name, username, password,
     """
 
     gran_int = int(re.findall('\d+', granularity)[0])
+    target_tzone = pytz.timezone(timezone)
     # get wetbulb
     wetbulb_ts = benchmarks.utils.get_weather(host, port, username, password,
                                               source,
@@ -153,6 +157,7 @@ def process_building(building, host, port, db_name, username, password,
                                               weather_fcst_db,
                                               weather_fcst_collection,
                                               granularity)
+    wetbulb_ts = wetbulb_ts.tz_localize(pytz.utc).tz_convert(target_tzone)
     wetbulb_ts = todel.interp_tseries(wetbulb_ts, gran_int)
     common.utils.debug_msg(debug, "wetbulb: %s" % wetbulb_ts)
 
@@ -168,6 +173,7 @@ def process_building(building, host, port, db_name, username, password,
                                                     'Occupancy')
     # interpolation converts occupancy data to float; convert back to int64
     occ_ts = todel.interp_tseries(occ_ts, gran_int).astype(numpy.int64)
+    occ_ts = occ_ts.tz_localize(pytz.utc).tz_convert(target_tzone)
     # occ_ts = ts_proc.munge.munge(occ_ts, 100, 2, '1min', granularity).astype(
     #     numpy.int64)
     common.utils.debug_msg(debug, "occupancy: %s" % occ_ts)
@@ -178,9 +184,9 @@ def process_building(building, host, port, db_name, username, password,
                                                       source, collection_name,
                                                       building,
                                                       'TotalInstant',
-                                                      'SIF_Steam_Demand',
-                                                      val_type=float)
+                                                      'SIF_Steam_Demand')
     steam_ts = todel.interp_tseries(steam_ts, gran_int)
+    steam_ts = steam_ts.tz_localize(pytz.utc).tz_convert(target_tzone)
     common.utils.debug_msg(debug, "steam: %s" % steam_ts)
 
     # find baseline
