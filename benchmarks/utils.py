@@ -10,6 +10,7 @@ import itertools
 import sys
 
 import pandas as pd
+
 import pymongo
 
 import common.utils
@@ -150,10 +151,12 @@ def incremental_trapz(y, x):
 
 
 
-def find_lowest_auc_day(date_scores, obs_ts, n, debug):
+def find_lowest_auc_day(date_scores, obs_ts, n, timezone, debug):
     """
     Finds the day with the lowest total electric usage from among the n most
     similar occupancy days
+
+    Assumption: Linear interpolation is a reasonable way to fill gaps
 
     :param date_scores: tuple of tuples
         Each tuple is datetime.date followed by its L2 norm score compared to
@@ -184,18 +187,17 @@ def find_lowest_auc_day(date_scores, obs_ts, n, debug):
         if score:
 
             # compute day electric usage by integrating the curve
-            # Assumption: Linear interpolation is a reasonable way to fill gaps
-            day_elec_ts = common.utils.drop_series_ix_date(
-                common.utils.get_dt_tseries(dt, obs_ts))
+            day_obs_ts = common.utils.drop_series_ix_date(
+                common.utils.get_dt_tseries(dt, obs_ts, timezone))
 
             # compute total and incremental AUC
             x = list(map(lambda y: y.hour + y.minute / 60.0 + y.second / 3600.0,
-                         day_elec_ts.index))
-            incr_auc, auc = incremental_trapz(day_elec_ts.data.tolist(), x)
+                         day_obs_ts.index))
+            incr_auc, auc = incremental_trapz(day_obs_ts.data.tolist(), x)
             common.utils.debug_msg(debug, "%s, %s" % (dt, auc))
 
             if 0 < auc < min_usage[1]:
-                min_usage = [dt, auc, incr_auc, day_elec_ts]
+                min_usage = [dt, auc, incr_auc, day_obs_ts]
 
     return min_usage
 

@@ -74,9 +74,8 @@ def compute_profile_similarity_score(gold_ts, other_ts):
     return math.sqrt(sum(norm_ts**2))/len(common_tms)
 
 
-
 def find_similar_profile_days(gold_ts, gold_dow_type, all_ts, k, data_avlblty,
-                              dow_type_fn=dow_type):
+                              timezone, dow_type_fn=dow_type):
     """
     Find k most similar profile days within all_ts with day-of-week type
     matching gold_dow_type and profile/time-series most similar to gold_ts such
@@ -104,23 +103,20 @@ def find_similar_profile_days(gold_ts, gold_dow_type, all_ts, k, data_avlblty,
 
     # find cutoff date
     cutoff_dt = gold_ts.index[0].to_datetime().date()
-    # print("cutoff date: %s" % cutoff_dt)
 
     # drop future dates and dates from other day of week types
     all_dates = set([t for t in all_dates if t < cutoff_dt and
                      dow_type_fn(t) == gold_dow_type])
 
     # compute similarity score for each date
-    one_day = datetime.timedelta(days=1)
-    gold_ts_nodate = drop_series_ix_date(gold_ts)
+    gold_ts_nodatetz = drop_series_ix_date(gold_ts)
     sim_scores = []
     for dt in all_dates:
 
         if dt in data_avlblty:
-
-            end_idx = datetime.datetime.combine(dt + one_day, datetime.time.min)
-            score = compute_profile_similarity_score(gold_ts_nodate,
-                        drop_series_ix_date(all_ts[dt: end_idx]))
+            score = compute_profile_similarity_score(gold_ts_nodatetz,
+                        drop_series_ix_date(get_dt_tseries(dt, all_ts,
+                                                           timezone)))
 
             if score:
                 sim_scores.append([dt, score])
@@ -130,7 +126,7 @@ def find_similar_profile_days(gold_ts, gold_dow_type, all_ts, k, data_avlblty,
     return keys[:k]
 
 
-def get_dt_tseries(dt, full_ts):
+def get_dt_tseries(dt, full_ts, timezone):
     """
     Get time series snippet for the given date
 
@@ -141,9 +137,15 @@ def get_dt_tseries(dt, full_ts):
 
     :return: pandas Series or DataFrame
     """
-    start_idx = datetime.datetime.combine(dt, datetime.time.min)
-    end_idx = datetime.datetime.combine(dt, datetime.time.max)
-    return full_ts[str(start_idx) : str(end_idx)]
+    # pytz.timezone differs from the documented Python API for tzinfo
+    # implementations. using the tzinfo argument of the datetime constructors
+    # does not work with pytz.timezone for many timezones. the call to normalize
+    # is a known work-around of this issue
+    start_idx = timezone.normalize(datetime.datetime.combine(dt,
+                                            datetime.time(tzinfo=timezone)))
+    end_idx   = timezone.normalize(datetime.datetime.combine(dt,
+                            datetime.time(23, 59, 59, 999999, tzinfo=timezone)))
+    return full_ts.loc[str(start_idx) : str(end_idx)]
 
 
 
