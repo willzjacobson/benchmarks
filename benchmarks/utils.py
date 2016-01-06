@@ -165,6 +165,8 @@ def find_lowest_auc_day(date_scores, obs_ts, n, timezone, debug):
         Total electric demand time series
     :param n: int
         number of most similar occupancy days to consider
+    :param timezone: pytz.timezone
+        target timezone or building timezone
     :param debug: bool
         debug flag
 
@@ -215,10 +217,12 @@ def save_benchmark(bench_dt, base_dt, bench_ts, bench_auc, bench_incr_auc,
         base date
     :param bench_ts: pandas Series
         observation time series from bench_dt
+    :param bench_auc: float
+        full day's area under the curve as observed on bench_dt
     :param bench_incr_auc: list
         list with incremental auc scores, is assumed to be of the same size as
         bench_ts
-    ::param host: string
+    :param host: string
         database server name or IP-address
     :param port: int
         database port number

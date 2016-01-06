@@ -91,6 +91,8 @@ def find_similar_profile_days(gold_ts, gold_dow_type, all_ts, k, data_avlblty,
         number of most similar days to returns
     :param data_avlblty: set
         set of dates which must contain the k most similar days selected
+    :param timezone: pytz.timezone
+        target timezone or building timezone
     :param dow_type_fn: function
         function with signature:
          int fn(<date>)
@@ -134,6 +136,8 @@ def get_dt_tseries(dt, full_ts, timezone):
         Date for which to get the observation data from
     :param full_ts: pandas Series or DataFrame
         complete observation / time series data set
+    :param timezone: pytz.timezone
+        target timezone or building timezone
 
     :return: pandas Series or DataFrame
     """

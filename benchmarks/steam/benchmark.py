@@ -107,7 +107,6 @@ def process_building(building, host, port, db_name, username, password,
                      base_dt, timezone, debug):
     """ Find baseline steam usage for building
 
-
     :param building: string
         building identifier
     :param host: string
@@ -140,6 +139,8 @@ def process_building(building, host, port, db_name, username, password,
         expected frequency of observations and forecast
     :param base_dt: datetime.date
         date for which benchmark usage is to be found
+    :param timezone: pytz.timezone
+        target timezone or building timezone
     :param debug: bool
         debug flag
 
