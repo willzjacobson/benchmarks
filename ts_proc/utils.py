@@ -16,6 +16,7 @@ import joblib
 # sns.set()
 import ts_proc.munge
 import dateutil.parser
+import pytz
 
 
 def _construct_electric_dataframe(ts_lists, value_lists):
@@ -338,7 +339,8 @@ def get_parsed_ts_new_schema(host, port, database, username, password,
 
     # drop missing values, set timestamp as the new index and sort by index
     # some duplicates seen in SIF steam data
-    return obs_df.dropna().set_index('tstamp').sort_index()['obs']
+    obs_df = obs_df.dropna().set_index('tstamp').sort_index()
+    return obs_df.tz_localize(pytz.utc)['obs']
 
 
 
