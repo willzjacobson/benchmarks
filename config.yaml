@@ -131,7 +131,7 @@ svm:
     cv: 3 #number of Kfold cross validation folds
     n_jobs: -1
     threshold: 0.003
-    bin_search: False
+    has_bin_search: False
 
 
 arima:

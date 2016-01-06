@@ -7,17 +7,16 @@ import sklearn.preprocessing
 import sklearn.svm
 import sklearn.svm.classes
 
+from occupancy.svm_dframe_prep import get_covars
+
 __author__ = 'David Karapetyan'
 
 
-def _build(endog, weather_orig, cov, gran, params, param_grid, cv, threshold,
+def _build(endog, weather_history, weather_forecast,
+           cov, gran, params, param_grid, cv, threshold,
            n_jobs, discrete, bin_search):
     """SVM Model Instantiation and Training
 
-    :param endog: Series. Endogenous variable to be forecasted
-    :param weather_orig: DataFrame. Built from weather underground data
-    :param cov: List of covariates.
-    :param gran: Sampling granularity
     :param params: Dictionary of SVM model parameters
     :param param_grid: Dictionary of C and gamma values
     The C and gamma keys point to lists representing initial grids used to find
@@ -34,6 +33,9 @@ def _build(endog, weather_orig, cov, gran, params, param_grid, cv, threshold,
     normalization scaling parameters
     """
 
+    covars = get_covars(endog, weather_history, weather_forecast,
+                        cov, gran)
+
     if discrete is True:
         svm = sklearn.svm.SVC(**params)
 
@@ -42,7 +44,9 @@ def _build(endog, weather_orig, cov, gran, params, param_grid, cv, threshold,
 
     # get optimal gamma and c
     if bin_search:
-        param_grid_opt = _best_params(endog=y, features=x, estimator=svm,
+        param_grid_opt = _best_params(endog=covars["y_train"],
+                                      features=covars["x_train"],
+                                      estimator=svm,
                                       param_grid=param_grid, cv=cv,
                                       n_jobs=n_jobs,
                                       threshold=threshold)
@@ -51,9 +55,10 @@ def _build(endog, weather_orig, cov, gran, params, param_grid, cv, threshold,
         new_params["C"] = param_grid_opt["C"]
         new_params["gamma"] = param_grid_opt["gamma"]
         svm.set_params(**new_params)
-        # fit the optimal build
+        # fit the optimal build on covariate set
         # TODO inputs come from svm_dframe prep module
-        fit = svm.fit(x, y)
+
+        fit = svm.fit(covars["x_train"], covars["y_train"])
     else:
         if type(svm) == sklearn.svm.classes.SVC:
             scofunc = "accuracy"
@@ -68,13 +73,13 @@ def _build(endog, weather_orig, cov, gran, params, param_grid, cv, threshold,
                 param_grid=param_grid,
                 scoring=scofunc,
                 cv=cv,
-                n_jobs=n_jobs).fit(x, y)
+                n_jobs=n_jobs).fit(covars["x_train"], covars["y_train"])
         for item in fit.grid_scores_:
             print(item)
         print("The best parameters are {} with a score of {}".format(
                 fit.best_params_, fit.best_score_))
 
-    return fit
+    return {"fit": fit, "covars": covars}
 
 
 def _best_gamma_fit(endog, features, estimator, c, param_grid_gamma, cv, n_jobs,
@@ -193,15 +198,11 @@ def _best_params(endog, features, estimator, param_grid, cv, n_jobs, threshold):
     return params[ind]
 
 
-def predict(endog, weather_history, weather_forecast, cov, gran,
-            params, param_grid, cv, threshold, n_jobs, discrete, bin_search):
+def predict(endog, weather_history, weather_forecast,
+            cov, gran, params, param_grid, cv, threshold,
+            n_jobs, discrete, bin_search):
     """Time Series Prediciton Using SVM
 
-    :param endog: Series. Endogenous variable to be forecasted
-    :param weather_history: Dataframe. Built from weather underground data
-    :param weather_forecast: Dataframe. Built from weather underground data
-    :param cov: List of covariates
-    :param gran: Int. Sampling granularity
     :param params: Dictionary of SVM model parameters
     :param param_grid: Dictionary of grid values for svm C and gamma
     :param cv: Number of Stratified K-fold cross-validation folds
@@ -216,16 +217,19 @@ def predict(endog, weather_history, weather_forecast, cov, gran,
     :return: Series
     """
     if discrete is True:
-        model = _build(endog=endog, weather_orig=weather_history,
-                       cov=cov, gran=gran, params=params,
-                       param_grid=param_grid, cv=cv,
-                       threshold=threshold,
-                       n_jobs=n_jobs,
-                       bin_search=bin_search,
-                       discrete=discrete,
-                       )
+        model_items = _build(endog, weather_history, weather_forecast,
+                             cov, gran, params, param_grid, cv, threshold,
+                             n_jobs, discrete, bin_search
+                             )
+        fit = model_items["fit"]
+        covars = model_items["covars"]
+        scaler = model_items["scaler"]
+
         # TODO predicted series inputs come from svm_dframe module
-        predicted_series = pd.Series(
-                data=model.predict(features_scaled),
-                index=prediction_index)
+        predicted_series_scaled = pd.Series(
+                data=fit.predict(covars["x_future"]),
+                index=covars["prediction_index"])
+
+        # transform prediction back to unscaled representation
+        predicted_series = scaler.inverse_transform(predicted_series_scaled)
         return predicted_series

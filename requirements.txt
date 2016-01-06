@@ -1,3 +1,4 @@
+sklearn
 pymongo
 joblib
 abstract-rendering==0.5.1
