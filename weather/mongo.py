@@ -111,12 +111,14 @@ def history_update(city, state, wund_url, parallel, host, port, source,
                                collection_name=collection_name,
                                )
 
+    if not isinstance(weather_data, pd.DataFrame):
+        raise ValueError("History pull as dataframe failed")
     # start is beginning of day for last entry in weather_data
     # we toss out any times already existing between start and end of
     # day in archive weather_data, in order for concat below to run without
     # indices clashing
 
-    if len(weather_data.index) == 0:
+    if len(weather_data) == 0:
         start = pd.datetime.today().date() - relativedelta(years=4)
     else:
         start = weather_data.index[-1].date()
@@ -170,6 +172,17 @@ def history_update(city, state, wund_url, parallel, host, port, source,
 
 def get_history(host, port, source, db_name, username, password,
                 collection_name):
+    """
+
+    :param host:
+    :param port:
+    :param source:
+    :param db_name:
+    :param username:
+    :param password:
+    :param collection_name:
+    :return: DataFrame
+    """
     whist = []
     with pymongo.MongoClient(host=host, port=port) as conn:
         conn[db_name].authenticate(username, password, source=source)
