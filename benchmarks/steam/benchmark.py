@@ -199,11 +199,19 @@ def process_building(building, host, port, db_name, username, password,
     # TODO: delete display code
     # plot
     # get actual, if available
-    # actual_ts = common.utils.get_dt_tseries(base_dt, steam_ts)
-    # actual_ts_nodate = common.utils.drop_series_ix_date(actual_ts)
-    # print("actual: %s" % actual_ts)
+    # actual_ts = common.utils.get_dt_tseries(base_dt, steam_ts, target_tzone)
+    # actual_ts_nodatetz = common.utils.drop_series_ix_date(actual_ts)
+
+    # debug 2015-08-28
+    # test_dt = datetime.date(2015, 8, 28)
+    # actual_ts_test = common.utils.get_dt_tseries(test_dt, steam_ts,
+    #                                              target_tzone)
+    # actual_ts_test_nodatetz = common.utils.drop_series_ix_date(actual_ts_test)
+    # print("actual: %s" % actual_ts_test)
+    # print("actual no tz,dt: %s" % actual_ts_test_nodatetz)
+
     # disp_df = bench_usage.to_frame(name='benchmark')
-    # disp_df = disp_df.join(actual_ts_nodate.to_frame(name='actual'),
+    # disp_df = disp_df.join(actual_ts_nodatetz.to_frame(name='actual'),
     #                        how='outer')
     # print("disp df: %s" % disp_df)
 
