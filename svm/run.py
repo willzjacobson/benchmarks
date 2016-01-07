@@ -47,7 +47,7 @@ if __name__ == "__main__":
     ts = ts.resample(granularity).fillna(method="bfill")
 
     # run prediction
-    prediction = svm.model.predict(y_train=ts,
+    prediction = svm.model.predict(endog=ts,
                                    weather_history=weather_history,
                                    weather_forecast=weather_forecast,
                                    cov=cov, gran=gran,
