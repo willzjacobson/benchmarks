@@ -6,7 +6,7 @@ import numpy
 __author__ = 'David Karapetyan'
 
 import pandas as pd
-import config
+from config import config
 import dateutil.parser
 
 
@@ -180,16 +180,16 @@ def filter_two_std(ts):
 
 def filter_day_season(ts, day=pd.datetime.today().weekday(),
                       month=pd.datetime.today().month):
-    seasons = config.config["building_dbs"]["seasons"]
+    seasons = config["weather"]["seasons"]
     month_range = (0, 0)
 
     for value in seasons.values():
-        if value[0] < month <= value[1]:
+        if value[0] % 12 < month <= value[1] % 12:
             month_range = value
 
     # filter by day and season
     ts_filt = ts[((ts.index.weekday == day) &
-                  (ts.index.month > month_range[0]) &
-                  (ts.index.month <= month_range[1])
+                  (ts.index.month > month_range[0] % 12) &
+                  (ts.index.month <= month_range[1] % 12)
                   )]
     return ts_filt
