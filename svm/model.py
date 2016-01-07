@@ -222,7 +222,6 @@ def predict(endog, weather_history, weather_forecast, cov, gran, params,
     fit = model_items["fit"]
     covars = model_items["covars"]
 
-    # TODO predicted series inputs come from svm_dframe module
     predicted_series = pd.Series(
             data=fit.predict(covars["x_future"]),
             index=covars["prediction_index"])

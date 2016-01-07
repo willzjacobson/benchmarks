@@ -1,6 +1,5 @@
 # coding=utf-8
 
-# import buildings_dbs as dbs
 from numpy import logspace
 
 import svm.model
@@ -8,7 +7,6 @@ from config import config
 from ts_proc.utils import get_parsed_ts_new_schema
 from weather.mongo import get_history, get_forecast
 
-##########
 dbs = config["building_dbs"]
 buildings = config["default"]["buildings"]
 
