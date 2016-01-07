@@ -61,7 +61,7 @@ def get_covars(endog, weather_orig, forecast_orig, cov, gran):
     prediction_index = future_features.index
     future_features = future_features.reset_index()
 
-    future_features['index'] = future_features['index'].apply(
+    future_features['time'] = future_features['time'].apply(
             lambda date:
             datetime.timedelta(
                     hours=date.hour,
@@ -70,5 +70,8 @@ def get_covars(endog, weather_orig, forecast_orig, cov, gran):
 
     x_future = scaler.transform(future_features)
 
-    return {y_train: y_train, x_train: x_train, x_future: x_future,
-            prediction_index: prediction_index, scaler: scaler}
+    return {"y_train": y_train,
+            "x_train": x_train,
+            "x_future": x_future,
+            "prediction_index": prediction_index,
+            "scaler": scaler}

@@ -60,7 +60,7 @@ for building in buildings:
     n_jobs = config["svm"]["param_search"]["n_jobs"]
     threshold = config["svm"]["param_search"]["threshold"]
     has_bin_search = config["svm"]["param_search"]["has_bin_search"]
-    discrete = True
+    discrete = False
 
     svm.model.predict(endog, weather_history, weather_forecast,
                       cov, gran, params, param_grid, cv, threshold,

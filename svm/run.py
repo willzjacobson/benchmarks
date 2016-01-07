@@ -55,7 +55,7 @@ if __name__ == "__main__":
                                    param_grid=param_grid,
                                    cv=cv,
                                    threshold=threshold, n_jobs=n_jobs,
-                                   bin_search=False,
+                                   has_bin_search=False,
                                    discrete=True)
 
     print(prediction)

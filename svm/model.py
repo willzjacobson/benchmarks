@@ -198,9 +198,8 @@ def _best_params(endog, features, estimator, param_grid, cv, n_jobs, threshold):
     return params[ind]
 
 
-def predict(endog, weather_history, weather_forecast,
-            cov, gran, params, param_grid, cv, threshold,
-            n_jobs, discrete, bin_search):
+def predict(endog, weather_history, weather_forecast, cov, gran, params,
+            param_grid, cv, threshold, n_jobs, discrete, has_bin_search):
     """Time Series Prediciton Using SVM
 
     :param params: Dictionary of SVM model parameters
@@ -212,24 +211,20 @@ def predict(endog, weather_history, weather_forecast,
     :param n_jobs: Positive integer specifying number of cores for run
     :param discrete: Boolean identifying whether the endogenous variable
     is discrete or takes a continuum of values
-    :param bin_search: Boolean. Whether or not to use binary search along
+    :param has_bin_search: Boolean. Whether or not to use binary search along
     gamma grid for each fixed C
     :return: Series
     """
-    if discrete is True:
-        model_items = _build(endog, weather_history, weather_forecast,
-                             cov, gran, params, param_grid, cv, threshold,
-                             n_jobs, discrete, bin_search
-                             )
-        fit = model_items["fit"]
-        covars = model_items["covars"]
-        scaler = model_items["scaler"]
+    model_items = _build(endog, weather_history, weather_forecast,
+                         cov, gran, params, param_grid, cv, threshold,
+                         n_jobs, discrete, has_bin_search
+                         )
+    fit = model_items["fit"]
+    covars = model_items["covars"]
 
-        # TODO predicted series inputs come from svm_dframe module
-        predicted_series_scaled = pd.Series(
-                data=fit.predict(covars["x_future"]),
-                index=covars["prediction_index"])
+    # TODO predicted series inputs come from svm_dframe module
+    predicted_series = pd.Series(
+            data=fit.predict(covars["x_future"]),
+            index=covars["prediction_index"])
 
-        # transform prediction back to unscaled representation
-        predicted_series = scaler.inverse_transform(predicted_series_scaled)
-        return predicted_series
+    return predicted_series
