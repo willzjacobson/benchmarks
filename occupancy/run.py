@@ -1,6 +1,8 @@
 # coding=utf-8
 
 # import buildings_dbs as dbs
+from numpy import logspace
+
 import svm.model
 from config import config
 from ts_proc.utils import get_parsed_ts_new_schema
@@ -50,8 +52,10 @@ for building in buildings:
     cov = config["weather"]["cov"]
     gran = config["sampling"]["granularity"]
     params = config["svm"]["params"]
-    param_grid = config["svm"]["param_search"]["grid"]
-    # TODO convert using np.logspace
+    pg = config["svm"]["param_search"]["grid"]
+    param_grid = {"C": logspace(**(pg["C"])),
+                  "gamma": logspace(**(pg["gamma"])),
+                  "kernel": pg["kernel"]}
     cv = config["svm"]["param_search"]["cv"]
     n_jobs = config["svm"]["param_search"]["n_jobs"]
     threshold = config["svm"]["param_search"]["threshold"]
