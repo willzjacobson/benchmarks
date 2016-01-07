@@ -6,7 +6,7 @@ default:
   buildings:
     - 345_Park
   # run mode
-  debug: True
+  debug: False
 
   345_Park:
       floor_quadrants:
