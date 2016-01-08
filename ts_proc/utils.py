@@ -187,6 +187,58 @@ def get_space_temp_ts(db, collection_name, bldg, floor, quad, granularity):
                      ).sort_index()
 
 
+def get_steam_ts(host, port, database, username, password,
+                 source, collection_name, building, device,
+                 system, meter_count):
+    """Fetch all available steam data from database
+
+    :param host: string
+        database server name or IP-address
+    :param port: int
+        database port number
+    :param database: string
+        name of the database on server
+    :param username: string
+        database username
+    :param password: string
+        database password
+    :param source: string
+        source database for authentication
+    :param collection_name: string
+        collection name to use
+    :param building: string
+        building identifier
+    :param device: string
+        device name for identifying time series
+    :param system: string
+        system name for identifying time series
+    :param meter_count: int
+        number of steam meters in use
+
+    :return: pandas Series
+        steam time series data
+    """
+
+    steam_ts_sif = get_parsed_ts_new_schema(host, port, database, username,
+                                            password, source, collection_name,
+                                            building, device, system)
+
+    # for newer data from direct BMS feed
+    master_df = pd.DataFrame()
+    for meter in range(1, meter_count + 1):
+        meter_nm = "Steam_Line_%d" % meter
+        meter_df = get_parsed_ts_new_schema(host, port, database, username,
+                                            password, source, collection_name,
+                                            building, meter_nm, 'Steam_Demand')
+        meter_df.name = meter_nm
+        master_df = master_df.join(meter_df, how='outer')
+
+    master_df = master_df.dropna().sum(axis=1).sort_index()
+    new_data_only_idx = master_df.index.difference(steam_ts_sif)
+    return pd.concat([steam_ts_sif, master_df.loc[new_data_only_idx]])
+
+
+
 def get_parsed_ts(host, port, database, username, password, source,
                   collection_name, building, device, system):
     """Fetch all available timeseries data from database

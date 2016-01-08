@@ -6,7 +6,7 @@ default:
   buildings:
     - 345_Park
   # run mode
-  debug: False
+  debug: True
 
   345_Park:
       floor_quadrants:
@@ -23,6 +23,7 @@ default:
       collection_name_out: analytics
 
       timezone: US/Eastern
+      steam_meter_count: 3
 
 
 building_dbs:
