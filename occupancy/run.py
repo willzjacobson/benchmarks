@@ -6,6 +6,7 @@ import svm.model
 from config import config
 from ts_proc.utils import get_parsed_ts_new_schema
 from weather.mongo import get_history, get_forecast
+from ts_proc.munge import is_discrete
 
 dbs = config["building_dbs"]
 buildings = config["default"]["buildings"]
@@ -47,6 +48,7 @@ for building in buildings:
                                     collection_name=dbs["weather_forecast_loc"][
                                         "collection_name"])
 
+    nary_thresh = config["sampling"]["nary_thresh"]
     cov = config["weather"]["cov"]
     gran = config["sampling"]["granularity"]
     params = config["svm"]["params"]
@@ -58,7 +60,7 @@ for building in buildings:
     n_jobs = config["svm"]["param_search"]["n_jobs"]
     threshold = config["svm"]["param_search"]["threshold"]
     has_bin_search = config["svm"]["param_search"]["has_bin_search"]
-    discrete = False
+    discrete = is_discrete(endog, nary_thresh)
 
     svm.model.predict(endog, weather_history, weather_forecast,
                       cov, gran, params, param_grid, cv, threshold,

@@ -9,6 +9,12 @@ import pandas as pd
 from config import config
 import dateutil.parser
 
+def is_discrete(df, nary_thresh):
+
+    if df.nunique() < nary_thresh:
+        return True
+    else:
+        return False
 
 def munge(df, nary_thresh, gap_threshold, accuracy, gran):
     """For cleaning incoming data, and extracting relevant fields
@@ -44,7 +50,7 @@ def munge(df, nary_thresh, gap_threshold, accuracy, gran):
     # for gaps less than threshold. Process nary data different than
     # continuous data
 
-    if df.nunique() < nary_thresh:
+    if is_discrete(df, nary_thresh):
         df_thresh = df.resample(accuracy).fillna(method="pad")[dates_le_resamp]
     else:
         df_thresh = df.resample(accuracy).interpolate()[dates_le_resamp]
