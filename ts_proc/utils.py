@@ -187,58 +187,6 @@ def get_space_temp_ts(db, collection_name, bldg, floor, quad, granularity):
                      ).sort_index()
 
 
-def get_steam_ts(host, port, database, username, password,
-                 source, collection_name, building, device,
-                 system, meter_count):
-    """Fetch all available steam data from database
-
-    :param host: string
-        database server name or IP-address
-    :param port: int
-        database port number
-    :param database: string
-        name of the database on server
-    :param username: string
-        database username
-    :param password: string
-        database password
-    :param source: string
-        source database for authentication
-    :param collection_name: string
-        collection name to use
-    :param building: string
-        building identifier
-    :param device: string
-        device name for identifying time series
-    :param system: string
-        system name for identifying time series
-    :param meter_count: int
-        number of steam meters in use
-
-    :return: pandas Series
-        steam time series data
-    """
-
-    steam_ts_sif = get_parsed_ts_new_schema(host, port, database, username,
-                                            password, source, collection_name,
-                                            building, device, system)
-
-    # for newer data from direct BMS feed
-    master_df = pd.DataFrame()
-    for meter in range(1, meter_count + 1):
-        meter_nm = "Steam_Line_%d" % meter
-        meter_df = get_parsed_ts_new_schema(host, port, database, username,
-                                            password, source, collection_name,
-                                            building, meter_nm, 'Steam_Demand')
-        meter_df.name = meter_nm
-        master_df = master_df.join(meter_df, how='outer')
-
-    master_df = master_df.dropna().sum(axis=1).sort_index()
-    new_data_only_idx = master_df.index.difference(steam_ts_sif)
-    return pd.concat([steam_ts_sif, master_df.loc[new_data_only_idx]])
-
-
-
 def get_parsed_ts(host, port, database, username, password, source,
                   collection_name, building, device, system):
     """Fetch all available timeseries data from database
@@ -397,7 +345,7 @@ def get_parsed_ts_new_schema(host, port, database, username, password,
 
 
 def get_ts_new_schema(host, port, database, username, password, source,
-                      collection_name, building, device, system):
+                      collection_name, building, device, system=None):
     """
     Get all observation data with the given building, device and system
     combination from the database
@@ -434,17 +382,15 @@ def get_ts_new_schema(host, port, database, username, password, source,
         collection = conn[database][collection_name]
 
         ts_list, value_list, daily_dict = [], [], {}
-        for data in collection.find({"building": building,
-                                     "device": device,
-                                     "system": system}):
+
+        query = {"building": building,
+                 "device"  : device}
+        if system:
+            query['system'] = system
+
+        for data in collection.find(query):
 
             readings = data['readings']
-
-            # zipped = map(lambda x: (x['time'], x['value']) if
-            # 'value' in x, readings)
-            # some occupancy data has reading entries with just the timestamp
-            # and no "value" key
-            # zipped = [(x['time'], x['value']) for x in readings if 'value' in x]
             zipped = [(x['time'], x['value']) for x in readings
                                                 if x['time'] is not None]
 
