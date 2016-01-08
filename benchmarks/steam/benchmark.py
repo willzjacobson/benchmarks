@@ -104,7 +104,7 @@ def process_building(building, host, port, db_name, username, password,
                      collection_name_out, weather_hist_db,
                      weather_hist_collection, weather_fcst_db,
                      weather_fcst_collection, granularity,
-                     base_dt, timezone, debug):
+                     base_dt, steam_meter_count, timezone, debug):
     """ Find baseline steam usage for building
 
     :param building: string
@@ -139,6 +139,8 @@ def process_building(building, host, port, db_name, username, password,
         expected frequency of observations and forecast
     :param base_dt: datetime.date
         date for which benchmark usage is to be found
+    :param steam_meter_count: int
+        number of steam meters in use
     :param timezone: pytz.timezone
         target timezone or building timezone
     :param debug: bool
@@ -158,7 +160,7 @@ def process_building(building, host, port, db_name, username, password,
                                               weather_fcst_db,
                                               weather_fcst_collection,
                                               granularity)
-    wetbulb_ts = wetbulb_ts.tz_localize(pytz.utc).tz_convert(target_tzone)
+    wetbulb_ts = wetbulb_ts.tz_convert(target_tzone)
     # wetbulb_ts = todel.interp_tseries(wetbulb_ts, gran_int)
     common.utils.debug_msg(debug, "wetbulb: %s" % wetbulb_ts)
 
@@ -182,9 +184,8 @@ def process_building(building, host, port, db_name, username, password,
     steam_ts = ts_proc.utils.get_parsed_ts_new_schema(host, port, db_name,
                                                       username, password,
                                                       source, collection_name,
-                                                      building,
-                                                      'TotalInstant',
-                                                      'SIF_Steam_Demand')
+                                                      building, 'TotalInstant',
+                                                      None)
     # steam_ts = todel.interp_tseries(steam_ts, gran_int)
     steam_ts = steam_ts.tz_convert(target_tzone)
     common.utils.debug_msg(debug, "steam: %s" % steam_ts)
@@ -195,31 +196,6 @@ def process_building(building, host, port, db_name, username, password,
     bench_dt, bench_auc, bench_incr_auc, bench_usage = bench_info
     common.utils.debug_msg(debug, "bench dt: %s, bench usage: %s, auc: %s" % (
         bench_dt, bench_usage, bench_auc))
-
-    # TODO: delete display code
-    # plot
-    # get actual, if available
-    # actual_ts = common.utils.get_dt_tseries(base_dt, steam_ts, target_tzone)
-    # actual_ts_nodatetz = common.utils.drop_series_ix_date(actual_ts)
-
-    # debug 2015-08-28
-    # test_dt = datetime.date(2015, 8, 28)
-    # actual_ts_test = common.utils.get_dt_tseries(test_dt, steam_ts,
-    #                                              target_tzone)
-    # actual_ts_test_nodatetz = common.utils.drop_series_ix_date(actual_ts_test)
-    # print("actual: %s" % actual_ts_test)
-    # print("actual no tz,dt: %s" % actual_ts_test_nodatetz)
-
-    # disp_df = bench_usage.to_frame(name='benchmark')
-    # disp_df = disp_df.join(actual_ts_nodatetz.to_frame(name='actual'),
-    #                        how='outer')
-    # print("disp df: %s" % disp_df)
-
-    # matplotlib.pyplot.style.use('ggplot')
-    # matplotlib.pyplot.figure()
-    # chart = disp_df.plot()
-    # fig = chart.get_figure()
-    # fig.savefig("bmark_%s.png" % base_dt)
 
     # save results
     if not debug:

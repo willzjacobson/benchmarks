@@ -345,7 +345,7 @@ def get_parsed_ts_new_schema(host, port, database, username, password,
 
 
 def get_ts_new_schema(host, port, database, username, password, source,
-                      collection_name, building, device, system):
+                      collection_name, building, device, system=None):
     """
     Get all observation data with the given building, device and system
     combination from the database
@@ -382,17 +382,15 @@ def get_ts_new_schema(host, port, database, username, password, source,
         collection = conn[database][collection_name]
 
         ts_list, value_list, daily_dict = [], [], {}
-        for data in collection.find({"building": building,
-                                     "device": device,
-                                     "system": system}):
+
+        query = {"building": building,
+                 "device"  : device}
+        if system:
+            query['system'] = system
+
+        for data in collection.find(query):
 
             readings = data['readings']
-
-            # zipped = map(lambda x: (x['time'], x['value']) if
-            # 'value' in x, readings)
-            # some occupancy data has reading entries with just the timestamp
-            # and no "value" key
-            # zipped = [(x['time'], x['value']) for x in readings if 'value' in x]
             zipped = [(x['time'], x['value']) for x in readings
                                                 if x['time'] is not None]
 

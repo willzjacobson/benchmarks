@@ -9,6 +9,7 @@ import datetime
 import itertools
 import sys
 
+import pytz
 import pandas as pd
 
 import pymongo
@@ -16,22 +17,6 @@ import pymongo
 import common.utils
 import weather.mongo
 import weather.wund
-
-
-def filter_missing_weather_data(weather_df):
-    """
-    Filter/remove rows with missing data like -9999's
-    :param weather_df: pandas DataFrame
-        dataframe with weather data
-
-    :return: pandas DataFrame
-    """
-
-    # TODO: it might be better not to ignore good data in records with
-    # some missing data
-    bad_data = weather_df.where(weather_df < -998).any(axis=1)
-    return weather_df.drop(bad_data[bad_data == True].index)
-
 
 
 def get_weather(host, port, username, password, source_db, history_db,
@@ -77,7 +62,7 @@ def get_weather(host, port, username, password, source_db, history_db,
     fcst_only_idx = fcst_munged.index.difference(hist_munged)
     wetbulb_ts = pd.concat([hist_munged, fcst_munged.loc[fcst_only_idx]])
 
-    return wetbulb_ts.dropna()
+    return wetbulb_ts.dropna().tz_localize(pytz.utc)
 
 
 
