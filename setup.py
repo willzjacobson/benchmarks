@@ -1,6 +1,11 @@
+# coding=utf-8
+import sys
 from distutils.core import setup
 
 from pip.req import parse_requirements
+
+if not sys.version_info.major == 2 & sys.version_info.minor == 7:
+    sys.exit("Sorry, Python 3 is not supported")
 
 # parse requirements
 install_reqs = parse_requirements("requirements.txt")
@@ -10,7 +15,7 @@ reqs = [str(ir.req) for ir in install_reqs]
 setup(
         name='Babbage',
         version='0.2',
-        packages=['', 'svm', 'arima', 'shared', 'ts_proc', 'weather',
+        packages=['svm', 'arima', 'shared', 'ts_proc', 'weather',
                   'electric', 'occupancy', 'benchmarks', 'benchmarks.steam',
                   'benchmarks.electric', 'space_temp', 'startup_rampdown'],
         url='https://github.com/PrescriptiveData/datascience',
