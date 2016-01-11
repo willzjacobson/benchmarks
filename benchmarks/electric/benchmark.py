@@ -12,6 +12,7 @@ import pymongo
 
 import benchmarks.occupancy.utils
 import benchmarks.utils
+import shared
 import ts_proc.munge
 import ts_proc.utils
 import weather.wet_bulb
@@ -129,8 +130,8 @@ def find_lowest_electric_usage(date_scores, electric_ts, n, debug):
 
             # compute day electric usage by integrating the curve
             # Assumption: Linear interpolation is a reasonable way to fill gaps
-            day_elec_ts = common.utils.drop_series_ix_date(
-                    common.utils.get_dt_tseries(dt, electric_ts))
+            day_elec_ts = shared.utils.drop_series_ix_date(
+                    shared.utils.get_dt_tseries(dt, electric_ts))
 
             # compute total and incremental AUC
             x = list(map(lambda y: y.hour + y.minute / 60.0 + y.second / 3600.0,
@@ -142,7 +143,7 @@ def find_lowest_electric_usage(date_scores, electric_ts, n, debug):
             # + x.minute * 60
             # + x.second,
             #   day_elec_ts.index)))
-            common.utils.debug_msg(debug, "%s, %s" % (dt, auc))
+            shared.utils.debug_msg(debug, "%s, %s" % (dt, auc))
 
             if 0 < auc < min_usage[1]:
                 min_usage = [dt, auc, incr_auc, day_elec_ts]
@@ -267,24 +268,24 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, electric_ts, gran, debug):
         raise Exception("insufficient data available for %s" % base_dt)
 
     # get weather for base_dt
-    base_dt_wetbulb = common.utils.get_dt_tseries(base_dt, wetbulb_ts)
+    base_dt_wetbulb = shared.utils.get_dt_tseries(base_dt, wetbulb_ts)
 
     # find k closest weather days for which electric and occupancy data is
     # available
-    dow_type = common.utils.dow_type(base_dt)
-    sim_wetbulb_days = common.utils.find_similar_profile_days(base_dt_wetbulb,
+    dow_type = shared.utils.dow_type(base_dt)
+    sim_wetbulb_days = shared.utils.find_similar_profile_days(base_dt_wetbulb,
                                                               dow_type,
                                                               wetbulb_ts,
                                                               20,
                                                               data_avlblty)
-    common.utils.debug_msg(debug, "sim days: %s" % str(sim_wetbulb_days))
+    shared.utils.debug_msg(debug, "sim days: %s" % str(sim_wetbulb_days))
 
     # compute occupancy similarity score for the k most similar weather days
     occ_scores = benchmarks.occupancy.utils.score_occ_similarity(
             base_dt,
             sim_wetbulb_days,
             occ_ts)
-    common.utils.debug_msg(debug, occ_scores)
+    shared.utils.debug_msg(debug, occ_scores)
     # find the date with the lowest electric usage
     return benchmarks.utils.find_lowest_auc_day(occ_scores, electric_ts, 5,
                                                 debug)
@@ -353,7 +354,7 @@ def process_building(building_id, host, port, db_name, username, password,
                                               weather_fcst_db,
                                               weather_fcst_collection,
                                               granularity)
-    common.utils.debug_msg(debug, "wetbulb: %s" % wetbulb_ts)
+    shared.utils.debug_msg(debug, "wetbulb: %s" % wetbulb_ts)
 
     # get occupancy data
     occ_ts = ts_proc.utils.get_occupancy_ts(host, port, db_name, username,
@@ -361,7 +362,7 @@ def process_building(building_id, host, port, db_name, username, password,
                                             collection_name, building_id)
     # interpolation converts occupancy data to float; convert back to int64
     # occ_ts = todel.interp_tseries(occ_ts, gran_int).astype(numpy.int64)
-    common.utils.debug_msg(debug, "occupancy: %s" % occ_ts)
+    shared.utils.debug_msg(debug, "occupancy: %s" % occ_ts)
 
     # query electric data
     elec_ts = ts_proc.utils.get_electric_ts(host, port, db_name, username,
@@ -369,13 +370,13 @@ def process_building(building_id, host, port, db_name, username, password,
                                             collection_name,
                                             building_id, meter_count)
     # elec_ts = todel.interp_tseries(elec_ts, gran_int)
-    common.utils.debug_msg(debug, "electric: %s" % elec_ts)
+    shared.utils.debug_msg(debug, "electric: %s" % elec_ts)
 
     # find baseline
     bench_info = _find_benchmark(base_dt, occ_ts, wetbulb_ts,
                                  elec_ts, gran_int, debug)
     bench_dt, bench_auc, bench_incr_auc, bench_usage = bench_info
-    common.utils.debug_msg(debug, "bench dt: %s, bench usage: %s, auc: %s" % (
+    shared.utils.debug_msg(debug, "bench dt: %s, bench usage: %s, auc: %s" % (
         bench_dt, bench_usage, bench_auc))
 
     # TODO: delete display code
