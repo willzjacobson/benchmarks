@@ -13,6 +13,7 @@ import pandas as pd
 import pymongo
 import pytz
 
+import shared.utils
 import weather.mongo
 import weather.wund
 
@@ -172,14 +173,14 @@ def find_lowest_auc_day(date_scores, obs_ts, n, timezone, debug):
         if score:
 
             # compute day electric usage by integrating the curve
-            day_obs_ts = common.utils.drop_series_ix_date(
-                common.utils.get_dt_tseries(dt, obs_ts, timezone))
+            day_obs_ts = shared.utils.drop_series_ix_date(
+                    shared.utils.get_dt_tseries(dt, obs_ts, timezone))
 
             # compute total and incremental AUC
             x = list(map(lambda y: y.hour + y.minute / 60.0 + y.second / 3600.0,
                          day_obs_ts.index))
             incr_auc, auc = incremental_trapz(day_obs_ts.data.tolist(), x)
-            common.utils.debug_msg(debug, "%s, %s" % (dt, auc))
+            shared.utils.debug_msg(debug, "%s, %s" % (dt, auc))
 
             if 0 < auc < min_usage[1]:
                 min_usage = [dt, auc, incr_auc, day_obs_ts]

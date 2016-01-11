@@ -6,11 +6,10 @@ import re
 
 import pytz
 
-import benchmarks.occupancy.utils
 import benchmarks.utils
+import shared.utils
 import ts_proc.munge
 import ts_proc.utils
-
 
 def _dow_type(dt):
     """
@@ -72,12 +71,12 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, obs_ts, gran, timezone,
         raise Exception("insufficient data available for %s" % base_dt)
 
     # get weather for base_dt
-    base_dt_wetbulb = common.utils.get_dt_tseries(base_dt, wetbulb_ts, timezone)
+    base_dt_wetbulb = shared.utils.get_dt_tseries(base_dt, wetbulb_ts, timezone)
 
     # find k closest weather days for which steam and occupancy data is
     # available
     dow_type = _dow_type(base_dt)
-    sim_wetbulb_days = common.utils.find_similar_profile_days(base_dt_wetbulb,
+    sim_wetbulb_days = shared.utils.find_similar_profile_days(base_dt_wetbulb,
                                                               dow_type,
                                                               wetbulb_ts,
                                                               7,
@@ -85,15 +84,15 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, obs_ts, gran, timezone,
                                                               timezone,
                                                               dow_type_fn=
                                                               _dow_type)
-    common.utils.debug_msg(debug, "sim days: %s" % str(sim_wetbulb_days))
+    shared.utils.debug_msg(debug, "sim days: %s" % str(sim_wetbulb_days))
 
     # compute occupancy similarity score for the k most similar weather days
-    occ_scores = benchmarks.occupancy.utils.score_occ_similarity(
+    occ_scores = benchmarks.utils.score_occ_similarity(
             base_dt,
             sim_wetbulb_days,
             occ_ts,
             timezone)
-    common.utils.debug_msg(debug, occ_scores)
+    shared.utils.debug_msg(debug, occ_scores)
     # find the date with the lowest steam usage
     return benchmarks.utils.find_lowest_auc_day(occ_scores, obs_ts, 2, timezone,
                                                 debug)
@@ -162,7 +161,7 @@ def process_building(building, host, port, db_name, username, password,
                                               granularity)
     wetbulb_ts = wetbulb_ts.tz_convert(target_tzone)
     # wetbulb_ts = todel.interp_tseries(wetbulb_ts, gran_int)
-    common.utils.debug_msg(debug, "wetbulb: %s" % wetbulb_ts)
+    shared.utils.debug_msg(debug, "wetbulb: %s" % wetbulb_ts)
 
     # get occupancy data
     occ_ts = ts_proc.utils.get_parsed_ts_new_schema(host, port, db_name,
@@ -178,7 +177,7 @@ def process_building(building, host, port, db_name, username, password,
     occ_ts = occ_ts.tz_convert(target_tzone)
     # occ_ts = ts_proc.munge.munge(occ_ts, 100, 2, '1min', granularity).astype(
     #     numpy.int64)
-    common.utils.debug_msg(debug, "occupancy: %s" % occ_ts)
+    shared.utils.debug_msg(debug, "occupancy: %s" % occ_ts)
 
     # query steam data
     steam_ts = ts_proc.utils.get_parsed_ts_new_schema(host, port, db_name,
@@ -188,13 +187,13 @@ def process_building(building, host, port, db_name, username, password,
                                                       None)
     # steam_ts = todel.interp_tseries(steam_ts, gran_int)
     steam_ts = steam_ts.tz_convert(target_tzone)
-    common.utils.debug_msg(debug, "steam: %s" % steam_ts)
+    shared.utils.debug_msg(debug, "steam: %s" % steam_ts)
 
     # find baseline
     bench_info = _find_benchmark(base_dt, occ_ts, wetbulb_ts, steam_ts,
                                  gran_int, target_tzone, debug)
     bench_dt, bench_auc, bench_incr_auc, bench_usage = bench_info
-    common.utils.debug_msg(debug, "bench dt: %s, bench usage: %s, auc: %s" % (
+    shared.utils.debug_msg(debug, "bench dt: %s, bench usage: %s, auc: %s" % (
         bench_dt, bench_usage, bench_auc))
 
     # save results

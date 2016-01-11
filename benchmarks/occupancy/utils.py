@@ -2,7 +2,7 @@
 __author__ = 'ashishgagneja'
 
 import sys
-
+import shared.utils
 
 def score_occ_similarity(base_dt, date_shortlist, occ_ts, timezone):
     """
@@ -23,15 +23,15 @@ def score_occ_similarity(base_dt, date_shortlist, occ_ts, timezone):
 
     # TODO: when we have occupancy forecast, use that to obtain expected
     # occupancy. For now, use actual
-    base_ts = common.utils.get_dt_tseries(base_dt, occ_ts, timezone)
-    base_ts_nodatetz = common.utils.drop_series_ix_date(base_ts)
+    base_ts = shared.utils.get_dt_tseries(base_dt, occ_ts, timezone)
+    base_ts_nodatetz = shared.utils.drop_series_ix_date(base_ts)
 
     scores = []
     for dt_t in date_shortlist:
 
-        score = common.utils.compute_profile_similarity_score(base_ts_nodatetz,
-                    common.utils.drop_series_ix_date(
-                        common.utils.get_dt_tseries(dt_t, occ_ts, timezone)))
+        score = shared.utils.compute_profile_similarity_score(base_ts_nodatetz,
+                    shared.utils.drop_series_ix_date(
+                        shared.utils.get_dt_tseries(dt_t, occ_ts, timezone)))
 
         scores.append((dt_t, score))
 
