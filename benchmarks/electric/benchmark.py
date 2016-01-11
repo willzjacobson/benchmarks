@@ -4,20 +4,18 @@ __author__ = 'ashishgagneja'
 
 import datetime
 import itertools
-import sys
 import re
+import sys
 
 import pandas as pd
-
 import pymongo
 
-import common.utils
+import benchmarks.occupancy.utils
+import benchmarks.utils
 import ts_proc.munge
 import ts_proc.utils
-import benchmarks.occupancy.utils
 import weather.wet_bulb
 import weather.wund
-import benchmarks.utils
 
 
 def _filter_missing_weather_data(weather_df):
@@ -96,7 +94,6 @@ def _get_data_availability_dates(obs_ts, gran):
             lambda x: x[1] < thresh, counts)])
 
 
-
 def find_lowest_electric_usage(date_scores, electric_ts, n, debug):
     """
     Finds the day with the lowest total electric usage from among the n most
@@ -139,7 +136,7 @@ def find_lowest_electric_usage(date_scores, electric_ts, n, debug):
             x = list(map(lambda y: y.hour + y.minute / 60.0 + y.second / 3600.0,
                          day_elec_ts.index))
             incr_auc, auc = benchmarks.utils.incremental_trapz(
-                day_elec_ts.data.tolist(), x)
+                    day_elec_ts.data.tolist(), x)
             # auc = numpy.trapz(day_elec_ts.data, x=list(map(lambda x:
             # x.hour * 3600
             # + x.minute * 60
@@ -283,13 +280,14 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, electric_ts, gran, debug):
     common.utils.debug_msg(debug, "sim days: %s" % str(sim_wetbulb_days))
 
     # compute occupancy similarity score for the k most similar weather days
-    occ_scores = benchmarks.occupancy.utils.score_occ_similarity(base_dt, sim_wetbulb_days,
-                                                                 occ_ts)
+    occ_scores = benchmarks.occupancy.utils.score_occ_similarity(
+            base_dt,
+            sim_wetbulb_days,
+            occ_ts)
     common.utils.debug_msg(debug, occ_scores)
     # find the date with the lowest electric usage
     return benchmarks.utils.find_lowest_auc_day(occ_scores, electric_ts, 5,
                                                 debug)
-
 
 
 def process_building(building_id, host, port, db_name, username, password,

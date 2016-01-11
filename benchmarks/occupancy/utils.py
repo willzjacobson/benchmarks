@@ -3,8 +3,6 @@ __author__ = 'ashishgagneja'
 
 import sys
 
-import common.utils
-
 
 def score_occ_similarity(base_dt, date_shortlist, occ_ts, timezone):
     """

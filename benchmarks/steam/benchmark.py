@@ -8,7 +8,6 @@ import pytz
 
 import benchmarks.occupancy.utils
 import benchmarks.utils
-import common.utils
 import ts_proc.munge
 import ts_proc.utils
 
@@ -27,11 +26,11 @@ def _dow_type(dt):
 
     dow = dt.isoweekday()
 
-    if dow in [1]: # Monday
+    if dow in [1]:  # Monday
         return 1
-    elif dow in [2, 3, 4, 5]: # Tue - Fri
+    elif dow in [2, 3, 4, 5]:  # Tue - Fri
         return 2
-    else: # weekend
+    else:  # weekend
         return 3
 
 
@@ -62,10 +61,10 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, obs_ts, gran, timezone,
     """
 
     # get data availability
-    elec_avlblty    = benchmarks.utils.get_data_availability_dates(obs_ts, gran)
-    occ_avlblty     = benchmarks.utils.get_data_availability_dates(occ_ts, gran)
+    elec_avlblty = benchmarks.utils.get_data_availability_dates(obs_ts, gran)
+    occ_avlblty = benchmarks.utils.get_data_availability_dates(occ_ts, gran)
     wetbulb_avlblty = benchmarks.utils.get_data_availability_dates(wetbulb_ts,
-                                                                    gran)
+                                                                   gran)
     data_avlblty = occ_avlblty.intersection(elec_avlblty, wetbulb_avlblty)
 
     # check if all required data is available for base dt
@@ -89,10 +88,11 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, obs_ts, gran, timezone,
     common.utils.debug_msg(debug, "sim days: %s" % str(sim_wetbulb_days))
 
     # compute occupancy similarity score for the k most similar weather days
-    occ_scores = benchmarks.occupancy.utils.score_occ_similarity(base_dt,
-                                                                 sim_wetbulb_days,
-                                                                 occ_ts,
-                                                                 timezone)
+    occ_scores = benchmarks.occupancy.utils.score_occ_similarity(
+            base_dt,
+            sim_wetbulb_days,
+            occ_ts,
+            timezone)
     common.utils.debug_msg(debug, occ_scores)
     # find the date with the lowest steam usage
     return benchmarks.utils.find_lowest_auc_day(occ_scores, obs_ts, 2, timezone,

@@ -9,12 +9,10 @@ import datetime
 import itertools
 import sys
 
-import pytz
 import pandas as pd
-
 import pymongo
+import pytz
 
-import common.utils
 import weather.mongo
 import weather.wund
 

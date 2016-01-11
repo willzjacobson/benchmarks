@@ -1,7 +1,7 @@
 # coding=utf-8
 import codecs
 import json
-from urllib.request import urlopen
+from urllib2 import urlopen
 
 import numpy as np
 import pandas as pd

@@ -2,14 +2,14 @@
 
 __author__ = 'ashishgagneja'
 
-import sys
 import re
+import sys
 
-import common.utils
-import ts_proc.utils
-import ts_proc.munge
 import occupancy.utils
+
 import benchmarks.utils
+import ts_proc.munge
+import ts_proc.utils
 
 
 def _find_benchmark(base_dt, occ_ts, wetbulb_ts, obs_ts, gran, debug):
