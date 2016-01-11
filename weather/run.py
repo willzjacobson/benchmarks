@@ -1,10 +1,10 @@
 # coding=utf-8
 # import pandas as pd
-import config
 import weather.mongo
 import weather.wund
+from config import config
 
-cfg = config.config["building_dbs"]
+cfg = config["building_dbs"]
 if __name__ == "__main__":
     # whist = pd.read_hdf("/data/weather.h5", "history_orig")
     # weather.mongo._mongo_history_push(whist, **(cfg["mongo_cred"]),
