@@ -6,15 +6,16 @@ import numpy
 __author__ = 'David Karapetyan'
 
 import pandas as pd
-from __init__ import config
+from larkin.config import config
 import dateutil.parser
 
-def is_discrete(df, nary_thresh):
 
+def is_discrete(df, nary_thresh):
     if df.nunique() < nary_thresh:
         return True
     else:
         return False
+
 
 def munge(df, nary_thresh, gap_threshold, accuracy, gran):
     """For cleaning incoming data, and extracting relevant fields
@@ -106,7 +107,6 @@ def convert_datatypes(ts_list, value_list, val_type=float):
     return [ts_list, value_list]
 
 
-
 def convert_dtypes_new_schema(ts_list, value_list, val_type=float):
     """
     Parse timestamp and observation data read from database. Timestamps
@@ -149,8 +149,6 @@ def convert_dtypes_new_schema(ts_list, value_list, val_type=float):
             raise Exception('unsupported transformation')
 
     return [ts_list, value_list]
-
-
 
 
 def ts_day_pos(ts, day, time, start, end, freq):

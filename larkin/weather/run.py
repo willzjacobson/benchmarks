@@ -1,7 +1,7 @@
 # coding=utf-8
 # import pandas as pd
 import larkin.weather.mongo
-from __init__ import config
+from larkin.config import config
 
 cfg = config["building_dbs"]
 if __name__ == "__main__":

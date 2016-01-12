@@ -1,11 +1,11 @@
 # coding=utf-8
 
 from numpy import logspace
-from ts_proc.utils import get_parsed_ts_new_schema
 
-from __init__ import config
+from larkin.config import config
 from larkin.ts_proc.munge import is_discrete
 from larkin.weather.mongo import get_history, get_forecast
+from ts_proc.utils import get_parsed_ts_new_schema
 
 dbs = config["building_dbs"]
 buildings = config["default"]["buildings"]

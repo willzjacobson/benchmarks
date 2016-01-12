@@ -1,8 +1,9 @@
 # coding=utf-8
 import sys
-from setuptools import setup, find_packages
-from pip.req import parse_requirements
+
 from pip.download import PipSession
+from pip.req import parse_requirements
+from setuptools import setup, find_packages
 
 if not sys.version_info.major == 2 and sys.version_info.minor == 7:
     sys.exit("Sorry, Python 3 is not supported")
@@ -19,6 +20,7 @@ setup(
         name='larkin',
         version='0.2',
         packages=pkgs,
+        data_files=[('./etc/larkin', ['larkin/config.yaml'])],
         url='https://github.com/PrescriptiveData/datascience',
         license='Proprietary',
         author='PrescriptiveData',
