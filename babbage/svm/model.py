@@ -7,7 +7,7 @@ import sklearn.preprocessing
 import sklearn.svm
 import sklearn.svm.classes
 
-from occupancy.svm_dframe_prep import get_covars
+from babbage.occupancy import get_covars
 
 __author__ = 'David Karapetyan'
 

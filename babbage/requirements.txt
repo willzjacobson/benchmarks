@@ -1,7 +1,8 @@
 statsmodels
 joblib
 pymongo
-sklearn
+scikit-learn
 pandas
 pip
 numpy
+pyyaml
