@@ -1,8 +1,0 @@
-statsmodels
-joblib
-pymongo
-scikit-learn
-pandas
-pip
-numpy
-pyyaml

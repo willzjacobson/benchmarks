@@ -1,0 +1,8 @@
+statsmodels
+joblib
+pymongo
+sklearn
+pandas
+pip
+numpy
+pyyaml
