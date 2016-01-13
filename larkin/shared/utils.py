@@ -39,7 +39,7 @@ def drop_series_ix_date(tseries):
         Data set to work on
     :return: pandas Series
     """
-    return pd.Series(data=tseries.data, index=map(lambda x: x.time(),
+    return pd.Series(data=tseries.values, index=map(lambda x: x.time(),
                                                   tseries.index.to_datetime()))
 
 
@@ -65,7 +65,6 @@ def compute_profile_similarity_score(gold_ts, other_ts):
 
     # if index overlap is less than threshold, do not compute score
     if len(common_tms) < 0.90 * gold_ts.size:
-        # print('data overlap below threshold: %s' % other_ts.index[0].date())
         return None
 
     norm_ts = gold_ts.loc[common_tms] - other_ts.loc[common_tms]

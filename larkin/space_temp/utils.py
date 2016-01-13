@@ -58,8 +58,7 @@ def process_building(building_id, host, port, username, password, db_name,
         print('processing %s:%s' % (floor, quad))
 
         # query data
-        ts = get_space_temp_ts(db, collection_name, building_id, floor, quad,
-                               granularity)
+        ts = get_space_temp_ts(db, collection_name, building_id, floor, quad)
 
         pred_dt = ts.index[-1] - 2 * relativedelta.relativedelta(days=1)
 

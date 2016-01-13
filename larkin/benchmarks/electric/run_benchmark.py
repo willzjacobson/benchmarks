@@ -19,7 +19,6 @@ buildings = cfg['default']['buildings']
 # determine benchmark date
 bench_dt = datetime.date.today()
 
-
 arg_count = len(sys.argv)
 if arg_count not in [1, 4]:
     raise Exception("Usage: python %s [YYYY MM DD]"
@@ -54,21 +53,7 @@ for building_id in buildings:
 
     bldg_params = cfg['default'][building_id]
     bmark.process_building(building_id,
-                           # bldg_params['host'],
-                           # bldg_params['port'],
-                           # bldg_params['database'],
-                           # bldg_params['username'],
-                           # bldg_params['password'],
-                           # bldg_params['source_db'],
-                           # bldg_params['collection_name_input'],
-                           # use the input db for now for output
-                           # bldg_params['database'],
-                           # bldg_params['collection_name_out'],
+                           timezone=bldg_params['timezone'],
                            meter_count=bldg_params['electric_meter_count'],
-                           # cfg['building_dbs']['h5file'],
-                           # cfg['building_dbs']['history_orig'],
-                           # cfg['building_dbs']['forecast_orig'],
-                           # cfg['sampling']['granularity'],
-                           # bench_dt,
-                           # cfg['default']['debug'])
                            **kw_args)
+

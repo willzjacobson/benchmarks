@@ -14,6 +14,7 @@ import pymongo
 import pytz
 
 import larkin.weather.mongo
+import larkin.shared.utils
 
 
 def get_weather(host, port, username, password, source_db, history_db,
@@ -100,7 +101,7 @@ def get_data_availability_dates(obs_ts, gran):
     counts = [[key, len(list(grp))] for key, grp in itertools.groupby(ts_list)]
 
     thresh = 0.85 * 24 * 60 / gran
-    return set([key for key, cnt in itertools.filterfalse(
+    return set([key for key, cnt in itertools.ifilterfalse(
         lambda x: x[1] < thresh, counts)])
 
 
@@ -124,13 +125,11 @@ def incremental_trapz(y, x):
 
     incr_auc, curr_total = [], 0.0
     for i, y_i in enumerate(y):
-
         if i > 0:
             curr_total += (y_i + y[i - 1]) * (x[i] - x[i - 1]) / 2.0
         incr_auc.append(curr_total)
 
     return incr_auc, curr_total
-
 
 
 def find_lowest_auc_day(date_scores, obs_ts, n, timezone, debug):
@@ -171,13 +170,14 @@ def find_lowest_auc_day(date_scores, obs_ts, n, timezone, debug):
         if score:
 
             # compute day electric usage by integrating the curve
-            day_obs_ts = larkin.shared.utils.drop_series_ix_date(
-                    larkin.shared.utils.get_dt_tseries(dt, obs_ts, timezone))
+            day_obs_ts = larkin.shared.utils.get_dt_tseries(dt, obs_ts,
+                                                            timezone)
 
             # compute total and incremental AUC
-            x = list(map(lambda y: y.hour + y.minute / 60.0 + y.second / 3600.0,
+            datum = day_obs_ts.index[0]
+            x = list(map(lambda y: (y - datum).total_seconds()/3600.0,
                          day_obs_ts.index))
-            incr_auc, auc = incremental_trapz(day_obs_ts.data.tolist(), x)
+            incr_auc, auc = incremental_trapz(day_obs_ts.values.tolist(), x)
             larkin.shared.utils.debug_msg(debug, "%s, %s" % (dt, auc))
 
             if 0 < auc < min_usage[1]:
@@ -189,7 +189,7 @@ def find_lowest_auc_day(date_scores, obs_ts, n, timezone, debug):
 
 def save_benchmark(bench_dt, base_dt, bench_ts, bench_auc, bench_incr_auc,
                     host, port, database, username, password, source_db,
-                    collection_name, bldg_id, system, output_type):
+                    collection_name, building, system, output_type):
     """
     Save benchmark time series to database
 
@@ -218,7 +218,7 @@ def save_benchmark(bench_dt, base_dt, bench_ts, bench_auc, bench_incr_auc,
         source database for authentication
     :param collection_name: string
         collection name to use
-    :param bldg_id: string
+    :param building: string
         building identifier
     :param system: string
         system name for identifying time series
@@ -233,14 +233,14 @@ def save_benchmark(bench_dt, base_dt, bench_ts, bench_auc, bench_incr_auc,
         collection = conn[database][collection_name]
 
         # delete all existing matching documents
-        doc_id = {"_id.building": bldg_id,
+        doc_id = {"_id.building": building,
                   "_id.system": system,
                   "_id.type": output_type,
                   "_id.date": base_dt.isoformat()}
         collection.remove(doc_id)
 
         # insert
-        doc = {"_id": {"building": bldg_id,
+        doc = {"_id": {"building": building,
                        "system": system,
                        "type": output_type,
                        "date": base_dt.isoformat()
