@@ -134,15 +134,16 @@ def history_update(city, state, wund_url, parallel, host, port, source,
 
     if parallel:
         frames = Parallel(n_jobs=-1)(
-                delayed(larkin.weather.wund.history_pull)(city=city, state=state,
-                                                          wund_url=wund_url,
-                                                          date=date)
+                delayed(larkin.weather.wund.history_pull)(
+                        city=city, state=state,
+                        wund_url=wund_url,
+                        date=date)
                 for date in interval[:cap])
     else:
-        frames = [larkin.weather.wund.history_pull(city=city, state=state,
-                                                   wund_url=wund_url, date=date) for
-                  date in
-                  interval[:cap]]
+        frames = [larkin.weather.wund.history_pull(
+                city=city, state=state,
+                wund_url=wund_url, date=date)
+                  for date in interval[:cap]]
 
     weather_update = pd.concat(frames)
     archive = pd.concat([wdata_days_comp, weather_update])
@@ -194,7 +195,7 @@ def get_history(host, port, source, db_name, username, password,
     if len(whist) == 0:
         return whist
     else:
-        #convert list of lists of dictionaries to list of dictionaries
+        # convert list of lists of dictionaries to list of dictionaries
         whist = [j for i in whist for j in i]
         whist = pd.DataFrame(whist)
         whist.set_index('time', inplace=True)

@@ -8,6 +8,7 @@ import sklearn.preprocessing
 
 import larkin.ts_proc.munge
 import larkin.weather.mongo
+import larkin.weather.wund
 
 
 def get_covars(endog, weather_orig, forecast_orig, cov, gran):

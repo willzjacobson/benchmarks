@@ -6,8 +6,8 @@ __author__ = 'David Karapetyan'
 import datetime
 
 import pandas as pd
+
 from larkin.user_config import config
-import dateutil.parser
 
 
 def is_discrete(df, nary_thresh):

@@ -10,11 +10,12 @@ temperature data
 import dateutil.relativedelta as relativedelta
 import pymongo
 
-import __init__
 import larkin.arima.model
 import larkin.ts_proc.munge
+import larkin.ts_proc.utils
+import user_config
 
-cfg = __init__.config
+cfg = user_config.config
 
 buildings = cfg['default']['buildings']
 

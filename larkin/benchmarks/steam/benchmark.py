@@ -6,11 +6,12 @@ import re
 
 import pytz
 
-import larkin.benchmarks.utils
 import larkin.benchmarks.occupancy.utils
+import larkin.benchmarks.utils
 import larkin.shared.utils
 import larkin.ts_proc.munge
 import larkin.ts_proc.utils
+
 
 def _dow_type(dt):
     """
@@ -66,7 +67,7 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, obs_ts, gran, timezone,
     occ_avlblty = larkin.benchmarks.utils.get_data_availability_dates(occ_ts,
                                                                       gran)
     wetbulb_avlblty = larkin.benchmarks.utils.get_data_availability_dates(
-        wetbulb_ts, gran)
+            wetbulb_ts, gran)
     data_avlblty = occ_avlblty.intersection(elec_avlblty, wetbulb_avlblty)
 
     # check if all required data is available for base dt
@@ -74,19 +75,21 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, obs_ts, gran, timezone,
         raise Exception("insufficient data available for %s" % base_dt)
 
     # get weather for base_dt
-    base_dt_wetbulb = larkin.shared.utils.get_dt_tseries(base_dt, wetbulb_ts, timezone)
+    base_dt_wetbulb = larkin.shared.utils.get_dt_tseries(
+            base_dt, wetbulb_ts, timezone)
 
     # find k closest weather days for which steam and occupancy data is
     # available
     dow_type = _dow_type(base_dt)
-    sim_wetbulb_days = larkin.shared.utils.find_similar_profile_days(base_dt_wetbulb,
-                                                                     dow_type,
-                                                                     wetbulb_ts,
-                                                                     7,
-                                                                     data_avlblty,
-                                                                     timezone,
-                                                                     dow_type_fn=
-                                                              _dow_type)
+    sim_wetbulb_days = larkin.shared.utils.find_similar_profile_days(
+            base_dt_wetbulb,
+            dow_type,
+            wetbulb_ts,
+            7,
+            data_avlblty,
+            timezone,
+            dow_type_fn=
+            _dow_type)
     larkin.shared.utils.debug_msg(debug, "sim days: %s" % str(sim_wetbulb_days))
 
     # compute occupancy similarity score for the k most similar weather days
@@ -193,8 +196,9 @@ def process_building(building, host, port, db_name, username, password,
                                  gran_int, target_tzone, debug)
     bench_dt, bench_auc, bench_incr_auc, bench_usage = bench_info
     larkin.shared.utils.debug_msg(debug,
-            "bench dt: %s, bench usage: %s, auc: %s" % (bench_dt, bench_usage,
-                                                        bench_auc))
+                                  "bench dt: %s, bench usage: %s, auc: %s" % (
+                                      bench_dt, bench_usage,
+                                      bench_auc))
 
     # save results
     if not debug:

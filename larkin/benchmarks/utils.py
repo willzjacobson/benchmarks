@@ -13,12 +13,13 @@ import pandas as pd
 import pymongo
 import pytz
 
-import larkin.weather.mongo
 import larkin.shared.utils
+import larkin.weather.mongo
+import larkin.weather.wund
 
 
 def get_weather(host, port, username, password, source_db, history_db,
-                 history_collection, forecast_db, forecast_collection, gran):
+                history_collection, forecast_db, forecast_collection, gran):
     """ Load all available weather data, clean it and drop unneeded columns
 
     :param host: string
@@ -46,8 +47,9 @@ def get_weather(host, port, username, password, source_db, history_db,
     """
 
     # TODO: this should be done before munging for efficiency
-    hist = larkin.weather.mongo.get_history(host, port, source_db, history_db,
-                                            username, password, history_collection)
+    hist = larkin.weather.mongo.get_history(
+            host, port, source_db, history_db,
+            username, password, history_collection)
     hist_munged = (larkin.weather.wund.history_munge(hist, gran))['wetbulb']
 
     fcst = larkin.weather.mongo.get_forecast(host, port, source_db, forecast_db,
@@ -61,7 +63,6 @@ def get_weather(host, port, username, password, source_db, history_db,
     wetbulb_ts = pd.concat([hist_munged, fcst_munged.loc[fcst_only_idx]])
 
     return wetbulb_ts.dropna().tz_localize(pytz.utc)
-
 
 
 def gen_bmark_readings_list(tseries, incr_auc):
@@ -79,7 +80,6 @@ def gen_bmark_readings_list(tseries, incr_auc):
 
     return [{'time': str(t[0]), 'value': t[1], 'daily': auc}
             for t, auc in zip(tseries.iteritems(), incr_auc)]
-
 
 
 def get_data_availability_dates(obs_ts, gran):
@@ -102,8 +102,7 @@ def get_data_availability_dates(obs_ts, gran):
 
     thresh = 0.85 * 24 * 60 / gran
     return set([key for key, cnt in itertools.ifilterfalse(
-        lambda x: x[1] < thresh, counts)])
-
+            lambda x: x[1] < thresh, counts)])
 
 
 def incremental_trapz(y, x):
@@ -175,7 +174,7 @@ def find_lowest_auc_day(date_scores, obs_ts, n, timezone, debug):
 
             # compute total and incremental AUC
             datum = day_obs_ts.index[0]
-            x = list(map(lambda y: (y - datum).total_seconds()/3600.0,
+            x = list(map(lambda y: (y - datum).total_seconds() / 3600.0,
                          day_obs_ts.index))
             incr_auc, auc = incremental_trapz(day_obs_ts.values.tolist(), x)
             larkin.shared.utils.debug_msg(debug, "%s, %s" % (dt, auc))
@@ -186,10 +185,9 @@ def find_lowest_auc_day(date_scores, obs_ts, n, timezone, debug):
     return min_usage
 
 
-
 def save_benchmark(bench_dt, base_dt, bench_ts, bench_auc, bench_incr_auc,
-                    host, port, database, username, password, source_db,
-                    collection_name, building, system, output_type):
+                   host, port, database, username, password, source_db,
+                   collection_name, building, system, output_type):
     """
     Save benchmark time series to database
 
@@ -249,6 +247,3 @@ def save_benchmark(bench_dt, base_dt, bench_ts, bench_auc, bench_incr_auc,
                "readings": gen_bmark_readings_list(bench_ts, bench_incr_auc),
                'daily_total': bench_auc}
         collection.insert(doc)
-
-
-

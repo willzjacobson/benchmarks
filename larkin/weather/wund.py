@@ -6,7 +6,7 @@ from urllib2 import urlopen
 import numpy as np
 import pandas as pd
 
-import __init__
+import larkin.user_config as user_config
 import larkin.weather.wet_bulb
 
 __author__ = "David Karapetyan"
@@ -15,8 +15,8 @@ stringcols = ['conds', 'wdire']
 
 
 def _dtype_conv(df=pd.DataFrame(),
-                conds_mapping=__init__.config["weather"]["conds_mapping"],
-                wdire_mapping=__init__.config["weather"]["wdire_mapping"]):
+                conds_mapping=user_config.config["weather"]["conds_mapping"],
+                wdire_mapping=user_config.config["weather"]["wdire_mapping"]):
     """Relabeling of weather underground columns, and conversion of column
     entries to either float or string data types (forecasting models expect
     float entries to have a type signature of 'float')
