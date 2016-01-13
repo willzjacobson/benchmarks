@@ -6,7 +6,7 @@ import numpy
 __author__ = 'David Karapetyan'
 
 import pandas as pd
-from larkin.config import config
+from larkin.user_config import config
 import dateutil.parser
 
 

@@ -9,6 +9,6 @@ __author__ = "David Karapetyan"
 # wrapper for loading yaml configuration file as if it were a python dictionary
 
 yaml_dir = sys.prefix
-stream = open(os.path.join(yaml_dir, "etc/larkin/config.yaml"))
+stream = open(os.path.join(yaml_dir, "etc/larkin/user_config.yaml"))
 config = yaml.load(stream)
 stream.close()

@@ -20,7 +20,7 @@ setup(
         name='larkin',
         version='0.2',
         packages=pkgs,
-        data_files=[('./etc/larkin', ['larkin/config.yaml'])],
+        data_files=[('./etc/larkin', ['larkin/user_config.yaml'])],
         url='https://github.com/PrescriptiveData/datascience',
         license='Proprietary',
         author='PrescriptiveData',

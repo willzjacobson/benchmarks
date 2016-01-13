@@ -1,0 +1,52 @@
+default:
+  base_dir: /home/davidkarapetyan/Documents/workspace/Adirondack/TPO2-Rudin
+  python_prog: /home/davidkarapetyan/anaconda3/bin/python
+  data_sources: /data
+  log_dir: /var/log
+  buildings:
+    - 345_Park
+  # run mode
+  debug: True
+
+  345_Park:
+      floor_quadrants:
+        -
+          - 24
+          - NW
+        -
+          - 24
+          - NE
+
+      # electric
+      electric_meter_count: 6
+      # electric -> benchmark
+      collection_name_out: analytics
+
+      timezone: US/Eastern
+      steam_meter_count: 3
+
+
+building_dbs:
+  mongo_cred:
+      host: 52.21.246.131 #54.173.216.14 #R3.Xlarge
+      port: 27017
+      source: admin
+      username: Analytics
+      password: L3x1^gt0n
+  wund_cred:
+      wund_url: http://api.wunderground.com/api/bab4ba5bcbc2dbec/
+    # wund_url: http://api.wunderground.com/api/08d25f404214f50b/
+      city: New_York
+      state: NY
+  weather_forecast_loc:
+      db_name: weather
+      collection_name: forecast
+  weather_history_loc:
+      db_name: weather
+      collection_name: history
+  building_ts_loc:
+      db_name: skynet
+      collection_name: timeseries
+  results:
+      db_name_out: skynet
+      collection_name_out: analytics

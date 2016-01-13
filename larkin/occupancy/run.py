@@ -1,8 +1,8 @@
 # coding=utf-8
 
 from numpy import logspace
-
-from larkin.config import config
+import larkin.svm.model
+from larkin.user_config import config
 from larkin.ts_proc.munge import is_discrete
 from larkin.weather.mongo import get_history, get_forecast
 from ts_proc.utils import get_parsed_ts_new_schema
