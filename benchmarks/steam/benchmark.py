@@ -7,6 +7,7 @@ import re
 import pytz
 
 import benchmarks.utils
+import benchmarks.occupancy.utils
 import shared.utils
 import ts_proc.munge
 import ts_proc.utils
@@ -87,7 +88,7 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, obs_ts, gran, timezone,
     shared.utils.debug_msg(debug, "sim days: %s" % str(sim_wetbulb_days))
 
     # compute occupancy similarity score for the k most similar weather days
-    occ_scores = benchmarks.utils.score_occ_similarity(
+    occ_scores = benchmarks.occupancy.utils.score_occ_similarity(
             base_dt,
             sim_wetbulb_days,
             occ_ts,
@@ -103,7 +104,7 @@ def process_building(building, host, port, db_name, username, password,
                      collection_name_out, weather_hist_db,
                      weather_hist_collection, weather_fcst_db,
                      weather_fcst_collection, granularity,
-                     base_dt, steam_meter_count, timezone, debug):
+                     base_dt, timezone, debug):
     """ Find baseline steam usage for building
 
     :param building: string
@@ -138,8 +139,6 @@ def process_building(building, host, port, db_name, username, password,
         expected frequency of observations and forecast
     :param base_dt: datetime.date
         date for which benchmark usage is to be found
-    :param steam_meter_count: int
-        number of steam meters in use
     :param timezone: pytz.timezone
         target timezone or building timezone
     :param debug: bool
@@ -160,7 +159,6 @@ def process_building(building, host, port, db_name, username, password,
                                               weather_fcst_collection,
                                               granularity)
     wetbulb_ts = wetbulb_ts.tz_convert(target_tzone)
-    # wetbulb_ts = todel.interp_tseries(wetbulb_ts, gran_int)
     shared.utils.debug_msg(debug, "wetbulb: %s" % wetbulb_ts)
 
     # get occupancy data
@@ -171,12 +169,8 @@ def process_building(building, host, port, db_name, username, password,
                                                     'Occupancy',
                                                     'Occupancy')
 
-    # interpolation converts occupancy data to float; convert back to int64
-    # occ_ts = todel.interp_tseries(occ_ts, gran_int).astype(numpy.int64)
     # convert to local time
     occ_ts = occ_ts.tz_convert(target_tzone)
-    # occ_ts = ts_proc.munge.munge(occ_ts, 100, 2, '1min', granularity).astype(
-    #     numpy.int64)
     shared.utils.debug_msg(debug, "occupancy: %s" % occ_ts)
 
     # query steam data
@@ -185,7 +179,6 @@ def process_building(building, host, port, db_name, username, password,
                                                       source, collection_name,
                                                       building, 'TotalInstant',
                                                       None)
-    # steam_ts = todel.interp_tseries(steam_ts, gran_int)
     steam_ts = steam_ts.tz_convert(target_tzone)
     shared.utils.debug_msg(debug, "steam: %s" % steam_ts)
 

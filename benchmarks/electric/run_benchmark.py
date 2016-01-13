@@ -53,6 +53,7 @@ for building_id in buildings:
 
     bldg_params = cfg['default'][building_id]
     bmark.process_building(building_id,
+                           timezone=bldg_params['timezone'],
                            meter_count=bldg_params['electric_meter_count'],
                            **kw_args)
 

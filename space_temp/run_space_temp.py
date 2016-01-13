@@ -41,7 +41,7 @@ for building in buildings:
         # get space temp time series
         ts = ts_proc.utils.get_space_temp_ts(db,
                     bldg_params['collection_name_input'],
-                    building, floor, quad, granularity)
+                    building, floor, quad)
 
         pred_dt = ts.index[-1] - 2 * relativedelta.relativedelta(days=1)
         print(pred_dt)

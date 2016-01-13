@@ -1,13 +1,14 @@
 # coding=utf-8
-import datetime
 
-import numpy
 
 __author__ = 'David Karapetyan'
 
+import datetime
+
 import pandas as pd
+
 from config import config
-import dateutil.parser
+
 
 def is_discrete(df, nary_thresh):
 
@@ -62,95 +63,6 @@ def munge(df, nary_thresh, gap_threshold, accuracy, gran):
     df_thresh_gran = df_thresh.resample(gran)
 
     return df_thresh_gran
-
-
-def convert_datatypes(ts_list, value_list, val_type=float):
-    """
-    Parse timestamp and observation data read from database. Timestamps
-    are converted to datetime.datetime ignoring timezone information.
-    Observations are cast to val_type
-
-    :param ts_list: list
-        list of timestamps
-    :param value_list: list
-        list of observations
-    :param val_type: function
-        function to use to cast observation to the required type
-        If None, no transformation is done
-
-    :return: list of lists
-        list containing a list with parsed timestamps followed by another one
-        with transformed/casted observation data
-
-    """
-    # line below not needed anymore due to change in database from 0 padding
-    # nonexisting time/data values to null
-    # ts_list = list(map(lambda x: numpy.nan if type(x) is int else x, ts_list))
-
-    ts_list = list(map(lambda x: dateutil.parser.parse(x, ignoretz=False),
-                       ts_list))
-
-    # convert str to val_type
-    if val_type:
-        # value_list = list(map(val_type, value_list))
-        # print(numpy.asarray(value_list)[:100])
-
-        arr = numpy.asarray(value_list)
-        if val_type == float:
-            value_list = arr.astype(numpy.float)
-        elif val_type == int:
-            value_list = arr.astype(numpy.int64)
-        else:
-            raise Exception('unsupported transformation')
-
-    return [ts_list, value_list]
-
-
-
-def convert_dtypes_new_schema(ts_list, value_list, val_type=float):
-    """
-    Parse timestamp and observation data read from database. Timestamps
-    are converted to datetime.datetime ignoring timezone information.
-    Observations are cast to val_type
-
-    :param ts_list: list
-        list of timestamps
-    :param value_list: list
-        list of observations
-    :param val_type: function
-        function to use to cast observation to the required type
-        If None, no transformation is done
-
-    :return: list of lists
-        list containing a list with parsed timestamps followed by another one
-        with transformed/casted observation data
-
-    """
-
-    # parse timestamps to datetime and drop timezone
-    # placeholder readings could have '0' as time, replace with NaN
-    # ts_list = joblib.Parallel(n_jobs=2)(joblib.delayed(
-    #     _parse_tstamp)(x, drop_tz) for x in ts_list)
-
-    # ts_list = list(map(lambda x: x if type(x) is not int else numpy.nan,
-    #                    ts_list))
-
-    # convert str to val_type
-    if val_type:
-        # value_list = list(map(val_type, value_list))
-        # print(numpy.asarray(value_list)[:100])
-
-        arr = numpy.asarray(value_list)
-        if val_type == float:
-            value_list = arr.astype(numpy.float)
-        elif val_type == int:
-            value_list = arr.astype(numpy.int64)
-        else:
-            raise Exception('unsupported transformation')
-
-    return [ts_list, value_list]
-
-
 
 
 def ts_day_pos(ts, day, time, start, end, freq):

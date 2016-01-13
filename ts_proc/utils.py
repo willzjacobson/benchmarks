@@ -13,7 +13,6 @@ import pymongo
 # import seaborn as sns
 import pandas as pd
 # sns.set()
-import ts_proc.munge
 import dateutil.parser
 import pytz
 import joblib
@@ -44,7 +43,6 @@ def _construct_electric_dataframe(ts_lists, value_lists):
 
     # insert column data
     for i, ts_list in enumerate(ts_lists):
-        # create new column
         master_df = master_df.join(pd.DataFrame(data=value_lists[i],
                                                 index=ts_list,
                                                 columns=[str(i + 1)]).dropna(),
@@ -80,22 +78,6 @@ def get_electric_ts(host, port, database, username, password, source,
     :return: pandas Dataframe
     """
 
-    # ts_lists, value_lists = [], []
-    # for equip_id in range(1, meter_count + 1):
-
-    # ts_list, value_list = _get_meter_data(
-    # equipment_id, bldg_id, collection)
-    #     ts_list, value_list = shared.utils.get_ts_new_schema(host, port, database,
-    #                                                      username, password,
-    #                                                      source,
-    #                                                      collection_name,
-    #                                                      building,
-    #                                                      "Elec-M%d" % equip_id,
-    #                                                      'SIF_Electric_Demand')
-
-        # ts_lists.append(ts_list)
-        # value_lists.append(value_list)
-
     results = joblib.Parallel(n_jobs=-1)(joblib.delayed(get_ts_new_schema)(
                         host, port, database, username, password, source,
                         collection_name, building,
@@ -108,50 +90,8 @@ def get_electric_ts(host, port, database, username, password, source,
                                                                        pytz.utc)
 
 
-def get_occupancy_ts(host, port, source, username, password, db_name,
-                     collection_name, building):
-    """Fetch all available occupancy data from database
 
-    :param host: string
-        database server name or IP-address
-    :param port: int
-        database port number
-    :param db_name: string
-        name of the database on server
-    :param username: string
-        database username
-    :param password: string
-        database password
-    :param source: string
-        source database for authentication
-    :param collection_name: string
-        collection name to use
-    :param building: string
-        building identifier
-    :return: pandas DataFrame
-        occupancy time series data
-    """
-
-    ts_list, val_list = get_ts(host, port, db_name, username, password,
-                               source, collection_name, building, 'Occupancy',
-                               'Occupancy')
-
-    # parse timestamp and observation to appropriate datatypes
-    ts_list, val_list = ts_proc.munge.convert_datatypes(ts_list, val_list,
-                                                        val_type=None)
-
-    # it is not possible to create a pandas Series object directly as
-    # placeholder entries may be there for missing data. these are usually
-    # in the form of time:0 associated with value:0
-    occ_df = pd.DataFrame({'tstamp': ts_list, 'occupancy': val_list})
-
-    # drop missing values, set timestamp as the new index and sort by index
-    occ_df = occ_df.dropna().set_index('tstamp',
-                                       verify_integrity=True).sort_index()
-    return occ_df.loc['occupancy']
-
-
-def get_space_temp_ts(db, collection_name, bldg, floor, quad, granularity):
+def get_space_temp_ts(db, collection_name, bldg, floor, quad):
     """ retrieve all available space temperature data for floor-quad of
         building_id bldg
 
@@ -165,8 +105,6 @@ def get_space_temp_ts(db, collection_name, bldg, floor, quad, granularity):
         floor identifier
     :param quad: string
         quadrant identifier
-    :param granularity: int
-    sampling frequency of input data and forecast data
 
     :return: pandas Series
     """
@@ -185,110 +123,6 @@ def get_space_temp_ts(db, collection_name, bldg, floor, quad, granularity):
 
     return pd.Series(data=value_list, index=pd.DatetimeIndex(ts_list)
                      ).sort_index()
-
-
-def get_parsed_ts(host, port, database, username, password, source,
-                  collection_name, building, device, system):
-    """Fetch all available timeseries data from database
-
-    :param host: string
-        database server name or IP-address
-    :param port: int
-        database port number
-    :param database: string
-        name of the database on server
-    :param username: string
-        database username
-    :param password: string
-        database password
-    :param source: string
-        source database for authentication
-    :param collection_name: string
-        collection name to use
-    :param building: string
-        building identifier
-    :param device: string
-        device name for identifying time series
-    :param system: string
-        system name for identifying time series
-    :return: pandas DataFrame
-        occupancy time series data
-    """
-
-    ts_list, val_list = get_ts(host, port, database, username, password,
-                               source, collection_name, building, device,
-                               system)
-
-    # parse timestamp and observation to appropriate datatypes
-    # this is no longer needed
-    # ts_list, val_list = ts_proc.munge.convert_datatypes(ts_list, val_list,
-    #                                                     val_type=val_type)
-
-    # it is not possible to create a pandas Series object directly as
-    # placeholder entries may be there for missing data. these are usually
-    # in the form of time:0 associated with value:0
-    obs_df = pd.DataFrame({'tstamp': ts_list, 'obs': val_list})
-
-    # drop missing values, set tstamp as the new index and sort by index
-    return obs_df.dropna().set_index(
-        'tstamp').drop_duplicates().sort_index()['obs']
-    # 'tstamp', verify_integrity=True).sort_index()['obs']
-
-
-def get_ts(host, port, database, username, password, source, collection_name,
-           building, device, system):
-    """
-    Get all observation data with the given building, device and system
-    combination from the database
-
-    :param host: string
-        database server name or IP-address
-    :param port: int
-        database port number
-    :param database: string
-        name of the database on server
-    :param username: string
-        database username
-    :param password: string
-        database password
-    :param source: string
-        source database for authentication
-    :param collection_name: string
-        database collection name
-    :param building: string
-        building identifier
-    :param device: string
-        device name for identifying time series
-    :param system: string
-        system name for identifying time series
-    :return: tuple with a list of time stamps followed by a list of values
-    """
-
-    with pymongo.MongoClient(host, port) as conn:
-        conn[database].authenticate(username, password, source=source)
-        collection = conn[database][collection_name]
-
-        ts_list, value_list, daily_dict = [], [], {}
-        for data in collection.find({"_id.building": building,
-                                     "_id.device": device,
-                                     "_id.system": system}):
-            readings = data['readings']
-
-            # zipped = map(lambda x: (x.loc['time'], x.loc["value"]), readings)
-            # print(readings)
-            # sys.exit(0)
-            zipped = [(x['time'], x['value']) for x in readings
-                      if (x['time'] is not None
-                          and type(x['time']) is not int
-                          and 'value' in x)]
-
-            if len(zipped):
-                ts_list_t, val_list_t = zip(*zipped)
-
-                ts_list.extend(ts_list_t)
-                value_list.extend(val_list_t)
-
-    return ts_list, value_list
 
 
 
@@ -365,7 +199,6 @@ def get_ts_new_schema(host, port, database, username, password, source,
     :return: tuple with a list of time stamps followed by a list of values
     """
 
-    print("%s:%s:%s:%s" % (host, port, database, collection_name))
     with pymongo.MongoClient(host, port) as conn:
 
         conn[database].authenticate(username, password, source=source)
@@ -378,7 +211,6 @@ def get_ts_new_schema(host, port, database, username, password, source,
         if system:
             query['system'] = system
 
-        print(query)
         for data in collection.find(query):
 
             readings = data['readings']

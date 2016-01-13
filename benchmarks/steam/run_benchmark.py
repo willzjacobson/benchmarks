@@ -50,5 +50,4 @@ for building_id in cfg['default']['buildings']:
     bldg_params = cfg['default'][building_id]
     benchmarks.steam.benchmark.process_building(building_id,
                             timezone=bldg_params['timezone'],
-                            steam_meter_count=bldg_params['steam_meter_count'],
                             **kw_args)
