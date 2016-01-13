@@ -7,8 +7,10 @@ import re
 import pytz
 
 import larkin.benchmarks.utils
+import larkin.benchmarks.occupancy.utils
+import larkin.shared.utils
 import larkin.ts_proc.munge
-
+import larkin.ts_proc.utils
 
 def _dow_type(dt):
     """
@@ -59,10 +61,12 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, obs_ts, gran, timezone,
     """
 
     # get data availability
-    elec_avlblty = larkin.benchmarks.utils.get_data_availability_dates(obs_ts, gran)
-    occ_avlblty = larkin.benchmarks.utils.get_data_availability_dates(occ_ts, gran)
-    wetbulb_avlblty = larkin.benchmarks.utils.get_data_availability_dates(wetbulb_ts,
-                                                                          gran)
+    elec_avlblty = larkin.benchmarks.utils.get_data_availability_dates(obs_ts,
+                                                                       gran)
+    occ_avlblty = larkin.benchmarks.utils.get_data_availability_dates(occ_ts,
+                                                                      gran)
+    wetbulb_avlblty = larkin.benchmarks.utils.get_data_availability_dates(
+        wetbulb_ts, gran)
     data_avlblty = occ_avlblty.intersection(elec_avlblty, wetbulb_avlblty)
 
     # check if all required data is available for base dt
@@ -86,15 +90,15 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, obs_ts, gran, timezone,
     larkin.shared.utils.debug_msg(debug, "sim days: %s" % str(sim_wetbulb_days))
 
     # compute occupancy similarity score for the k most similar weather days
-    occ_scores = larkin.benchmarks.utils.score_occ_similarity(
+    occ_scores = larkin.benchmarks.occupancy.utils.score_occ_similarity(
             base_dt,
             sim_wetbulb_days,
             occ_ts,
             timezone)
     larkin.shared.utils.debug_msg(debug, occ_scores)
     # find the date with the lowest steam usage
-    return larkin.benchmarks.utils.find_lowest_auc_day(occ_scores, obs_ts, 2, timezone,
-                                                       debug)
+    return larkin.benchmarks.utils.find_lowest_auc_day(occ_scores, obs_ts, 2,
+                                                       timezone, debug)
 
 
 def process_building(building, host, port, db_name, username, password,
@@ -102,7 +106,7 @@ def process_building(building, host, port, db_name, username, password,
                      collection_name_out, weather_hist_db,
                      weather_hist_collection, weather_fcst_db,
                      weather_fcst_collection, granularity,
-                     base_dt, steam_meter_count, timezone, debug):
+                     base_dt, timezone, debug):
     """ Find baseline steam usage for building
 
     :param building: string
@@ -137,8 +141,6 @@ def process_building(building, host, port, db_name, username, password,
         expected frequency of observations and forecast
     :param base_dt: datetime.date
         date for which benchmark usage is to be found
-    :param steam_meter_count: int
-        number of steam meters in use
     :param timezone: pytz.timezone
         target timezone or building timezone
     :param debug: bool
@@ -151,7 +153,8 @@ def process_building(building, host, port, db_name, username, password,
     target_tzone = pytz.timezone(timezone)
 
     # get wetbulb
-    wetbulb_ts = larkin.benchmarks.utils.get_weather(host, port, username, password,
+    wetbulb_ts = larkin.benchmarks.utils.get_weather(host, port, username,
+                                                     password,
                                                      source,
                                                      weather_hist_db,
                                                      weather_hist_collection,
@@ -159,32 +162,29 @@ def process_building(building, host, port, db_name, username, password,
                                                      weather_fcst_collection,
                                                      granularity)
     wetbulb_ts = wetbulb_ts.tz_convert(target_tzone)
-    # wetbulb_ts = todel.interp_tseries(wetbulb_ts, gran_int)
     larkin.shared.utils.debug_msg(debug, "wetbulb: %s" % wetbulb_ts)
 
     # get occupancy data
     occ_ts = larkin.ts_proc.utils.get_parsed_ts_new_schema(host, port, db_name,
                                                            username, password,
-                                                           source, collection_name,
+                                                           source,
+                                                           collection_name,
                                                            building,
-                                                    'Occupancy',
-                                                    'Occupancy')
+                                                           'Occupancy',
+                                                           'Occupancy')
 
-    # interpolation converts occupancy data to float; convert back to int64
-    # occ_ts = todel.interp_tseries(occ_ts, gran_int).astype(numpy.int64)
     # convert to local time
     occ_ts = occ_ts.tz_convert(target_tzone)
-    # occ_ts = ts_proc.munge.munge(occ_ts, 100, 2, '1min', granularity).astype(
-    #     numpy.int64)
     larkin.shared.utils.debug_msg(debug, "occupancy: %s" % occ_ts)
 
     # query steam data
-    steam_ts = larkin.ts_proc.utils.get_parsed_ts_new_schema(host, port, db_name,
-                                                             username, password,
-                                                             source, collection_name,
-                                                             building, 'TotalInstant',
+    steam_ts = larkin.ts_proc.utils.get_parsed_ts_new_schema(host, port,
+                                                             db_name, username,
+                                                             password, source,
+                                                             collection_name,
+                                                             building,
+                                                             'TotalInstant',
                                                              None)
-    # steam_ts = todel.interp_tseries(steam_ts, gran_int)
     steam_ts = steam_ts.tz_convert(target_tzone)
     larkin.shared.utils.debug_msg(debug, "steam: %s" % steam_ts)
 
@@ -192,14 +192,15 @@ def process_building(building, host, port, db_name, username, password,
     bench_info = _find_benchmark(base_dt, occ_ts, wetbulb_ts, steam_ts,
                                  gran_int, target_tzone, debug)
     bench_dt, bench_auc, bench_incr_auc, bench_usage = bench_info
-    larkin.shared.utils.debug_msg(debug, "bench dt: %s, bench usage: %s, auc: %s" % (
-        bench_dt, bench_usage, bench_auc))
+    larkin.shared.utils.debug_msg(debug,
+            "bench dt: %s, bench usage: %s, auc: %s" % (bench_dt, bench_usage,
+                                                        bench_auc))
 
     # save results
     if not debug:
         larkin.benchmarks.utils.save_benchmark(bench_dt, base_dt, bench_usage,
-                                               bench_auc, bench_incr_auc, host, port,
-                                               db_name_out, username, password,
-                                               source, collection_name_out,
-                                               building, 'Steam_Usage',
-                                        'benchmark')
+                                               bench_auc, bench_incr_auc, host,
+                                               port, db_name_out, username,
+                                               password, source,
+                                               collection_name_out, building,
+                                               'Steam_Usage', 'benchmark')
