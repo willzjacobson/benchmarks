@@ -141,13 +141,13 @@ def get_dt_tseries(dt, full_ts, timezone):
     :return: pandas Series or DataFrame
     """
     # pytz.timezone differs from the documented Python API for tzinfo
-    # implementations. using the tzinfo argument of the datetime constructors
-    # does not work with pytz.timezone for many timezones. the call to normalize
-    # is a known work-around of this issue
-    start_idx = timezone.normalize(datetime.datetime.combine(dt,
-                                            datetime.time(tzinfo=timezone)))
-    end_idx   = timezone.normalize(datetime.datetime.combine(dt,
-                            datetime.time(23, 59, 59, 999999, tzinfo=timezone)))
+    # implementation. using the tzinfo argument of the datetime constructors
+    # is known not to work with pytz.timezone for many timezones. the call to
+    # localize is a known work-around
+    start_idx = timezone.localize(datetime.datetime.combine(dt,
+                                                            datetime.time.min))
+    end_idx = timezone.localize(datetime.datetime.combine(dt,
+                                                          datetime.time.max))
     return full_ts.loc[str(start_idx) : str(end_idx)]
 
 

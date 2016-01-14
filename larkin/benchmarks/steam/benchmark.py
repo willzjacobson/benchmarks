@@ -74,19 +74,20 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, obs_ts, gran, timezone,
         raise Exception("insufficient data available for %s" % base_dt)
 
     # get weather for base_dt
-    base_dt_wetbulb = larkin.shared.utils.get_dt_tseries(base_dt, wetbulb_ts, timezone)
+    base_dt_wetbulb = larkin.shared.utils.get_dt_tseries(base_dt, wetbulb_ts,
+                                                         timezone)
 
     # find k closest weather days for which steam and occupancy data is
     # available
     dow_type = _dow_type(base_dt)
-    sim_wetbulb_days = larkin.shared.utils.find_similar_profile_days(base_dt_wetbulb,
-                                                                     dow_type,
-                                                                     wetbulb_ts,
-                                                                     7,
-                                                                     data_avlblty,
-                                                                     timezone,
-                                                                     dow_type_fn=
-                                                              _dow_type)
+    sim_wetbulb_days = larkin.shared.utils.find_similar_profile_days(
+                                                        base_dt_wetbulb,
+                                                        dow_type,
+                                                        wetbulb_ts,
+                                                        7,
+                                                        data_avlblty,
+                                                        timezone,
+                                                        dow_type_fn=_dow_type)
     larkin.shared.utils.debug_msg(debug, "sim days: %s" % str(sim_wetbulb_days))
 
     # compute occupancy similarity score for the k most similar weather days

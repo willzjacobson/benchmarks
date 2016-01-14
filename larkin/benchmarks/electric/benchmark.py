@@ -157,12 +157,12 @@ def process_building(building, host, port, db_name, username, password,
     larkin.shared.utils.debug_msg(debug, "occupancy: %s" % occ_ts)
 
     # query electric data
-    elec_ts = ts_proc.utils.get_electric_ts(host, port, db_name, username,
-                                            password, source,
-                                            collection_name,
-                                            building, meter_count)
+    elec_ts = larkin.ts_proc.utils.get_electric_ts(host, port, db_name,
+                                                   username, password, source,
+                                                   collection_name, building,
+                                                   meter_count)
     elec_ts = elec_ts.tz_convert(target_tzone)
-    shared.utils.debug_msg(debug, "electric: %s" % elec_ts)
+    larkin.shared.utils.debug_msg(debug, "electric: %s" % elec_ts)
 
     # find baseline
     bench_info = _find_benchmark(base_dt, occ_ts, wetbulb_ts,

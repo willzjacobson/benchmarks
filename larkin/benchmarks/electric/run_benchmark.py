@@ -10,7 +10,7 @@ import datetime
 import sys
 
 import __init__
-from larkin import benchmarks as bmark
+import larkin.benchmarks.electric.benchmark
 
 cfg = __init__.config
 
@@ -52,8 +52,7 @@ kw_args['debug']       = cfg['default']['debug']
 for building_id in buildings:
 
     bldg_params = cfg['default'][building_id]
-    bmark.process_building(building_id,
-                           timezone=bldg_params['timezone'],
-                           meter_count=bldg_params['electric_meter_count'],
-                           **kw_args)
-
+    larkin.benchmarks.electric.benchmark.process_building(building_id,
+                              timezone=bldg_params['timezone'],
+                              meter_count=bldg_params['electric_meter_count'],
+                              **kw_args)

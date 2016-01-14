@@ -47,7 +47,7 @@ for building in buildings:
 
         # invoke model
         forecast, std_err, conf_int = larkin.arima.model.start_time(
-            larkin.ts_proc.munge.interp_tseries(ts, granularity),
+            ts,
             weather_params['h5file'],
                 weather_params['weather_history_loc'],
                 weather_params['weather_forecast_loc'],

@@ -3,6 +3,8 @@ __author__ = 'ashishgagneja'
 
 import sys
 
+import larkin.shared.utils
+
 
 def score_occ_similarity(base_dt, date_shortlist, occ_ts, timezone):
     """
@@ -30,8 +32,9 @@ def score_occ_similarity(base_dt, date_shortlist, occ_ts, timezone):
     for dt_t in date_shortlist:
 
         score = larkin.shared.utils.compute_profile_similarity_score(base_ts_nodatetz,
-                                                                     larkin.shared.utils.drop_series_ix_date(
-                        larkin.shared.utils.get_dt_tseries(dt_t, occ_ts, timezone)))
+                    larkin.shared.utils.drop_series_ix_date(
+                        larkin.shared.utils.get_dt_tseries(dt_t, occ_ts,
+                                                           timezone)))
 
         scores.append((dt_t, score))
 
