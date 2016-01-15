@@ -9,10 +9,10 @@ co-variates
 import datetime
 import sys
 
-import user_config
 import larkin.benchmarks.electric.benchmark
+import user_config
 
-cfg = user_config.config
+cfg = user_config.user_config
 
 buildings = cfg['default']['buildings']
 

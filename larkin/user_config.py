@@ -10,5 +10,5 @@ __author__ = "David Karapetyan"
 
 yaml_dir = sys.prefix
 stream = open(os.path.join(yaml_dir, "etc/larkin/user_config.yaml"))
-config = yaml.load(stream)
+user_config = yaml.load(stream)
 stream.close()

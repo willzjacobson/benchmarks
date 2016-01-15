@@ -11,7 +11,7 @@ import sys
 import larkin.benchmarks.steam.benchmark
 import user_config
 
-cfg = user_config.config
+cfg = user_config.user_config
 
 # determine base date
 bench_dt = datetime.date.today()

@@ -7,7 +7,7 @@ import datetime
 
 import pandas as pd
 
-from larkin.user_config import config
+from larkin.user_config import user_config
 
 
 def is_discrete(df, nary_thresh):
@@ -98,7 +98,7 @@ def filter_two_std(ts):
 
 def filter_day_season(ts, day=pd.datetime.today().weekday(),
                       month=pd.datetime.today().month):
-    seasons = config["weather"]["seasons"]
+    seasons = user_config["weather"]["seasons"]
     month_range = (0, 0)
 
     for value in seasons.values():

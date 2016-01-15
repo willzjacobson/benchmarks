@@ -1,5 +1,5 @@
 # coding=utf-8
-config = dict(
+model_config = dict(
         sampling={
             'forecast_length': 24,
             'granularity': '15min',

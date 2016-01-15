@@ -15,7 +15,7 @@ import larkin.ts_proc.munge
 import larkin.ts_proc.utils
 import user_config
 
-cfg = user_config.config
+cfg = user_config.user_config
 
 buildings = cfg['default']['buildings']
 

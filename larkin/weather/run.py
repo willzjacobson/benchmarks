@@ -1,11 +1,11 @@
 # coding=utf-8
 # import pandas as pd
 import larkin.weather.mongo
-from larkin.user_config import config
+from larkin.user_config import user_config
 
-cfg = config["building_dbs"]
+cfg = user_config["building_dbs"]
 if __name__ == "__main__":
-    dbs = config["building_dbs"]
+    dbs = user_config["building_dbs"]
     # whist = pd.read_hdf("/data/weather.h5", "history_orig")
     # weather.mongo._mongo_history_push(whist, **(cfg["mongo_cred"]),
     #                                   **(cfg["weather_history_loc"]))
@@ -34,7 +34,7 @@ if __name__ == "__main__":
     larkin.weather.mongo.forecast_update(
             wund_url=dbs["wund_cred"]["wund_url"],
             city=dbs["wund_cred"]["city"],
-            state=dbs["wund_url"]["state"],
+            state=dbs["wund_cred"]["state"],
             host=dbs["mongo_cred"]["host"],
             port=dbs["mongo_cred"]["port"],
             source=dbs["mongo_cred"]["source"],
@@ -44,4 +44,4 @@ if __name__ == "__main__":
             db_name=dbs["weather_forecast_loc"][
                 "db_name"],
             collection_name=dbs["weather_forecast_loc"][
-                "history"])
+                "collection_name"])
