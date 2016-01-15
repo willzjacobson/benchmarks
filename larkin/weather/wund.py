@@ -104,6 +104,8 @@ def history_pull(city, state, wund_url, date=pd.datetime.today()):
     dateindex.name = None
     df = df.set_index(dateindex)
 
+    # when pandas pulls in data from db, utc offsets not included. So, include
+    df.tz_localize('UTC')
     return df
 
 
@@ -159,10 +161,15 @@ def forecast_pull(city, state, wund_url):
 
     city_path = '%s/%s' % (state, city)
     url = wund_url + "hourly/q/%s.json" % city_path
+    url_tz = wund_url + "forecast/q/%s.json" % city_path
     reader = codecs.getreader('utf-8')
     f = urlopen(url)
+    g = urlopen(url_tz)
     parsed_json = json.load(reader(f))
+    tz_json = json.load(reader(g))
     f.close()
+    g.close()
+
     df = parsed_json['hourly_forecast']
 
     # convert to dataframes for easy presentation and manipulation
@@ -171,8 +178,15 @@ def forecast_pull(city, state, wund_url):
     dateindex = df.FCTTIME.apply(
             lambda x: pd.datetime(int(x['year']), int(x['mon']), int(x['mday']),
                                   int(x['hour']), int(x['min'])))
+    # timezone field is empty when we look in parsed_json. Fault of wund api.
+    # As a result, we look elsewhere for the timezone in the wund forecast api
+    tz = tz_json[
+        'forecast']['simpleforecast']['forecastday'][0]['date']['tz_long']
+    # since we couldn't pull data that was explicitly labeled UTC,
+    # we pull data labeled tz, then convert to UTC
     dateindex.name = None
     df = df.set_index(dateindex)
+    df.tz_localize(tz).tz_convert('UTC')
     return df
 
 

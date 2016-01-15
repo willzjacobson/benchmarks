@@ -111,8 +111,6 @@ def history_update(city, state, wund_url, parallel, host, port, source,
                                collection_name=collection_name,
                                )
 
-    if not isinstance(weather_data, pd.DataFrame):
-        raise ValueError("History pull as dataframe failed")
     # start is beginning of day for last entry in weather_data
     # we toss out any times already existing between start and end of
     # day in archive weather_data, in order for concat below to run without
@@ -120,10 +118,13 @@ def history_update(city, state, wund_url, parallel, host, port, source,
 
     if len(weather_data) == 0:
         start = pd.datetime.today().date() - relativedelta(years=4)
+        end = pd.datetime.today().date()
+        weather_data = pd.DataFrame()
     else:
+        if not isinstance(weather_data, pd.DataFrame):
+            raise ValueError("History pull as dataframe failed")
         start = weather_data.index[-1].date()
-
-    end = pd.datetime.today().date()
+        end = pd.datetime.today().date()
 
     if start == end:
         raise ValueError(
