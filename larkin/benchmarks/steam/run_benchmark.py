@@ -10,8 +10,9 @@ import sys
 
 import larkin.benchmarks.steam.benchmark
 import user_config
+import model_config
 
-cfg = user_config.config
+cfg = dict(user_config.config, **model_config.config)
 
 # determine base date
 bench_dt = datetime.date.today()
@@ -30,7 +31,7 @@ print("looking up benchmark for %s" % bench_dt)
 # fill keyword argument dict
 kw_args = dict(dict(cfg['building_dbs']['mongo_cred'],
                     **cfg['building_dbs']['building_ts_loc']),
-               **cfg['building_dbs']['results'])
+               **cfg['building_dbs']['results_steam_benchmark'])
 
 weather_hist = cfg['building_dbs']['weather_history_loc']
 weather_fcst = cfg['building_dbs']['weather_forecast_loc']

@@ -205,4 +205,5 @@ def process_building(building, host, port, db_name, username, password,
                                                port, db_name_out, username,
                                                password, source,
                                                collection_name_out, building,
-                                               'Steam_Usage', 'benchmark')
+                                               'building', 'Steam_Usage',
+                                               target_tzone)

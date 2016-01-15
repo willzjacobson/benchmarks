@@ -10,7 +10,9 @@ import itertools
 import sys
 
 import pandas as pd
+
 import pymongo
+
 import pytz
 
 import larkin.shared.utils
@@ -65,20 +67,27 @@ def get_weather(host, port, username, password, source_db, history_db,
     return wetbulb_ts.dropna().tz_localize(pytz.utc)
 
 
-def gen_bmark_readings_list(tseries, incr_auc):
+def gen_bmark_readings_list(tseries, incr_auc, base_dt, timezone):
     """
     generate list of readings with each item being a dictionary of the form:
     {"time": <datetime/date/time>, "value": <value>, 'daily': <incr_auc>}
+    time's timezone must be UTC
 
     :param tseries: pandas Series
         time series snippet to
     :param incr_auc: list
         list with incremental auc scores, is assumed to be of the same size as
         tseries
+    :param base_dt: datetime.date
+        base date or as of date
+    :param timezone: pytz.timezone
+        target timezone or building timezone
     :return: list of dictionaries
     """
-
-    return [{'time': str(t[0]), 'value': t[1], 'daily': auc}
+    return [{'time': timezone.normalize(timezone.localize(
+        datetime.datetime.combine(base_dt, t[0]))).astimezone(pytz.utc),
+             'value': t[1],
+             'daily': auc}
             for t, auc in zip(tseries.iteritems(), incr_auc)]
 
 
@@ -180,21 +189,23 @@ def find_lowest_auc_day(date_scores, obs_ts, n, timezone, debug):
             larkin.shared.utils.debug_msg(debug, "%s, %s" % (dt, auc))
 
             if 0 < auc < min_usage[1]:
-                min_usage = [dt, auc, incr_auc, day_obs_ts]
+                min_usage = [dt, auc, incr_auc,
+                             larkin.shared.utils.drop_series_ix_date(
+                                 day_obs_ts)]
 
     return min_usage
 
 
 def save_benchmark(bench_dt, base_dt, bench_ts, bench_auc, bench_incr_auc,
                    host, port, database, username, password, source_db,
-                   collection_name, building, system, output_type):
+                   collection_name, building, bmark_type, system, timezone):
     """
     Save benchmark time series to database
 
     :param bench_dt: datetime.date
         date from the past most similar to base date
     :param base_dt: datetime.date
-        base date
+        base date or as of date
     :param bench_ts: pandas Series
         observation time series from bench_dt
     :param bench_auc: float
@@ -218,10 +229,12 @@ def save_benchmark(bench_dt, base_dt, bench_ts, bench_auc, bench_incr_auc,
         collection name to use
     :param building: string
         building identifier
+    :param bmark_type: string
+        bmark_type name for identifying time series
     :param system: string
-        system name for identifying time series
-    :param output_type: string
         field name for identifying time series
+    :param timezone: pytz.timezone
+        target timezone or building timezone
 
     :return:
     """
@@ -230,20 +243,22 @@ def save_benchmark(bench_dt, base_dt, bench_ts, bench_auc, bench_incr_auc,
         conn[database].authenticate(username, password, source=source_db)
         collection = conn[database][collection_name]
 
+        base_dt_t = datetime.datetime.combine(base_dt, datetime.time())
         # delete all existing matching documents
-        doc_id = {"_id.building": building,
-                  "_id.system": system,
-                  "_id.type": output_type,
-                  "_id.date": base_dt.isoformat()}
+        doc_id = {"building": building,
+                  "type"    : bmark_type,
+                  "system"  : system,
+                  "date"    : base_dt_t}
         collection.remove(doc_id)
 
         # insert
-        doc = {"_id": {"building": building,
-                       "system": system,
-                       "type": output_type,
-                       "date": base_dt.isoformat()
-                       },
-               "comment": bench_dt.isoformat(),
-               "readings": gen_bmark_readings_list(bench_ts, bench_incr_auc),
-               'daily_total': bench_auc}
+        doc = { "building": building,
+                "type"    : bmark_type,
+                "system"  : system,
+                "date"    : base_dt_t,
+                "comment" : datetime.datetime.combine(bench_dt,
+                                                      datetime.time()),
+                "readings": gen_bmark_readings_list(bench_ts, bench_incr_auc,
+                                                    base_dt, timezone),
+                "daily_total": bench_auc}
         collection.insert(doc)
