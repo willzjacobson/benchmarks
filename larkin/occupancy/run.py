@@ -3,6 +3,7 @@
 from numpy import logspace
 
 import larkin.svm.model
+from larkin.model_config import model_config
 from larkin.ts_proc.munge import is_discrete
 from larkin.user_config import user_config
 from larkin.weather.mongo import get_history, get_forecast
@@ -48,18 +49,18 @@ for building in buildings:
                                     collection_name=dbs["weather_forecast_loc"][
                                         "collection_name"])
 
-    nary_thresh = user_config["sampling"]["nary_thresh"]
-    cov = user_config["weather"]["cov"]
-    gran = user_config["sampling"]["granularity"]
-    params = user_config["svm"]["params"]
-    pg = user_config["svm"]["param_search"]["grid"]
+    nary_thresh = model_config["sampling"]["nary_thresh"]
+    cov = model_config["weather"]["cov"]
+    gran = model_config["sampling"]["granularity"]
+    params = model_config["svm"]["params"]
+    pg = model_config["svm"]["param_search"]["grid"]
     param_grid = {"C": logspace(**(pg["C"])),
                   "gamma": logspace(**(pg["gamma"])),
                   "kernel": pg["kernel"]}
-    cv = user_config["svm"]["param_search"]["cv"]
-    n_jobs = user_config["svm"]["param_search"]["n_jobs"]
-    threshold = user_config["svm"]["param_search"]["threshold"]
-    has_bin_search = user_config["svm"]["param_search"]["has_bin_search"]
+    cv = model_config["svm"]["param_search"]["cv"]
+    n_jobs = model_config["svm"]["param_search"]["n_jobs"]
+    threshold = model_config["svm"]["param_search"]["threshold"]
+    has_bin_search = model_config["svm"]["param_search"]["has_bin_search"]
     discrete = is_discrete(endog, nary_thresh)
 
     larkin.svm.model.predict(endog, weather_history, weather_forecast,

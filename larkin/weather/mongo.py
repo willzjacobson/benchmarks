@@ -201,6 +201,9 @@ def get_history(host, port, source, db_name, username, password,
         whist = pd.DataFrame(whist)
         whist.set_index('time', inplace=True)
         whist = whist.sort_index()
+
+        # key step--must localize to UTC uniformly across suite
+        whist = whist.tz_localize('UTC')
         return whist
 
 
@@ -219,4 +222,5 @@ def get_forecast(host, port, source, db_name, username, password,
             else:
                 wfore.set_index('time', inplace=True)
                 wfore = wfore.sort_index()
+                wfore = wfore.tz_localize('UTC')
                 return wfore

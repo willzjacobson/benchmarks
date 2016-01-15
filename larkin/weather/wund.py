@@ -105,7 +105,7 @@ def history_pull(city, state, wund_url, date=pd.datetime.today()):
     df = df.set_index(dateindex)
 
     # when pandas pulls in data from db, utc offsets not included. So, include
-    df.tz_localize('UTC')
+    df = df.tz_localize('UTC')
     return df
 
 
@@ -186,7 +186,7 @@ def forecast_pull(city, state, wund_url):
     # we pull data labeled tz, then convert to UTC
     dateindex.name = None
     df = df.set_index(dateindex)
-    df.tz_localize(tz).tz_convert('UTC')
+    df = df.tz_localize(tz).tz_convert('UTC')
     return df
 
 
