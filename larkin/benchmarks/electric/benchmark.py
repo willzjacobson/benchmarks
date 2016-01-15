@@ -179,4 +179,5 @@ def process_building(building, host, port, db_name, username, password,
                                                port, db_name_out, username,
                                                password, source,
                                                collection_name_out, building,
-                                               'Electric_Demand', 'benchmark')
+                                               'building', 'Electric_Demand',
+                                               target_tzone)
