@@ -27,8 +27,8 @@ setup(
         author_email='dkarapetyan@prescriptivedata.io',
         description=(
             'An analytics and prediction engine'
-            ' for energy and electricity usage in'
-            ' commercial and non-commercial buildings.'
+            'for energy and electricity usage in'
+            'commercial and non-commercial buildings.'
         ),
         install_requires=reqs
 )
