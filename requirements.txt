@@ -6,3 +6,4 @@ pandas
 pip
 numpy
 pyyaml
+python-crontab
