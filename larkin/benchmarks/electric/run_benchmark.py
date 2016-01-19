@@ -9,10 +9,11 @@ co-variates
 import datetime
 import sys
 
-import larkin.benchmarks.electric.benchmark
 import user_config
+import model_config
+import larkin.benchmarks.electric.benchmark
 
-cfg = user_config.user_config
+cfg = dict(user_config.user_config, **model_config.model_config)
 
 buildings = cfg['default']['buildings']
 
@@ -33,7 +34,7 @@ print("looking up benchmark for %s" % bench_dt)
 # fill keyword argument dict
 kw_args = dict(dict(cfg['building_dbs']['mongo_cred'],
                     **cfg['building_dbs']['building_ts_loc']),
-               **cfg['building_dbs']['results'])
+               **cfg['building_dbs']['results_electric_benchmark'])
 
 weather_hist = cfg['building_dbs']['weather_history_loc']
 weather_fcst = cfg['building_dbs']['weather_forecast_loc']
