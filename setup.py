@@ -30,6 +30,5 @@ setup(
             ' for energy and electricity usage in'
             ' commercial and non-commercial buildings.'
         ),
-        platform='linux2',
         install_requires=reqs
 )
