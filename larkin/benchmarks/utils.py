@@ -10,9 +10,7 @@ import itertools
 import sys
 
 import pandas as pd
-
 import pymongo
-
 import pytz
 
 import larkin.shared.utils
@@ -64,7 +62,8 @@ def get_weather(host, port, username, password, source_db, history_db,
     fcst_only_idx = fcst_munged.index.difference(hist_munged)
     wetbulb_ts = pd.concat([hist_munged, fcst_munged.loc[fcst_only_idx]])
 
-    return wetbulb_ts.dropna().tz_localize(pytz.utc)
+    # this data is already in UTC
+    return wetbulb_ts.dropna()
 
 
 def gen_bmark_readings_list(tseries, incr_auc, base_dt, timezone):

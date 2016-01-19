@@ -79,10 +79,11 @@ def get_electric_ts(host, port, database, username, password, source,
     """
 
     results = joblib.Parallel(n_jobs=-1)(joblib.delayed(get_ts_new_schema)(
-                        host, port, database, username, password, source,
-                        collection_name, building,
-                        "Elec-M%d" % equip_id, 'SIF_Electric_Demand')
-                                    for equip_id in range(1, meter_count + 1))
+                    host, port, database, username, password, source,
+                    collection_name, building,
+                    ["Elec-M%d" % meter_num, "Electric_Meter_%d" % meter_num],
+                    ['SIF_Electric_Demand', 'Electric_Demand'])
+                        for meter_num in range(1, meter_count + 1))
 
     ts_lists, value_lists = zip(*results)
 
@@ -127,8 +128,8 @@ def get_space_temp_ts(db, collection_name, bldg, floor, quad):
 
 
 def get_parsed_ts_new_schema(host, port, database, username, password,
-                             source, collection_name, building, device,
-                             system):
+                             source, collection_name, building, devices,
+                             systems):
     """Fetch all available timeseries data from database
 
     :param host: string
@@ -147,10 +148,10 @@ def get_parsed_ts_new_schema(host, port, database, username, password,
         collection name to use
     :param building: string
         building identifier
-    :param device: string
-        device name for identifying time series
-    :param system: string
-        system name for identifying time series
+    :param devices: string or iterable
+        device name(s) for identifying time series
+    :param systems: string or iterable
+        system name(s) for identifying time series
 
     :return: pandas DataFrame
         occupancy time series data
@@ -159,7 +160,7 @@ def get_parsed_ts_new_schema(host, port, database, username, password,
 
     ts_list, val_list = get_ts_new_schema(host, port, database, username,
                                           password, source, collection_name,
-                                          building, device, system)
+                                          building, devices, systems)
 
     obs_df = pd.DataFrame({'obs': val_list}, index=ts_list).dropna()
 
@@ -170,9 +171,9 @@ def get_parsed_ts_new_schema(host, port, database, username, password,
 
 
 def get_ts_new_schema(host, port, database, username, password, source,
-                      collection_name, building, device, system=None):
+                      collection_name, building, devices, systems=None):
     """
-    Get all observation data with the given building, device and system
+    Get all observation data with the given building, devices and systems
     combination from the database
 
     :param host: string
@@ -180,7 +181,7 @@ def get_ts_new_schema(host, port, database, username, password, source,
     :param port: int
         database port number
     :param database: string
-        name of the database on server
+        name of the database on server/
     :param username: string
         database username
     :param password: string
@@ -191,10 +192,10 @@ def get_ts_new_schema(host, port, database, username, password, source,
         database collection name
     :param building: string
         building identifier
-    :param device: string
-        device name for identifying time series
-    :param system: string
-        system name for identifying time series
+    :param devices: string or iterable
+        device name(s) for identifying time series
+    :param systems: string or iterable
+        system name(s) for identifying time series
 
     :return: tuple with a list of time stamps followed by a list of values
     """
@@ -206,10 +207,20 @@ def get_ts_new_schema(host, port, database, username, password, source,
 
         ts_list, value_list, daily_dict = [], [], {}
 
-        query = {"building": building,
-                 "device"  : device}
-        if system:
-            query['system'] = system
+        query = {"building": building}
+        # there may be one or more devices to match
+        if hasattr(devices, '__iter__'):
+                 query['device'] = {'$in': devices}
+        else:
+            query['device'] = devices
+
+       # systems is optional, for example for steam data
+        if systems:
+            # there may be one or more systems names to match
+            if hasattr(systems, '__iter__'):
+                query['system'] = {'$in': systems}
+            else:
+                query['system'] = systems
 
         for data in collection.find(query):
 

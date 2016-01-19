@@ -24,8 +24,8 @@ for building in buildings:
                                      collection_name=dbs["building_ts_loc"][
                                          "collection_name"],
                                      building=building,
-                                     device="Occupancy",
-                                     system="Occupancy",
+                                     devices="Occupancy",
+                                     systems="Occupancy",
                                      )
 
     weather_history = get_history(host=dbs["mongo_cred"]["host"],
