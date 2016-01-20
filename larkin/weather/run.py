@@ -39,5 +39,6 @@ def main():
             collection_name=dbs["weather_forecast_loc"][
                 "collection_name"])
 
-    if __name__ == "__main__":
-        main()
+
+if __name__ == "__main__":
+    main()
