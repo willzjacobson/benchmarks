@@ -15,7 +15,7 @@ buildings = user_config["default"]["buildings"]
 for building in buildings:
     endog = get_parsed_ts_new_schema(host=dbs["mongo_cred"]["host"],
                                      port=dbs["mongo_cred"]["port"],
-                                     database=dbs["building_ts_loc"][
+                                     db_name=dbs["building_ts_loc"][
                                          "db_name"],
                                      username=dbs["mongo_cred"][
                                          "username"],

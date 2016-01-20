@@ -6,7 +6,6 @@
 # dview.block = True
 
 # with dview.sync_imports():
-import dateutil.parser
 import pymongo
 
 # from statsmodels.tsa.statespace.sarimax import SARIMAX
@@ -14,7 +13,6 @@ import pymongo
 import pandas as pd
 import joblib
 # sns.set()
-import dateutil.parser
 import pytz
 
 
@@ -90,52 +88,16 @@ def get_electric_ts(host, port, database, username, password, source,
                                                                        pytz.utc)
 
 
-
-def get_space_temp_ts(db, collection_name, bldg, floor, quad):
-    """ retrieve all available space temperature data for floor-quad of
-        building_id bldg
-
-    :param db: pymongo database object
-        connected database object
-    :param collection_name: string
-        database collection name
-    :param bldg: string
-        database building_id identifier
-    :param floor: string
-        floor identifier
-    :param quad: string
-        quadrant identifier
-
-    :return: pandas Series
-    """
-
-    ts_list, value_list = [], []
-    collection = db.loc[collection_name]
-    for data in collection.find({"_id.building": bldg,
-                                 "_id.device": "Space_Temp",
-                                 "_id.floor": str(floor),
-                                 "_id.quad": quad}):
-        readings = data.loc['readings']
-        for reading in readings:
-            ts_list.append(
-                    dateutil.parser.parse(reading['time'], ignoretz=True))
-            value_list.append(float(reading['value']))
-
-    return pd.Series(data=value_list, index=pd.DatetimeIndex(ts_list)
-                     ).sort_index()
-
-
-
-def get_parsed_ts_new_schema(host, port, database, username, password,
+def get_parsed_ts_new_schema(host, port, db_name, username, password,
                              source, collection_name, building, device,
-                             system):
+                             system=None, floor=None, quad=None):
     """Fetch all available timeseries data from database
 
     :param host: string
         database server name or IP-address
     :param port: int
         database port number
-    :param database: string
+    :param db_name: string
         name of the database on server
     :param username: string
         database username
@@ -151,15 +113,20 @@ def get_parsed_ts_new_schema(host, port, database, username, password,
         device name for identifying time series
     :param system: string
         system name for identifying time series
+    :param floor: string
+        floor identifier
+    :param quad: string
+        quadrant identifier
 
     :return: pandas DataFrame
         occupancy time series data
     """
 
 
-    ts_list, val_list = get_ts_new_schema(host, port, database, username,
+    ts_list, val_list = get_ts_new_schema(host, port, db_name, username,
                                           password, source, collection_name,
-                                          building, device, system)
+                                          building, device, system, floor=floor,
+                                          quad=quad)
 
     obs_df = pd.DataFrame({'obs': val_list}, index=ts_list).dropna()
 
@@ -168,9 +135,9 @@ def get_parsed_ts_new_schema(host, port, database, username, password,
     return obs_df.sort_index().tz_localize(pytz.utc)['obs']
 
 
-
 def get_ts_new_schema(host, port, database, username, password, source,
-                      collection_name, building, device, system=None):
+                      collection_name, building, device, system=None,
+                      floor=None, quad=None):
     """
     Get all observation data with the given building, device and system
     combination from the database
@@ -195,6 +162,10 @@ def get_ts_new_schema(host, port, database, username, password, source,
         device name for identifying time series
     :param system: string
         system name for identifying time series
+    :param floor: string
+        floor identifier
+    :param quad: string
+        quadrant identifier
 
     :return: tuple with a list of time stamps followed by a list of values
     """
@@ -204,12 +175,16 @@ def get_ts_new_schema(host, port, database, username, password, source,
         conn[database].authenticate(username, password, source=source)
         collection = conn[database][collection_name]
 
-        ts_list, value_list, daily_dict = [], [], {}
+        ts_list, value_list = [], []
 
-        query = {"building": building,
-                 "device"  : device}
-        if system:
-            query['system'] = system
+        query = {'building': building,
+                 'device'  : device}
+
+        # handle optional arguments
+        for field, value in {'system': system, 'floor': floor,
+                             'quadrant': quad}.iteritems():
+            if value is not None:
+                query[field] = value
 
         for data in collection.find(query):
 
