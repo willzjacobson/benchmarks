@@ -185,8 +185,7 @@ def process_building(building, host, port, db_name, username, password,
                                                              password, source,
                                                              collection_name,
                                                              building,
-                                                             'TotalInstant',
-                                                             None)
+                                                             'TotalInstant')
     steam_ts = steam_ts.tz_convert(target_tzone)
     larkin.shared.utils.debug_msg(debug, "steam: %s" % steam_ts)
 

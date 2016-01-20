@@ -8,40 +8,39 @@ temperature data
 """
 
 import dateutil.relativedelta as relativedelta
-import pymongo
 
 import larkin.arima.model
 import larkin.ts_proc.munge
 import larkin.ts_proc.utils
 import user_config
+import model_config
 
-cfg = user_config.user_config
+cfg = dict(user_config.user_config, **model_config.model_config)
 
 buildings = cfg['default']['buildings']
 
 # iterate over all buildings
 for building in buildings:
 
-    bldg_params = cfg[building]
-    weather_params = cfg['building_dbs']
+    bldg_params = cfg['default'][building]
+    building_dbs = cfg['building_dbs']
+    weather_params = cfg['weather']
     arima_params = cfg['arima']
     granularity = cfg['sampling']['granularity']
 
-    # connect to database
-    conn = pymongo.MongoClient(bldg_params['host'], bldg_params['port'])
-    conn[bldg_params['database']].authenticate(bldg_params['username'],
-                                               bldg_params['password'],
-                                               source=bldg_params['source_db'])
-    db = conn[bldg_params['database']]
+    kw_args = dict(building_dbs['mongo_cred'],
+                   **building_dbs['building_ts_loc'])
 
     predictions = []
     for floor_quadrant in bldg_params['floor_quadrants']:
         floor, quad = floor_quadrant
 
         # get space temp time series
-        ts = larkin.ts_proc.utils.get_space_temp_ts(db,
-                    bldg_params['collection_name_input'],
-                    building, floor, quad)
+        ts = larkin.ts_proc.utils.get_parsed_ts_new_schema(building=building,
+                                                           device='Space_Temp',
+                                                           floor=str(floor),
+                                                           quad=quad,
+                                                           **kw_args)
 
         pred_dt = ts.index[-1] - 2 * relativedelta.relativedelta(days=1)
         print(pred_dt)
@@ -50,8 +49,8 @@ for building in buildings:
         forecast, std_err, conf_int = larkin.arima.model.start_time(
             ts,
             weather_params['h5file'],
-                weather_params['weather_history_loc'],
-                weather_params['weather_forecast_loc'],
+            weather_params['weather_history_loc'],
+            weather_params['weather_forecast_loc'],
             arima_params['order'],
             granularity,
             str(pred_dt))
@@ -59,7 +58,5 @@ for building in buildings:
         print("forecast: %s" % forecast)
         print("std err: %s" % std_err)
         print("confidence interval: %s" % conf_int)
-
-    conn.close()
 
 

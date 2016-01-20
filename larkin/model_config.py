@@ -65,5 +65,6 @@ model_config = dict(
                               'Variable': 0,
                               'WNW': 9,
                               'WSW': 7,
-                              'West': 2}}
+                              'West': 2}},
+        arima={'order': [1, 1, 0]}
 )
