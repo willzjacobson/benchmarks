@@ -7,7 +7,7 @@ import sklearn.preprocessing
 import sklearn.svm
 import sklearn.svm.classes
 
-from larkin.occupancy.svm_dframe_prep import get_covars
+from svm.dframe_prep import get_covars
 
 __author__ = 'David Karapetyan'
 

@@ -27,6 +27,12 @@ for building in buildings:
                             meter_count=6
                             )
 
+    # temporary code--mongo guys to update db
+    endog = endog[~endog.index.duplicated(keep='first')].dropna()
+    # take care of padding guys were doing on mongo
+    endog = endog[endog != 0]
+    # TODO Have padding on Mongo Changed to time: null, value: null
+
     weather_history = get_history(host=dbs["mongo_cred"]["host"],
                                   port=dbs["mongo_cred"]["port"],
                                   source=dbs["mongo_cred"]["source"],
