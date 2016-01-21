@@ -62,7 +62,7 @@ def get_weather(host, port, username, password, source_db, history_db,
     fcst_only_idx = fcst_munged.index.difference(hist_munged)
     wetbulb_ts = pd.concat([hist_munged, fcst_munged.loc[fcst_only_idx]])
 
-    # data already in UTC timezone now
+    # this data is already in UTC
     return wetbulb_ts.dropna()
 
 
