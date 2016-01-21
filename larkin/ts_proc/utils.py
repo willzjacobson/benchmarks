@@ -91,8 +91,8 @@ def get_electric_ts(host, port, database, username, password, source,
 
 
 def get_parsed_ts_new_schema(host, port, db_name, username, password,
-                             source, collection_name, building, device,
-                             system=None, floor=None, quad=None):
+                             source, collection_name, building, devices,
+                             systems=None, floor=None, quad=None):
     """Fetch all available timeseries data from database
 
     :param host: string
