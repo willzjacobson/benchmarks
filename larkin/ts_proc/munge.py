@@ -90,9 +90,10 @@ def ts_day_pos(ts, day, time, start, end, freq):
         return temp.at_time(time)
 
 
-def filter_two_std(ts):
-    stats = ts.describe(percentiles=[.05, .95])
-    low, high = stats['5%'], stats['95%']
+def filter_three_std(ts):
+    perc = [.003, .997]
+    stats = ts.describe(percentiles=perc)
+    low, high = stats['0.3%'], stats['99.7%']
     return ts[ts.between(low, high)]
 
 
@@ -111,3 +112,26 @@ def filter_day_season(ts, day=pd.datetime.today().weekday(),
                   (ts.index.month <= month_range[1] % 12)
                   )]
     return ts_filt
+
+
+def spike_munge(ts):
+    # temporary code--mongo guys to update db
+    filtered = ts[~ts.index.duplicated(keep='first')].dropna()
+    # take care of padding guys were doing on mongo, and 0 like values
+    # in data
+    filtered = filtered[filtered > 0]
+
+    # system testing up to 2012-10-26; cut data up to then
+    filtered = filtered['2012-10-26 18:00:00':]
+    filtered = filtered.groupby(
+            filtered.index.weekofyear).apply(
+            filter_three_std)
+    filtered = filtered.reset_index().drop(
+            'level_0', axis=1, inplace=True).set_index('level_1')
+
+    return filtered
+
+    # find all dates between ith and i+1th spike that are greater than
+    # percentage
+    # change from date reading at i-1 value (for example, could have multiple
+    # readings at a spike level--want to excise these

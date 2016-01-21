@@ -7,6 +7,7 @@ from larkin.model_config import model_config
 from larkin.ts_proc.munge import is_discrete
 from larkin.user_config import user_config
 from larkin.weather.mongo import get_history, get_forecast
+from ts_proc.munge import spike_munge
 from ts_proc.utils import get_electric_ts
 
 dbs = user_config["building_dbs"]
@@ -27,10 +28,9 @@ for building in buildings:
                             meter_count=6
                             )
 
-    # temporary code--mongo guys to update db
-    endog = endog[~endog.index.duplicated(keep='first')].dropna()
-    # take care of padding guys were doing on mongo
-    endog = endog[endog != 0]
+    endog = spike_munge(endog)
+
+
     # TODO Have padding on Mongo Changed to time: null, value: null
 
     weather_history = get_history(host=dbs["mongo_cred"]["host"],
