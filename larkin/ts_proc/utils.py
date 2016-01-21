@@ -81,8 +81,9 @@ def get_electric_ts(host, port, database, username, password, source,
     results = joblib.Parallel(n_jobs=-1)(joblib.delayed(get_ts_new_schema)(
                     host, port, database, username, password, source,
                     collection_name, building,
-                    ["Elec-M%d" % meter_num, "Electric_Meter_%d" % meter_num],
-                    ['SIF_Electric_Demand', 'Electric_Demand'])
+                    ["Elec-M%d" % meter_num,
+                     "Electric_Meter_%d^Avg_Rate" % meter_num],
+                    ['SIF_Electric_Demand', 'Electric_Utility'])
                         for meter_num in range(1, meter_count + 1))
 
     ts_lists, value_lists = zip(*results)

@@ -165,8 +165,8 @@ def process_building(building, host, port, db_name, username, password,
     larkin.shared.utils.debug_msg(debug, "electric: %s" % elec_ts)
 
     # find baseline
-    bench_info = _find_benchmark(base_dt, occ_ts, wetbulb_ts,
-                                 elec_ts, gran_int, target_tzone, debug)
+    bench_info = _find_benchmark(base_dt, occ_ts, wetbulb_ts, elec_ts, gran_int,
+                                 target_tzone, debug)
     bench_dt, bench_auc, bench_incr_auc, bench_usage = bench_info
     larkin.shared.utils.debug_msg(debug,
                                   "bench dt: %s, bench usage: %s, auc: %s" % (
