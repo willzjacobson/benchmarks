@@ -184,7 +184,7 @@ def find_lowest_auc_day(date_scores, obs_ts, n, timezone, debug):
             datum = day_obs_ts.index[0]
             x = list(map(lambda y: (y - datum).total_seconds() / 3600.0,
                          day_obs_ts.index))
-            incr_auc, auc = incremental_trapz(day_obs_ts.values.tolist(), x)
+            incr_auc, auc = incremental_trapz(day_obs_ts.values.flatten(), x)
             larkin.shared.utils.debug_msg(debug, "%s, %s" % (dt, auc))
 
             if 0 < auc < min_usage[1]:

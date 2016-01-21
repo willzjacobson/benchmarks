@@ -39,8 +39,8 @@ def drop_series_ix_date(tseries):
         Data set to work on
     :return: pandas Series
     """
-    return pd.Series(data=tseries.values, index=map(lambda x: x.time(),
-                                                  tseries.index.to_datetime()))
+    return pd.Series(data=tseries.values.flatten(),
+                     index=map(lambda x: x.time(), tseries.index.to_datetime()))
 
 
 def compute_profile_similarity_score(gold_ts, other_ts):

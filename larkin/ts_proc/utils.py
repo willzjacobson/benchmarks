@@ -46,7 +46,8 @@ def _construct_electric_dataframe(ts_lists, value_lists):
                                                 columns=[str(i + 1)]).dropna(),
                                    how='outer')
 
-    return master_df.sum(axis=1).sort_index()
+    return master_df.sum(axis=1).reset_index().drop_duplicates(
+        subset='index').set_index('index').sort_index()
 
 
 def get_electric_ts(host, port, database, username, password, source,
@@ -134,7 +135,8 @@ def get_parsed_ts_new_schema(host, port, db_name, username, password,
 
     # drop missing values, set timestamp as the new index and sort by index
     # some duplicates seen in SIF steam data
-    return obs_df.sort_index().tz_localize(pytz.utc)['obs']
+    return obs_df.reset_index().drop_duplicates(subset='index').set_index(
+        'index').sort_index().tz_localize(pytz.utc)['obs']
 
 
 def get_ts_new_schema(host, port, database, username, password, source,
