@@ -37,7 +37,7 @@ for building in buildings:
 
         # get space temp time series
         ts = larkin.ts_proc.utils.get_parsed_ts_new_schema(building=building,
-                                                           device='Space_Temp',
+                                                           devices='Space_Temp',
                                                            floor=str(floor),
                                                            quad=quad,
                                                            **kw_args)
