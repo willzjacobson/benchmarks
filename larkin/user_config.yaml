@@ -6,7 +6,7 @@ default:
   buildings:
     - 345_Park
   # run mode
-  debug: False
+  debug: True
 
   345_Park:
       floor_quadrants:
@@ -19,8 +19,6 @@ default:
 
       # electric
       electric_meter_count: 6
-      # electric -> benchmark
-      collection_name_out: analytics
 
       timezone: US/Eastern
       steam_meter_count: 3
@@ -53,3 +51,6 @@ building_dbs:
   results_electric_benchmark:
       db_name_out: benchmarks
       collection_name_out: electricity
+  results_water_benchmark:
+        db_name_out: benchmarks
+        collection_name_out: water

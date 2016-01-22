@@ -46,7 +46,8 @@ def _construct_electric_dataframe(ts_lists, value_lists):
                                                 columns=[str(i + 1)]).dropna(),
                                    how='outer')
 
-    return master_df.sum(axis=1).sort_index()
+    return master_df.sum(axis=1).reset_index().drop_duplicates(
+        subset='index').set_index('index').sort_index()
 
 
 def get_electric_ts(host, port, database, username, password, source,
@@ -77,10 +78,12 @@ def get_electric_ts(host, port, database, username, password, source,
     """
 
     results = joblib.Parallel(n_jobs=-1)(joblib.delayed(get_ts_new_schema)(
-                        host, port, database, username, password, source,
-                        collection_name, building,
-                        "Elec-M%d" % equip_id, 'SIF_Electric_Demand')
-                                    for equip_id in range(1, meter_count + 1))
+                    host, port, database, username, password, source,
+                    collection_name, building,
+                    ["Elec-M%d" % meter_num,
+                     "Electric_Meter_%d^Avg_Rate" % meter_num],
+                    ['SIF_Electric_Demand', 'Electric_Utility'])
+                        for meter_num in range(1, meter_count + 1))
 
     ts_lists, value_lists = zip(*results)
 
@@ -89,8 +92,8 @@ def get_electric_ts(host, port, database, username, password, source,
 
 
 def get_parsed_ts_new_schema(host, port, db_name, username, password,
-                             source, collection_name, building, device,
-                             system=None, floor=None, quad=None):
+                             source, collection_name, building, devices,
+                             systems=None, floor=None, quad=None):
     """Fetch all available timeseries data from database
 
     :param host: string
@@ -109,10 +112,10 @@ def get_parsed_ts_new_schema(host, port, db_name, username, password,
         collection name to use
     :param building: string
         building identifier
-    :param device: string
-        device name for identifying time series
-    :param system: string
-        system name for identifying time series
+    :param devices: string or iterable
+        device name(s) for identifying time series
+    :param systems: string or iterable
+        system name(s) for identifying time series
     :param floor: string
         floor identifier
     :param quad: string
@@ -125,21 +128,22 @@ def get_parsed_ts_new_schema(host, port, db_name, username, password,
 
     ts_list, val_list = get_ts_new_schema(host, port, db_name, username,
                                           password, source, collection_name,
-                                          building, device, system, floor=floor,
-                                          quad=quad)
+                                          building, devices, systems,
+                                          floor=floor, quad=quad)
 
     obs_df = pd.DataFrame({'obs': val_list}, index=ts_list).dropna()
 
     # drop missing values, set timestamp as the new index and sort by index
     # some duplicates seen in SIF steam data
-    return obs_df.sort_index().tz_localize(pytz.utc)['obs']
+    return obs_df.reset_index().drop_duplicates(subset='index').set_index(
+        'index').sort_index().tz_localize(pytz.utc)['obs']
 
 
 def get_ts_new_schema(host, port, database, username, password, source,
-                      collection_name, building, device, system=None,
+                      collection_name, building, devices, systems=None,
                       floor=None, quad=None):
     """
-    Get all observation data with the given building, device and system
+    Get all observation data with the given building, devices and systems
     combination from the database
 
     :param host: string
@@ -158,10 +162,10 @@ def get_ts_new_schema(host, port, database, username, password, source,
         database collection name
     :param building: string
         building identifier
-    :param device: string
-        device name for identifying time series
-    :param system: string
-        system name for identifying time series
+    :param devices: string or iterable
+        device name(s) for identifying time series
+    :param systems: string or iterable
+        system name(s) for identifying time series
     :param floor: string
         floor identifier
     :param quad: string
@@ -177,14 +181,23 @@ def get_ts_new_schema(host, port, database, username, password, source,
 
         ts_list, value_list = [], []
 
-        query = {'building': building,
-                 'device'  : device}
+        query = {"building": building}
+        # there may be one or more devices to match
+        if hasattr(devices, '__iter__'):
+                 query['device'] = {'$in': devices}
+        else:
+            query['device'] = devices
 
+       # systems is optional, for example for steam data
         # handle optional arguments
-        for field, value in {'system': system, 'floor': floor,
+        for field, value in {'system': systems, 'floor': floor,
                              'quadrant': quad}.iteritems():
-            if value is not None:
-                query[field] = value
+            if value:
+                # there may be one or more systems names to match
+                if hasattr(value, '__iter__'):
+                    query[field] = {'$in': value}
+                else:
+                    query[field] = value
 
         for data in collection.find(query):
 

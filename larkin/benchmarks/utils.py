@@ -10,9 +10,7 @@ import itertools
 import sys
 
 import pandas as pd
-
 import pymongo
-
 import pytz
 
 import larkin.shared.utils
@@ -64,7 +62,8 @@ def get_weather(host, port, username, password, source_db, history_db,
     fcst_only_idx = fcst_munged.index.difference(hist_munged)
     wetbulb_ts = pd.concat([hist_munged, fcst_munged.loc[fcst_only_idx]])
 
-    return wetbulb_ts.dropna().tz_localize(pytz.utc)
+    # this data is already in UTC
+    return wetbulb_ts.dropna()
 
 
 def gen_bmark_readings_list(tseries, incr_auc, base_dt, timezone):
@@ -185,7 +184,7 @@ def find_lowest_auc_day(date_scores, obs_ts, n, timezone, debug):
             datum = day_obs_ts.index[0]
             x = list(map(lambda y: (y - datum).total_seconds() / 3600.0,
                          day_obs_ts.index))
-            incr_auc, auc = incremental_trapz(day_obs_ts.values.tolist(), x)
+            incr_auc, auc = incremental_trapz(day_obs_ts.values.flatten(), x)
             larkin.shared.utils.debug_msg(debug, "%s, %s" % (dt, auc))
 
             if 0 < auc < min_usage[1]:
