@@ -126,8 +126,7 @@ def spike_munge(ts):
     filtered = filtered.groupby(
             filtered.index.weekofyear).apply(
             filter_three_std)
-    filtered = filtered.reset_index().drop(
-            'level_0', axis=1, inplace=True).set_index('level_1')
+    filtered = filtered.reset_index(level=0, drop=True)
 
     return filtered
 
