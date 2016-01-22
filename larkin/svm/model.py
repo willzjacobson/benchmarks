@@ -7,8 +7,8 @@ import sklearn.preprocessing
 import sklearn.svm
 import sklearn.svm.classes
 
-from model_config import model_config
-from svm.dframe_prep import get_covars
+from larkin.model_config import model_config
+from larkin.svm.dframe_prep import get_covars
 
 __author__ = 'David Karapetyan'
 
