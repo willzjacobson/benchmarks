@@ -7,7 +7,7 @@ from larkin.model_config import model_config
 from larkin.ts_proc.munge import is_discrete
 from larkin.user_config import user_config
 from larkin.weather.mongo import get_history, get_forecast
-from ts_proc.munge import spike_munge
+from ts_proc.munge import electricity_spike_munge
 from ts_proc.utils import get_electric_ts
 
 dbs = user_config["building_dbs"]
@@ -27,8 +27,9 @@ for building in buildings:
                             building=building,
                             meter_count=6
                             )
-
-    endog = spike_munge(endog)
+    # TODO Ashish will output ts, not df from get_electric
+    endog = endog[0]  # temp code
+    endog = electricity_spike_munge(endog)
 
 
     # TODO Have padding on Mongo Changed to time: null, value: null

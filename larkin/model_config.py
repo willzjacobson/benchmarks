@@ -23,7 +23,10 @@ model_config = dict(
                        'max_iter': -1,
                        'shrinking': True,
                        'tol': 0.001,
-                       'verbose': False}},
+                       'verbose': False},
+            'cont_scofunc': 'mean_absolute_error',  # 'r2'
+            'disc_scofunc': 'accuracy'
+        },
         weather={
             'conds_mapping':
                 {'Clear': 0,

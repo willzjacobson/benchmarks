@@ -4,11 +4,10 @@ from numpy import logspace
 
 import larkin.svm.model
 from larkin.model_config import model_config
-from larkin.ts_proc.munge import is_discrete
+from larkin.ts_proc.munge import is_discrete, occupancy_spike_munge
 from larkin.ts_proc.utils import get_parsed_ts_new_schema
 from larkin.user_config import user_config
 from larkin.weather.mongo import get_history, get_forecast
-
 dbs = user_config["building_dbs"]
 buildings = user_config["default"]["buildings"]
 
@@ -27,6 +26,8 @@ for building in buildings:
                                      devices="Occupancy",
                                      systems="Occupancy",
                                      )
+
+    endog = occupancy_spike_munge(endog)
 
     weather_history = get_history(host=dbs["mongo_cred"]["host"],
                                   port=dbs["mongo_cred"]["port"],

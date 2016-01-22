@@ -7,6 +7,7 @@ import sklearn.preprocessing
 import sklearn.svm
 import sklearn.svm.classes
 
+from model_config import model_config
 from svm.dframe_prep import get_covars
 
 __author__ = 'David Karapetyan'
@@ -61,9 +62,9 @@ def _build(endog, weather_history, weather_forecast,
         fit = svm.fit(covars["x_train"], covars["y_train"])
     else:
         if type(svm) == sklearn.svm.classes.SVC:
-            scofunc = "accuracy"
+            scofunc = model_config["svm"]["disc_scofunc"]
         elif type(svm) == sklearn.svm.classes.SVR:
-            scofunc = "r2"
+            scofunc = model_config["svm"]["cont_scofunc"]
         else:
             raise ValueError("You have entered an invalid svm. Please use"
                              "an svm of class SVR or SVC")
@@ -93,9 +94,9 @@ def _best_gamma_fit(endog, features, estimator, c, param_grid_gamma, cv, n_jobs,
     fit = None
 
     if type(estimator) == sklearn.svm.classes.SVC:
-        scofunc = "accuracy"
+        scofunc = model_config["svm"]["disc_scofunc"]
     elif type(estimator) == sklearn.svm.classes.SVR:
-        scofunc = "r2"
+        scofunc = model_config["svm"]["cont_scofunc"]
     else:
         raise ValueError("You have entered an invalid estimator. Please use"
                          "an estimator of class SVR or SVC")

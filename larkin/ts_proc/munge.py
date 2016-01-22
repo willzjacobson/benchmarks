@@ -114,7 +114,7 @@ def filter_day_season(ts, day=pd.datetime.today().weekday(),
     return ts_filt
 
 
-def spike_munge(ts):
+def electricity_spike_munge(ts):
     # temporary code--mongo guys to update db
     filtered = ts[~ts.index.duplicated(keep='first')].dropna()
     # take care of padding guys were doing on mongo, and 0 like values
@@ -126,6 +126,29 @@ def spike_munge(ts):
     filtered = filtered.groupby(
             filtered.index.weekofyear).apply(
             filter_three_std)
+    filtered = filtered.reset_index(level=0, drop=True)
+
+    return filtered
+
+    # find all dates between ith and i+1th spike that are greater than
+    # percentage
+    # change from date reading at i-1 value (for example, could have multiple
+    # readings at a spike level--want to excise these
+
+
+def occupancy_spike_munge(ts):
+    # temporary code--mongo guys to update db
+    filtered = ts[~ts.index.duplicated(keep='first')].dropna()
+    # take care of padding guys were doing on mongo, and 0 like values
+    # in data
+    # random zeroes all over the place
+    filtered = filtered[filtered > 0]
+
+    # system testing up to 2012-10-26; cut data up to then
+    filtered = filtered['2013-05-23 07:30:00':]
+    filtered = filtered.groupby(
+            filtered.index.date).apply(
+            lambda df: df.drop_duplicates(keep=False))
     filtered = filtered.reset_index(level=0, drop=True)
 
     return filtered
