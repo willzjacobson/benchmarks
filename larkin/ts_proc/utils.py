@@ -11,7 +11,6 @@ import pymongo
 # from statsmodels.tsa.statespace.sarimax import SARIMAX
 # import seaborn as sns
 import pandas as pd
-import joblib
 # sns.set()
 import pytz
 
@@ -37,7 +36,6 @@ def _construct_electric_dataframe(ts_lists, value_lists):
         raise ValueError('array lengths must match')
     if not len(ts_lists):
         return master_df
-
 
     # insert column data
     for i, ts_list in enumerate(ts_lists):
@@ -77,18 +75,31 @@ def get_electric_ts(host, port, database, username, password, source,
     :return: pandas Dataframe
     """
 
-    results = joblib.Parallel(n_jobs=-1)(joblib.delayed(get_ts_new_schema)(
-                    host, port, database, username, password, source,
-                    collection_name, building,
-                    ["Elec-M%d" % meter_num,
-                     "Electric_Meter_%d^Avg_Rate" % meter_num],
-                    ['SIF_Electric_Demand', 'Electric_Utility'])
-                        for meter_num in range(1, meter_count + 1))
+    devices, meter_groups = [], {}
+    ts_lists, value_lists = [], []
+    for meter_num in range(1, meter_count + 1):
+        meters_t = ["Elec-M%d" % meter_num,
+                    "Electric_Meter_%d^Avg_Rate" % meter_num]
+        for meter_t in meters_t:
+            meter_groups[meter_t] = meter_num - 1
+        devices.extend(meters_t)
 
-    ts_lists, value_lists = zip(*results)
+        ts_lists.append([])
+        value_lists.append([])
+
+    device_data = get_device_ts_new_schema(host, port, database, username,
+                                             password, source, collection_name,
+                                             building, devices,
+                                             ['SIF_Electric_Demand',
+                                              'Electric_Utility'])
+
+    for device, data in device_data.iteritems():
+        group = meter_groups[device]
+        ts_lists   [group].extend(data[0])
+        value_lists[group].extend(data[1])
 
     return _construct_electric_dataframe(ts_lists, value_lists).tz_localize(
-                                                                       pytz.utc)
+        pytz.utc)[0]
 
 
 def get_parsed_ts_new_schema(host, port, db_name, username, password,
@@ -125,11 +136,16 @@ def get_parsed_ts_new_schema(host, port, db_name, username, password,
         occupancy time series data
     """
 
-
-    ts_list, val_list = get_ts_new_schema(host, port, db_name, username,
-                                          password, source, collection_name,
-                                          building, devices, systems,
-                                          floor=floor, quad=quad)
+    device_data = get_device_ts_new_schema(host, port, db_name, username,
+                                           password, source, collection_name,
+                                           building, devices, systems,
+                                           floor=floor, quad=quad)
+    if not hasattr(devices, '__iter__'):
+        devices = [devices]
+    ts_list, val_list = [], []
+    for device in devices:
+        ts_list .extend(device_data[device][0])
+        val_list.extend(device_data[device][1])
 
     obs_df = pd.DataFrame({'obs': val_list}, index=ts_list).dropna()
 
@@ -139,9 +155,9 @@ def get_parsed_ts_new_schema(host, port, db_name, username, password,
         'index').sort_index().tz_localize(pytz.utc)['obs']
 
 
-def get_ts_new_schema(host, port, database, username, password, source,
-                      collection_name, building, devices, systems=None,
-                      floor=None, quad=None):
+def get_device_ts_new_schema(host, port, database, username, password, source,
+                               collection_name, building, devices, systems=None,
+                               floor=None, quad=None):
     """
     Get all observation data with the given building, devices and systems
     combination from the database
@@ -171,7 +187,8 @@ def get_ts_new_schema(host, port, database, username, password, source,
     :param quad: string
         quadrant identifier
 
-    :return: tuple with a list of time stamps followed by a list of values
+    :return: device-indexed dictionary with  a list of lists of timestamps
+    followed by a list of values
     """
 
     with pymongo.MongoClient(host, port) as conn:
@@ -179,17 +196,20 @@ def get_ts_new_schema(host, port, database, username, password, source,
         conn[database].authenticate(username, password, source=source)
         collection = conn[database][collection_name]
 
-        ts_list, value_list = [], []
+        device_data = {}
 
         query = {"building": building}
         # there may be one or more devices to match
         if hasattr(devices, '__iter__'):
-                 query['device'] = {'$in': devices}
+            query['device'] = {'$in': devices}
+            for device in devices:
+                device_data[device] = [[], []]
         else:
             query['device'] = devices
+            device_data[devices] = [[], []]
 
-       # systems is optional, for example for steam data
         # handle optional arguments
+        # systems is optional, for example for steam data
         for field, value in {'system': systems, 'floor': floor,
                              'quadrant': quad}.iteritems():
             if value:
@@ -199,17 +219,19 @@ def get_ts_new_schema(host, port, database, username, password, source,
                 else:
                     query[field] = value
 
-        for data in collection.find(query):
+        for doc in collection.find(query):
 
-            readings = data['readings']
+            device = doc['device']
+            readings = doc['readings']
             zipped = [(x['time'], x['value']) for x in readings
-                                      if x['time'] is not None and 'value' in x]
+                      if x['time'] is not None]
 
             if len(zipped):
                 ts_list_t, val_list_t = zip(*zipped)
-                ts_list.extend(ts_list_t)
-                value_list.extend(val_list_t)
+                device_str = str(device)
+                device_data[device_str][0].extend(ts_list_t)
+                device_data[device_str][1].extend(val_list_t)
 
-    return ts_list, value_list
+    return device_data
 
 

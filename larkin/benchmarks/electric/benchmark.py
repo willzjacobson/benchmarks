@@ -1,4 +1,6 @@
 # coding=utf-8
+""" electric benchmark suppurting functions
+"""
 
 __author__ = 'ashishgagneja'
 
