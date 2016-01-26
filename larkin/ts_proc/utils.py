@@ -15,7 +15,7 @@ import pandas as pd
 import pytz
 
 
-def _construct_electric_dataframe(ts_lists, value_lists):
+def _construct_device_sum_dframe(ts_lists, value_lists):
     """
     Construct a pandas DataFrame using the time series data on individual
     meter can compute the total instantaneous usage
@@ -26,7 +26,7 @@ def _construct_electric_dataframe(ts_lists, value_lists):
         list of list of data corresponding to the timestamps list in the same
         ordinal position in ts_lists
 
-    :return:
+    :return: pandas DataFrame
     """
 
     master_df = pd.DataFrame()
@@ -72,33 +72,100 @@ def get_electric_ts(host, port, database, username, password, source,
     :param meter_count: int
         number of distinct meters that need to be summed up
 
-    :return: pandas Dataframe
+    :return: pandas Series
     """
-
-    devices, meter_groups = [], {}
-    ts_lists, value_lists = [], []
+    devices, device_groups = [], {}
     for meter_num in range(1, meter_count + 1):
         meters_t = ["Elec-M%d" % meter_num,
                     "Electric_Meter_%d^Avg_Rate" % meter_num]
         for meter_t in meters_t:
-            meter_groups[meter_t] = meter_num - 1
+            device_groups[meter_t] = meter_num - 1
         devices.extend(meters_t)
 
+    return get_devices_sum_ts(host, port, database, username, password,
+                                  source, collection_name, building, devices,
+                                  ['SIF_Electric_Demand', 'Electric_Utility'],
+                                  device_groups)
+
+
+def get_water_ts(host, port, database, username, password, source,
+                 collection_name, building, meter_count):
+    """ retrieves all available water data from all meters and sums up
+    to get total water usage time series
+
+    :param host: string
+        database server name or IP-address
+    :param port: int
+        database port number
+    :param database: string
+        name of the database on server
+    :param username: string
+        database username
+    :param password: string
+        database password
+    :param source: string
+        source database for authentication
+    :param collection_name: string
+        database collection name to query
+    :param building: string
+        database building_id identifier
+    :param meter_count: int
+        number of distinct meters that need to be summed up
+
+    :return: pandas Series
+    """
+    devices, device_groups = ['LevelAToday', 'LevelCToday'], {}
+    for meter_num in range(1, meter_count + 1):
+        device_groups[devices[meter_num - 1]] = meter_num - 1
+
+    return get_devices_sum_ts(host, port, database, username, password,
+                                  source, collection_name, building, devices,
+                                  'Water_Demand', device_groups)
+
+
+def get_devices_sum_ts(host, port, database, username, password, source,
+                           collection_name, building, devices, systems,
+                           device_groups):
+    """ retrieves all available electric data from all meters and sums up
+    to get total electric usage time series
+
+    :param host: string
+        database server name or IP-address
+    :param port: int
+        database port number
+    :param database: string
+        name of the database on server
+    :param username: string
+        database username
+    :param password: string
+        database password
+    :param source: string
+        source database for authentication
+    :param collection_name: string
+        database collection name to query
+    :param building: string
+        database building_id identifier
+    :param meter_count: int
+        number of distinct meters that need to be summed up
+
+    :return: pandas Dataframe
+    """
+
+    ts_lists, value_lists = [], []
+    for j in range(0, len(device_groups)):
         ts_lists.append([])
         value_lists.append([])
 
     device_data = get_device_ts_new_schema(host, port, database, username,
-                                             password, source, collection_name,
-                                             building, devices,
-                                             ['SIF_Electric_Demand',
-                                              'Electric_Utility'])
+                                           password, source, collection_name,
+                                           building, devices, systems)
 
     for device, data in device_data.iteritems():
-        group = meter_groups[device]
+        group = device_groups[device]
         ts_lists   [group].extend(data[0])
         value_lists[group].extend(data[1])
 
-    return _construct_electric_dataframe(ts_lists, value_lists).tz_localize(
+    return _construct_device_sum_dframe(ts_lists, value_lists).tz_localize(
         pytz.utc)[0]
 
 
@@ -224,7 +291,7 @@ def get_device_ts_new_schema(host, port, database, username, password, source,
             device = doc['device']
             readings = doc['readings']
             zipped = [(x['time'], x['value']) for x in readings
-                      if x['time'] is not None]
+                      if x['time'] is not None and 'value' in x]
 
             if len(zipped):
                 ts_list_t, val_list_t = zip(*zipped)

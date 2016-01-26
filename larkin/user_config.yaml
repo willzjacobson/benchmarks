@@ -23,6 +23,8 @@ default:
       timezone: US/Eastern
       steam_meter_count: 3
 
+      water_meter_count: 2
+
 
 building_dbs:
   mongo_cred:
