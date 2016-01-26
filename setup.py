@@ -30,5 +30,6 @@ setup(
             'for energy and electricity usage in'
             'commercial and non-commercial buildings.'
         ),
+        scripts=['larkin/bin/run_analytics'],
         install_requires=reqs
 )

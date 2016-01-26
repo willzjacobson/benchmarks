@@ -1,0 +1,7 @@
+#!/usr/bin/env python
+# coding=utf-8
+
+import larkin.jobs
+
+# run suite (with cronjob setup)
+larkin.jobs.main()

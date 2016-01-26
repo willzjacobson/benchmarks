@@ -17,9 +17,14 @@ def benchmark_run_job():
     srb.main()
 
 
-schedule.every().hour.do(weather_update_job)
-schedule.every().hour.do(benchmark_run_job)
+def main():
+    schedule.every().hour.do(weather_update_job)
+    schedule.every().hour.do(benchmark_run_job)
 
-while True:
-    schedule.run_pending()
-    time.sleep(1)
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
+
+
+if __name__ == 'main':
+    main()
