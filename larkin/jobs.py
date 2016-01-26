@@ -9,12 +9,18 @@ import larkin.weather.run as wr
 
 
 def weather_update_job():
+    print("Updating weather DB")
     wr.main()
+    print("Done")
 
 
 def benchmark_run_job():
+    print("Running electricity benchmark")
     erb.main()
+    print("Now running steam benchmark")
     srb.main()
+    print("Done")
+    print("Going to sleep now for an hour")
 
 
 def main():

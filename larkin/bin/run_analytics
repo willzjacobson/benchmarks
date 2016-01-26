@@ -1,7 +1,14 @@
 #!/usr/bin/env python
 # coding=utf-8
 
+import logging as log
+import sys
+
 import larkin.jobs
+
+# logging
+
+log.basicConfig(stream=sys.stdout, level=log.DEBUG)
 
 # run suite (with cronjob setup)
 larkin.jobs.main()
