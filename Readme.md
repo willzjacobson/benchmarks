@@ -27,10 +27,6 @@ have:
 * run.py : entry point for the modules in the directory
 * model.py : model-related code
 
-Sample usage entails adding TPO2-Rudin to your PYTHONPATH, navigating to the
-root of a model (for example, `cd $ADIRONDACK_ROOT/TPO2-Rudin/svm`) 
-and running `python run.py`.
-
 The remaining directories house utility scripts related to data pulling,
 parsing, migration, and munging, and are dependencies of the model 
 building modules.
@@ -42,11 +38,16 @@ BMS start-up times.
 
 # Installation
 
-[Install Anaconda 2.3.0 (64-bit)](https://www.continuum.io/downloads), 
-navigate to the root of the Adirondack folder, and run 
-`conda install --file req.txt`.
+* [Install the Python 2.7 version of 
+Anaconda 2.4.1 (64-bit)](https://www.continuum.io/downloads) 
+* From a bash shell, run
+`pip install git+https://d8dc88be5600d2048fa9789c3368b558357d0fd1@github.com/ \
+PrescriptiveData/datascience`
 
-TODO: Write a setup.py module closer to beta, and automate installation there.
+
+# Execution
+
+Once installation is successful, execute `run_analytics` from a bash shell.
 
 # Tests
 
