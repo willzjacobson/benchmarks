@@ -10,12 +10,12 @@ import datetime
 import sys
 
 import larkin.benchmarks.electric.benchmark
-import model_config
-import user_config
+from larkin.model_config import model_config
+from larkin.user_config import user_config
 
 
 def main():
-    cfg = dict(user_config.user_config, **model_config.model_config)
+    cfg = dict(user_config, **model_config)
 
     buildings = cfg['default']['buildings']
 
