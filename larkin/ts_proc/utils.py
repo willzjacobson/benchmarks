@@ -145,8 +145,12 @@ def get_devices_sum_ts(host, port, database, username, password, source,
         database collection name to query
     :param building: string
         database building_id identifier
-    :param meter_count: int
-        number of distinct meters that need to be summed up
+    :param devices: string or iterable
+        device name(s) for identifying time series
+    :param systems: string or iterable
+        system name(s) for identifying time series
+    :param device_groups: dict
+        mapping to enable devices to be grouped together
 
     :return: pandas Dataframe
     """
