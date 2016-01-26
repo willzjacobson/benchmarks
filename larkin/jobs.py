@@ -24,6 +24,7 @@ def benchmark_run_job():
 
 
 def main():
+    print("Scheduling the new jobs")
     schedule.every().hour.do(weather_update_job)
     schedule.every().hour.do(benchmark_run_job)
 
