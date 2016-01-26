@@ -24,10 +24,13 @@ def benchmark_run_job():
 
 
 def main():
+    # for debugging. Delete later
+    weather_update_job()
+    benchmark_run_job()
     print("Scheduling the new jobs")
     schedule.every().hour.do(weather_update_job)
     schedule.every().hour.do(benchmark_run_job)
-
+    #
     while True:
         schedule.run_pending()
         time.sleep(1)
