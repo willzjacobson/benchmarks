@@ -20,7 +20,7 @@ def main():
     buildings = cfg['default']['buildings']
 
     # determine benchmark date
-    bench_dt = datetime.date.today()
+    bench_dt = datetime.date.today() - datetime.timedelta(days=1)
 
     arg_count = len(sys.argv)
     if arg_count not in [1, 4]:

@@ -1,6 +1,6 @@
 # coding=utf-8
 """
-driver for finding benchmark water usage
+driver for looking up benchmark water usage
 """
 
 __author__ = 'ashishgagneja'
@@ -15,7 +15,7 @@ import model_config
 cfg = dict(user_config.user_config, **model_config.model_config)
 
 # determine base date
-bench_dt = datetime.date.today()
+bench_dt = datetime.date.today() - datetime.timedelta(days=1)
 
 arg_count = len(sys.argv)
 if arg_count not in [1, 4]:
@@ -50,5 +50,6 @@ for building_id in cfg['default']['buildings']:
 
     bldg_params = cfg['default'][building_id]
     larkin.benchmarks.water.benchmark.process_building(building_id,
-                                            timezone=bldg_params['timezone'],
-                                            **kw_args)
+                                timezone=bldg_params['timezone'],
+                                meter_count=bldg_params['water_meter_count'],
+                                **kw_args)

@@ -49,7 +49,7 @@ def process_building(building, host, port, db_name, username, password,
                      collection_name_out, weather_hist_db,
                      weather_hist_collection, weather_fcst_db,
                      weather_fcst_collection, granularity,
-                     base_dt, timezone, debug):
+                     base_dt, timezone, meter_count, debug):
     """ Find baseline steam usage for building
 
     :param building: string
@@ -86,6 +86,8 @@ def process_building(building, host, port, db_name, username, password,
         date for which benchmark usage is to be found
     :param timezone: pytz.timezone
         target timezone or building timezone
+    :param meter_count: int
+        number of water meters
     :param debug: bool
         debug flag
 
@@ -121,12 +123,10 @@ def process_building(building, host, port, db_name, username, password,
     larkin.shared.utils.debug_msg(debug, "occupancy: %s" % occ_ts)
 
     # get water data
-    water_ts = larkin.ts_proc.utils.get_parsed_ts_new_schema(host, port,
-                                                             db_name, username,
-                                                             password, source,
-                                                             collection_name,
-                                                             building,
-                                                             'TotalInstant')
+    water_ts = larkin.ts_proc.utils.get_water_ts(host, port, db_name, username,
+                                                 password, source,
+                                                 collection_name, building,
+                                                 meter_count)
     water_ts = water_ts.tz_convert(target_tzone)
     larkin.shared.utils.debug_msg(debug, "water: %s" % water_ts)
 
