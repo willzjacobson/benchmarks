@@ -12,8 +12,8 @@ import dateutil.relativedelta as relativedelta
 import larkin.arima.model
 import larkin.ts_proc.munge
 import larkin.ts_proc.utils
-import user_config
 import model_config
+import user_config
 
 cfg = dict(user_config.user_config, **model_config.model_config)
 

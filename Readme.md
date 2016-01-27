@@ -33,8 +33,9 @@ building modules.
 
 # Motivation
 
-To help building managers and operators make optimal decisions regarding
-BMS start-up times.
+* To help building managers and operators make optimal decisions regarding
+BMS start-up times
+* To provide benchmarks for building operation.
 
 # Installation
 
