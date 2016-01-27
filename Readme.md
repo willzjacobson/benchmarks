@@ -39,10 +39,13 @@ BMS start-up times.
 # Installation
 
 * [Install the Python 2.7 version of 
-Anaconda 2.4.1 (64-bit)](https://www.continuum.io/downloads) 
-* From a bash shell, run
-`pip install git+https://d8dc88be5600d2048fa9789c3368b558357d0fd1@github.com/ \
-PrescriptiveData/datascience`
+Anaconda 2.4.1 (64-bit)](https://www.continuum.io/downloads)
+* Download the desired release of Larkin from 
+[https://github.com/
+PrescriptiveData/
+datascience/releases](https://github.com/PrescriptiveData/datascience/releases)
+to your local hard drive
+* From a bash shell, run `pip install <location_of_larkin>`
 
 
 # Execution
