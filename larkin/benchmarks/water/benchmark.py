@@ -8,25 +8,11 @@ __author__ = 'ashishgagneja'
 import re
 
 import pytz
-import pandas
 
 import larkin.shared.utils
 import larkin.ts_proc.utils
 import larkin.benchmarks.utils
-
-
-def _daily_cumulative_to_rate(daily_cumu_ts):
-
-    # rate_df = daily_cumu_ts.copy()
-    # print(rate_df.index)
-    index_df = pandas.DataFrame(data=daily_cumu_ts.index, columns=['end'])
-
-    print("index1 %s" % index_df)
-    # index_df['begin'] = index_df.shift()
-    # index_df['diff'] = (index_df['end'] - index_df['begin']).fillna(0)
-    # print("index df: %s" % index_df)
-    # longest_allowed_gap = datetime.timedelta(hours=2)
-    return daily_cumu_ts #index_df[index_df['diff'] > longest_allowed_gap]
+import larkin.benchmarks.occupancy.utils
 
 
 def _find_benchmark(base_dt, occ_ts, wetbulb_ts, obs_ts, gran, timezone,
@@ -88,7 +74,17 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, obs_ts, gran, timezone,
         timezone)
     larkin.shared.utils.debug_msg(debug, "sim days: %s" % str(sim_wetbulb_days))
 
-    return None, None, None, None
+    # compute occupancy similarity score for the k most similar weather days
+    occ_scores = larkin.benchmarks.occupancy.utils.score_occ_similarity(
+        base_dt,
+        sim_wetbulb_days,
+        occ_ts,
+        timezone)
+    larkin.shared.utils.debug_msg(debug, occ_scores)
+
+    # find the date with the lowest water usage
+    return larkin.benchmarks.utils.find_lowest_usage_day(occ_scores, obs_ts, 5,
+                                                         timezone, debug)
 
 
 def process_building(building, host, port, db_name, username, password,
