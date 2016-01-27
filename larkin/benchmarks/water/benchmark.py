@@ -8,16 +8,31 @@ __author__ = 'ashishgagneja'
 import re
 
 import pytz
+import pandas
 
 import larkin.shared.utils
 import larkin.ts_proc.utils
 import larkin.benchmarks.utils
 
 
+def _daily_cumulative_to_rate(daily_cumu_ts):
+
+    # rate_df = daily_cumu_ts.copy()
+    # print(rate_df.index)
+    index_df = pandas.DataFrame(data=daily_cumu_ts.index, columns=['end'])
+
+    print("index1 %s" % index_df)
+    # index_df['begin'] = index_df.shift()
+    # index_df['diff'] = (index_df['end'] - index_df['begin']).fillna(0)
+    # print("index df: %s" % index_df)
+    # longest_allowed_gap = datetime.timedelta(hours=2)
+    return daily_cumu_ts #index_df[index_df['diff'] > longest_allowed_gap]
+
+
 def _find_benchmark(base_dt, occ_ts, wetbulb_ts, obs_ts, gran, timezone,
                     debug):
     """
-        Find benchmark steam usage for the date base_dt. Benchmark
+        Find benchmark water usage for the date base_dt. Benchmark
         water usage is defined as the water usage profile from a similar
         weather and occupancy day in the past with the lowest total daily
         water usage. weather and occupancy forecasts are used to find such
@@ -30,17 +45,49 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, obs_ts, gran, timezone,
     :param wetbulb_ts: pandas Series
         wet bulb time series
     :param obs_ts: pandas Series
-        total usage time series
+        total water usage time series
     :param gran: int
         expected frequency of observations and forecast in minutes
     :param debug: bool
         debug flag
 
     :return: tuple containing benchmark date and a pandas Series object with
-        steam usage data from that date
+        water usage data from that date
     """
-    for arg in [base_dt, occ_ts, wetbulb_ts, obs_ts, gran, timezone, debug]:
-        print(arg)
+
+    # get data availability
+    water_avlblty = larkin.benchmarks.utils.get_data_availability_dates(obs_ts,
+                                                                        gran)
+    occ_avlblty = larkin.benchmarks.utils.get_data_availability_dates(occ_ts,
+                                                                      gran)
+    wetbulb_avlblty = larkin.benchmarks.utils.get_data_availability_dates(
+        wetbulb_ts, gran)
+    data_avlblty = occ_avlblty.intersection(water_avlblty, wetbulb_avlblty)
+
+    # check if all required data is available for base dt
+    if base_dt not in data_avlblty:
+        dtl = "<obs:%s>, <occ:%s>, <wetbulb:%s>" % (base_dt in water_avlblty,
+                                                    base_dt in occ_avlblty,
+                                                    base_dt in wetbulb_avlblty)
+        raise Exception("insufficient data available for %s: %s" % (base_dt,
+                                                                    dtl))
+
+    # get weather for base_dt
+    base_dt_wetbulb = larkin.shared.utils.get_dt_tseries(base_dt, wetbulb_ts,
+                                                         timezone)
+
+    # find k closest weather days for which steam and occupancy data is
+    # available
+    dow_type = larkin.shared.utils.dow_type(base_dt)
+    sim_wetbulb_days = larkin.shared.utils.find_similar_profile_days(
+        base_dt_wetbulb,
+        dow_type,
+        wetbulb_ts,
+        20,
+        data_avlblty,
+        timezone)
+    larkin.shared.utils.debug_msg(debug, "sim days: %s" % str(sim_wetbulb_days))
+
     return None, None, None, None
 
 
@@ -128,6 +175,8 @@ def process_building(building, host, port, db_name, username, password,
                                                  collection_name, building,
                                                  meter_count)
     water_ts = water_ts.tz_convert(target_tzone)
+    # water_usg_rate_ts = _daily_cumulative_to_rate(water_ts)
+    # sys.exit(0)
     larkin.shared.utils.debug_msg(debug, "water: %s" % water_ts)
 
     # find baseline
