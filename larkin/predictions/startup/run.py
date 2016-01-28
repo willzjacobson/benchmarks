@@ -70,6 +70,8 @@ for building in buildings:
 
 
     discrete = is_discrete(endog, nary_thresh)
-    larkin.svm.model.predict(endog, weather_history, weather_forecast,
-                             cov, gran, params, param_grid, cv, threshold,
-                             n_jobs, discrete, has_bin_search)
+    bobo = larkin.svm.model.predict(endog, weather_history, weather_forecast,
+                                    cov, gran, params, param_grid, cv, threshold,
+                                    n_jobs, discrete, has_bin_search)
+
+    print(bobo)

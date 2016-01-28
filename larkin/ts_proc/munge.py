@@ -39,13 +39,18 @@ def munge(df, nary_thresh, gap_threshold, accuracy, gran):
     longest_allowed_gap = datetime.timedelta(hours=gap_threshold)
 
     # find dates with gaps less than threshold, and resample
-    dates_less_thresh = df.index[
-        (df.index - df.index.shift()) <= longest_allowed_gap]
+    # not doing this on the index directly because shift operator doesn't
+    # work on it as expected
+    bool_arr = (df.reset_index()['index'] - df.reset_index()['index'].shift()
+                <= longest_allowed_gap)
+    bool_arr[0] = True  # shifting eliminated first element, so re-add it
+    dates_less_thresh = df.index[bool_arr]
 
-    if (len(dates_less_thresh) / len(df.index)) < 0.5:
+    if (len(dates_less_thresh) / float(len(df.index))) < 0.5:
         raise ValueError("Investigate the data: it has too many gaps")
 
-    dates_le_resamp = dates_less_thresh.resample(accuracy)
+    dates_le_resamp = pd.Series(
+            index=dates_less_thresh).resample(accuracy).index
 
     # resampling step, where we are careful to only fill NAs via interpolation
     # for gaps less than threshold. Process nary data different than
