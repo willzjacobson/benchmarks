@@ -3,7 +3,9 @@ model_config = dict(
         sampling={
             'forecast_length': 24,
             'granularity': '15min',
-            'nary_thresh': 100},
+            'nary_thresh': 100,
+            'accuracy': '1min',
+            'gap_threshold': 2},
         svm={
             'param_search': {
                 'cv': 2,
