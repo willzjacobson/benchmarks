@@ -104,6 +104,7 @@ def history_pull(city, state, wund_url, date=pd.datetime.today()):
     dateindex.name = None
     df = df.set_index(dateindex)
 
+    #TODO Check history db in wund again for tz
     # when pandas pulls in data from db, utc offsets not included. So, include
     df = df.tz_localize('UTC')
     return df
