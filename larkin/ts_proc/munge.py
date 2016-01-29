@@ -17,7 +17,7 @@ def is_discrete(df, nary_thresh):
         return False
 
 
-def munge(df, nary_thresh, gap_threshold, accuracy, gran):
+def gap_resamp(df, nary_thresh, gap_threshold, accuracy, gran):
     """For cleaning incoming data, and extracting relevant fields
 
     :param df: pd.Dataframe
