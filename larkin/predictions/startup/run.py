@@ -42,11 +42,28 @@ def main():
                                          collection_name=dbs["building_ts_loc"][
                                              "collection_name"],
                                          building=building,
-                                         devices="F9-ReturnSpeed",
-                                         systems="S10",
+                                         devices="S4-SupplyFanStatus",
+                                         systems="S4",
                                          )
+
         # TODO fix this issue in the database, or have a script run befo hardw
-        endog = endog.apply(lambda x: 1 if x > 0.65 else 0)
+        # def basic_filt(x):
+        #     if x == 0.65:
+        #         return 1
+        #     elif x > 0.65:
+        #         return 2
+        #     else:
+        #         return 0
+
+        def basic_filt(x):
+            if x == "active":
+                return 1
+            elif x == "inactive":
+                return 0
+            else:
+                return x
+
+        endog = endog.apply(basic_filt)
         endog = gap_resamp(endog, nary_thresh, gap_threshold, accuracy, gran)
 
         weather_history = get_history(host=dbs["mongo_cred"]["host"],
@@ -87,4 +104,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    pds = main()
