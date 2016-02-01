@@ -5,6 +5,7 @@ from urllib2 import urlopen
 
 import numpy as np
 import pandas as pd
+import pytz  # for specifying utc and avoiding ambiguity near daylight savings
 
 import larkin.weather.wet_bulb
 from larkin.model_config import model_config
@@ -86,10 +87,15 @@ def history_pull(city, state, wund_url, date=pd.datetime.today()):
     url = wund_url + \
           "%s/q/%s.json" % (date_path, city_path)
 
+    url_tz = wund_url + "forecast/q/%s.json" % city_path
+
     reader = codecs.getreader('utf-8')
     f = urlopen(url)
+    g = urlopen(url_tz)
     parsed_json = json.load(reader(f))
+    tz_json = json.load(reader(g))
     f.close()
+    g.close()
     observations = parsed_json['history']['observations']
 
     # convert to dataframes for easy presentation and manipulation
@@ -104,9 +110,16 @@ def history_pull(city, state, wund_url, date=pd.datetime.today()):
     dateindex.name = None
     df = df.set_index(dateindex)
 
-    #TODO Check history db in wund again for tz
-    # when pandas pulls in data from db, utc offsets not included. So, include
-    df = df.tz_localize('UTC')
+    # find the tz. unfortunately, wund api seems not to offer it in the history
+    # section, so need to go to the forecast section to get it
+    # if you can find it in the history section, replace bottom by it--will
+    # save one url call per wund query
+    tz = pytz.timezone(tz_json[
+                           'forecast']['simpleforecast']['forecastday'][0][
+                           'date']['tz_long'])
+    utc = pytz.utc
+    df = df.tz_localize(tz, ambiguous='infer').tz_convert(utc)
+
     return df
 
 
@@ -187,7 +200,11 @@ def forecast_pull(city, state, wund_url):
     # we pull data labeled tz, then convert to UTC
     dateindex.name = None
     df = df.set_index(dateindex)
-    df = df.tz_localize(tz).tz_convert('UTC')
+    # protect timezones against dst ambiguities using pytz
+    tz = pytz.timezone(tz)
+    utc = pytz.utc
+    # convert to utc
+    df = df.tz_localize(tz, ambiguous='infer').tz_convert(utc)
     return df
 
 
