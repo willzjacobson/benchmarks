@@ -9,3 +9,5 @@ pyyaml
 python-crontab
 schedule
 matplotlib
+ipyparallel
+
