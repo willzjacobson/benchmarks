@@ -75,10 +75,10 @@ def _build(endog, weather_history, weather_forecast,
                 scoring=scofunc,
                 cv=cv,
                 n_jobs=n_jobs).fit(covars["x_train"], covars["y_train"])
-        for item in fit.grid_scores_:
-            print(item)
-        print("The best parameters are {} with a score of {}".format(
-                fit.best_params_, fit.best_score_))
+        # for item in fit.grid_scores_:
+        #     print(item)
+        # print("The best parameters are {} with a score of {}".format(
+        #         fit.best_params_, fit.best_score_))
 
     return {"fit": fit, "covars": covars}
 
@@ -188,13 +188,13 @@ def _best_params(endog, features, estimator, param_grid, cv, n_jobs, threshold):
 
     ind = np.argmax(scores)
 
-    collated = params
-    for (x, y) in zip(collated, scores):
-        x["score"] = y
-        print(x)
-
-    print("The best parameters are {} with a score of {}".format(
-            params[ind], scores[ind]))
+    # collated = params
+    # for (x, y) in zip(collated, scores):
+    #     x["score"] = y
+    #     print(x)
+    #
+    # print("The best parameters are {} with a score of {}".format(
+    #         params[ind], scores[ind]))
 
     return params[ind]
 
@@ -227,4 +227,5 @@ def predict(endog, weather_history, weather_forecast, cov, gran, params,
             data=fit.predict(covars["x_future"]),
             index=covars["prediction_index"])
 
-    return predicted_series
+    return {"prediction": predicted_series, "params": fit.best_params_,
+            "score": fit.best_score_}

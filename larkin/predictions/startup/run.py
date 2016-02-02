@@ -29,78 +29,92 @@ has_bin_search = model_config["svm"]["param_search"]["has_bin_search"]
 
 
 def main():
-    predictions = {}
+    all_preds = {}
     for building in buildings:
-        endog = get_parsed_ts_new_schema(host=dbs["mongo_cred"]["host"],
-                                         port=dbs["mongo_cred"]["port"],
-                                         db_name=dbs["building_ts_loc"][
-                                             "db_name"],
-                                         username=dbs["mongo_cred"][
-                                             "username"],
-                                         password=dbs["mongo_cred"]["password"],
-                                         source=dbs["mongo_cred"]["source"],
-                                         collection_name=dbs["building_ts_loc"][
-                                             "collection_name"],
-                                         building=building,
-                                         devices="S4-SupplyFanStatus",
-                                         systems="S4",
-                                         )
+        building_preds = {}
+        devices = ["S" + str(num) + "-SupplyFanStatus" for num in range(1, 13)]
+        systems = ["S" + str(num) for num in range(1, 13)]
 
-        # TODO fix this issue in the database, or have a script run befo hardw
-        # def basic_filt(x):
-        #     if x == 0.65:
-        #         return 1
-        #     elif x > 0.65:
-        #         return 2
-        #     else:
-        #         return 0
+        for device, system in zip(devices, systems):
+            endog = get_parsed_ts_new_schema(host=dbs["mongo_cred"]["host"],
+                                             port=dbs["mongo_cred"]["port"],
+                                             db_name=dbs["building_ts_loc"][
+                                                 "db_name"],
+                                             username=dbs["mongo_cred"][
+                                                 "username"],
+                                             password=dbs["mongo_cred"][
+                                                 "password"],
+                                             source=dbs["mongo_cred"]["source"],
+                                             collection_name=
+                                             dbs["building_ts_loc"][
+                                                 "collection_name"],
+                                             building=building,
+                                             devices=device,
+                                             systems=system,
+                                             )
 
-        def basic_filt(x):
-            if x == "active":
-                return 1
-            elif x == "inactive":
-                return 0
-            else:
-                return x
+            # TODO fix this issue in the database, or have script befo hardw
+            # def basic_filt(x):
+            #     if x == 0.65:
+            #         return 1
+            #     elif x > 0.65:
+            #         return 2
+            #     else:
+            #         return 0
 
-        endog = endog.apply(basic_filt)
-        endog = gap_resamp(endog, nary_thresh, gap_threshold, accuracy, gran)
+            def basic_filt(x):
+                if x == "active":
+                    return 1
+                elif x == "inactive":
+                    return 0
+                else:
+                    return x
 
-        weather_history = get_history(host=dbs["mongo_cred"]["host"],
-                                      port=dbs["mongo_cred"]["port"],
-                                      source=dbs["mongo_cred"]["source"],
-                                      username=dbs["mongo_cred"][
-                                          "username"],
-                                      password=dbs["mongo_cred"]["password"],
-                                      db_name=dbs["weather_history_loc"][
-                                          "db_name"],
-                                      collection_name=
-                                      dbs["weather_history_loc"][
-                                          "collection_name"])
+            endog = endog.apply(basic_filt)
+            endog = gap_resamp(endog, nary_thresh, gap_threshold, accuracy,
+                               gran)
 
-        weather_forecast = get_forecast(host=dbs["mongo_cred"]["host"],
-                                        port=dbs["mongo_cred"]["port"],
-                                        source=dbs["mongo_cred"]["source"],
-                                        username=dbs["mongo_cred"][
-                                            "username"],
-                                        password=dbs["mongo_cred"]["password"],
-                                        db_name=dbs["weather_forecast_loc"][
-                                            "db_name"],
-                                        collection_name=
-                                        dbs["weather_forecast_loc"][
-                                            "collection_name"])
+            weather_history = get_history(host=dbs["mongo_cred"]["host"],
+                                          port=dbs["mongo_cred"]["port"],
+                                          source=dbs["mongo_cred"]["source"],
+                                          username=dbs["mongo_cred"][
+                                              "username"],
+                                          password=dbs["mongo_cred"][
+                                              "password"],
+                                          db_name=dbs["weather_history_loc"][
+                                              "db_name"],
+                                          collection_name=
+                                          dbs["weather_history_loc"][
+                                              "collection_name"])
 
-        discrete = is_discrete(endog, nary_thresh)
-        predictions.update({building: larkin.svm.model.predict(endog,
-                                                               weather_history,
-                                                               weather_forecast,
-                                                               cov, gran,
-                                                               params,
-                                                               param_grid, cv,
-                                                               threshold,
-                                                               n_jobs, discrete,
-                                                               has_bin_search)})
-    return predictions
+            weather_forecast = get_forecast(host=dbs["mongo_cred"]["host"],
+                                            port=dbs["mongo_cred"]["port"],
+                                            source=dbs["mongo_cred"]["source"],
+                                            username=dbs["mongo_cred"][
+                                                "username"],
+                                            password=dbs["mongo_cred"][
+                                                "password"],
+                                            db_name=dbs["weather_forecast_loc"][
+                                                "db_name"],
+                                            collection_name=
+                                            dbs["weather_forecast_loc"][
+                                                "collection_name"])
+
+            discrete = is_discrete(endog, nary_thresh)
+            building_preds.update({device: larkin.svm.model.predict(
+                    endog,
+                    weather_history,
+                    weather_forecast,
+                    cov, gran,
+                    params,
+                    param_grid,
+                    cv,
+                    threshold,
+                    n_jobs,
+                    discrete,
+                    has_bin_search)})
+        all_preds.update({building: building_preds})
+    return all_preds
 
 
 if __name__ == '__main__':
