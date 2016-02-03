@@ -21,16 +21,16 @@ aws.instance_type = "r3.large"
 aws.ami = "ami-d05e75b8"
 ```
 
-#### Step 4: Go to EC2 Console and Spin a new instance based on the parameters obtained on Step3
+#### Step 4: Go to EC2 Console and Spin a new instance based on the parameters obtained before
 
 The instance should have an IAM role that allows reads to an S3 Bucket
 
-#### Step6: Log into the machine
+#### Step5: Log into the machine
 ```
 $ssh ubuntu@[public_dns]
 ```
 
-#### Step 7: Install dependencies
+#### Step 6: Install dependencies
 
 ```
 $ sudo apt-get install awscli
@@ -66,7 +66,7 @@ Download from S3
 $ aws s3 sync s3://pdanalytics/v0.4-8aebb42 ./
 ```
 
-Install
+Install python dependencies
 ```
 $ pip install requirements.txt
 ```
