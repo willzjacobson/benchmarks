@@ -149,7 +149,7 @@ def process_building(building, host, port, db_name, username, password,
                                                      weather_fcst_db,
                                                      weather_fcst_collection,
                                                      granularity)
-    wetbulb_ts = wetbulb_ts.tz_convert(target_tzone)#.resample(granularity)
+    wetbulb_ts = wetbulb_ts.tz_convert(target_tzone)
     larkin.shared.utils.debug_msg(debug, "wetbulb: %s" % wetbulb_ts)
 
     # get occupancy data
@@ -162,7 +162,7 @@ def process_building(building, host, port, db_name, username, password,
                                                            'Occupancy')
 
     # convert to local time
-    occ_ts = occ_ts.tz_convert(target_tzone)#.resample(granularity)
+    occ_ts = occ_ts.tz_convert(target_tzone)
     larkin.shared.utils.debug_msg(debug, "occupancy: %s" % occ_ts)
 
     # get water data
@@ -170,7 +170,7 @@ def process_building(building, host, port, db_name, username, password,
                                                  password, source,
                                                  collection_name, building,
                                                  meter_count)
-    water_ts = water_ts.tz_convert(target_tzone)#.resample(granularity)
+    water_ts = water_ts.tz_convert(target_tzone)
     larkin.shared.utils.debug_msg(debug, "water: %s" % water_ts)
 
     # find baseline
