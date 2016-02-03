@@ -141,7 +141,7 @@ def incremental_trapz(y, x):
 
 def find_lowest_auc_day(date_scores, obs_ts, n, timezone, debug):
     """
-    Finds the day with the lowest total electric usage from among the n most
+    Finds the day with the lowest total obs usage from among the n most
     similar occupancy days
 
     Assumption: Linear interpolation is a reasonable way to fill gaps
@@ -185,6 +185,58 @@ def find_lowest_auc_day(date_scores, obs_ts, n, timezone, debug):
             x = list(map(lambda y: (y - datum).total_seconds() / 3600.0,
                          day_obs_ts.index))
             incr_auc, auc = incremental_trapz(day_obs_ts.values.flatten(), x)
+            larkin.shared.utils.debug_msg(debug, "%s, %s" % (dt, auc))
+
+            if 0 < auc < min_usage[1]:
+                min_usage = [dt, auc, incr_auc,
+                             larkin.shared.utils.drop_series_ix_date(
+                                 day_obs_ts)]
+
+    return min_usage
+
+
+def find_lowest_usage_day(date_scores, obs_ts, n, timezone, debug):
+    """
+    Finds the day with the lowest total obs usage from among the n most
+    similar occupancy days
+
+    Assumption: Linear interpolation is a reasonable way to fill gaps
+
+    :param date_scores: tuple of tuples
+        Each tuple is datetime.date followed by its L2 norm score compared to
+        the occupancy forecast for the base date
+    :param obs_ts: pandas Series
+        Total electric demand time series
+    :param n: int
+        number of most similar occupancy days to consider
+    :param timezone: pytz.timezone
+        target timezone or building timezone
+    :param debug: bool
+        debug flag
+
+    :return: tuple with benchmark date and pandas Series object with usage data
+        from benchmark date
+    """
+
+    dates, sim_scores = zip(*date_scores)
+
+    if not len(dates):
+        return None
+
+    min_usage = [dates[0], sys.maxsize, None, None]
+    for i, dt in enumerate(dates):
+
+        if i >= n:
+            break
+
+        score = sim_scores[i]
+        if score:
+            day_obs_ts = larkin.shared.utils.get_dt_tseries(dt, obs_ts,
+                                                            timezone)
+
+            # compute total and incremental AUC
+            day_obs_data = day_obs_ts.values.flatten()
+            incr_auc, auc = day_obs_data, day_obs_data[-1]
             larkin.shared.utils.debug_msg(debug, "%s, %s" % (dt, auc))
 
             if 0 < auc < min_usage[1]:
