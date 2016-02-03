@@ -149,7 +149,7 @@ def process_building(building, host, port, db_name, username, password,
                                                      weather_fcst_db,
                                                      weather_fcst_collection,
                                                      granularity)
-    wetbulb_ts = wetbulb_ts.tz_convert(target_tzone)
+    wetbulb_ts = wetbulb_ts.tz_convert(target_tzone)#.resample(granularity)
     larkin.shared.utils.debug_msg(debug, "wetbulb: %s" % wetbulb_ts)
 
     # get occupancy data
@@ -162,7 +162,7 @@ def process_building(building, host, port, db_name, username, password,
                                                            'Occupancy')
 
     # convert to local time
-    occ_ts = occ_ts.tz_convert(target_tzone)
+    occ_ts = occ_ts.tz_convert(target_tzone)#.resample(granularity)
     larkin.shared.utils.debug_msg(debug, "occupancy: %s" % occ_ts)
 
     # get water data
@@ -170,9 +170,7 @@ def process_building(building, host, port, db_name, username, password,
                                                  password, source,
                                                  collection_name, building,
                                                  meter_count)
-    water_ts = water_ts.tz_convert(target_tzone)
-    # water_usg_rate_ts = _daily_cumulative_to_rate(water_ts)
-    # sys.exit(0)
+    water_ts = water_ts.tz_convert(target_tzone)#.resample(granularity)
     larkin.shared.utils.debug_msg(debug, "water: %s" % water_ts)
 
     # find baseline
@@ -183,4 +181,12 @@ def process_building(building, host, port, db_name, username, password,
         "bench dt: %s, bench usage: %s, auc: %s" % (bench_dt, bench_usage,
                                                     bench_auc))
 
-    print("%s:%s" % (db_name_out, collection_name_out))
+    # save results
+    if not debug:
+        larkin.benchmarks.utils.save_benchmark(bench_dt, base_dt, bench_usage,
+                                               bench_auc, bench_incr_auc, host,
+                                               port, db_name_out, username,
+                                               password, source,
+                                               collection_name_out, building,
+                                               'building', 'Water_Usage',
+                                               target_tzone)
