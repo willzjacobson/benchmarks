@@ -10,4 +10,5 @@ python-crontab
 schedule
 matplotlib
 ipyparallel
+dill
 

@@ -1,5 +1,7 @@
 # coding=utf-8
 
+from functools import partial
+
 from ipyparallel import Client
 from numpy import logspace
 
@@ -27,53 +29,11 @@ cv = model_config["svm"]["param_search"]["cv"]
 n_jobs = model_config["svm"]["param_search"]["n_jobs"]
 threshold = model_config["svm"]["param_search"]["threshold"]
 has_bin_search = model_config["svm"]["param_search"]["has_bin_search"]
-devices = ["S" + str(num) + "-SupplyFanStatus" for num in range(1, 13)]
-systems = ["S" + str(num) for num in range(1, 13)]
+devices = ["S" + str(num) + "-SupplyFanStatus" for num in range(1, 3)]
+systems = ["S" + str(num) for num in range(1, 3)]
 
 
-def main():
-    rc = Client()
-    lview = rc.load_balanced_view()
-    lview.block = True
-    all_preds = {}
-    weather_history = get_history(host=dbs["mongo_cred"]["host"],
-                                  port=dbs["mongo_cred"]["port"],
-                                  source=dbs["mongo_cred"]["source"],
-                                  username=dbs["mongo_cred"][
-                                      "username"],
-                                  password=dbs["mongo_cred"][
-                                      "password"],
-                                  db_name=dbs["weather_history_loc"][
-                                      "db_name"],
-                                  collection_name=
-                                  dbs["weather_history_loc"][
-                                      "collection_name"])
-
-    weather_forecast = get_forecast(host=dbs["mongo_cred"]["host"],
-                                    port=dbs["mongo_cred"]["port"],
-                                    source=dbs["mongo_cred"]["source"],
-                                    username=dbs["mongo_cred"][
-                                        "username"],
-                                    password=dbs["mongo_cred"][
-                                        "password"],
-                                    db_name=dbs["weather_forecast_loc"][
-                                        "db_name"],
-                                    collection_name=
-                                    dbs["weather_forecast_loc"][
-                                        "collection_name"])
-
-    for building in buildings:
-        building_preds = lview.map(
-                {device: fan_prediction(
-                        building, device, system, weather_forecast,
-                        weather_history) for device, system in
-                 zip(devices, systems)})
-        all_preds.update({building: building_preds})
-    lview.close()
-    return all_preds
-
-
-def fan_prediction(building, device, system, weather_forecast,
+def fan_prediction(device, system, building, weather_forecast,
                    weather_history):
     endog = get_parsed_ts_new_schema(host=dbs["mongo_cred"]["host"],
                                      port=dbs["mongo_cred"]["port"],
@@ -118,6 +78,57 @@ def fan_prediction(building, device, system, weather_forecast,
             cov, gran, params, param_grid, cv,
             threshold, n_jobs,
             discrete, False)
+
+
+def main():
+    rc = Client()
+    rc.direct_view().use_dill()
+    lview = rc.load_balanced_view()
+    all_preds = {}
+    weather_history = get_history(host=dbs["mongo_cred"]["host"],
+                                  port=dbs["mongo_cred"]["port"],
+                                  source=dbs["mongo_cred"]["source"],
+                                  username=dbs["mongo_cred"][
+                                      "username"],
+                                  password=dbs["mongo_cred"][
+                                      "password"],
+                                  db_name=dbs["weather_history_loc"][
+                                      "db_name"],
+                                  collection_name=
+                                  dbs["weather_history_loc"][
+                                      "collection_name"])
+
+    weather_forecast = get_forecast(host=dbs["mongo_cred"]["host"],
+                                    port=dbs["mongo_cred"]["port"],
+                                    source=dbs["mongo_cred"]["source"],
+                                    username=dbs["mongo_cred"][
+                                        "username"],
+                                    password=dbs["mongo_cred"][
+                                        "password"],
+                                    db_name=dbs["weather_forecast_loc"][
+                                        "db_name"],
+                                    collection_name=
+                                    dbs["weather_forecast_loc"][
+                                        "collection_name"])
+
+    for building in buildings:
+        fan_pred = partial(
+                fan_prediction,
+                building=building,
+                weather_forecast=weather_forecast,
+                weather_history=weather_history
+        )
+        par_comp = lview.apply_sync(
+                fan_pred,
+                devices,
+                systems
+        )
+
+        building_preds = {
+            device: par_comp[i] for i, device in enumerate(devices)}
+
+        all_preds.update({building: building_preds})
+    return all_preds
 
 
 if __name__ == '__main__':
