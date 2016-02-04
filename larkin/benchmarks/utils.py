@@ -10,6 +10,7 @@ import itertools
 import sys
 
 import pandas as pd
+
 import pymongo
 
 import pytz
@@ -215,6 +216,8 @@ def find_lowest_usage_day(date_scores, obs_ts, n, timezone, debug,
         target timezone or building timezone
     :param debug: bool
         debug flag
+    :param drop_first: bool
+        flag indicating whether to ignore first/midnight observation
 
     :return: tuple with benchmark date and pandas Series object with usage data
         from benchmark date
