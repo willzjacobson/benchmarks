@@ -127,7 +127,7 @@ def find_similar_profile_days(gold_ts, gold_dow_type, all_ts, k, data_avlblty,
     return keys[:k]
 
 
-def get_dt_tseries(dt, full_ts, timezone):
+def get_dt_tseries(dt, full_ts, timezone, drop_first=False):
     """
     Get time series snippet for the given date
 
@@ -137,6 +137,8 @@ def get_dt_tseries(dt, full_ts, timezone):
         complete observation / time series data set
     :param timezone: pytz.timezone
         target timezone or building timezone
+    :param drop_first: bool
+        flag indicating whether to drop first entry
 
     :return: pandas Series or DataFrame
     """
@@ -146,6 +148,9 @@ def get_dt_tseries(dt, full_ts, timezone):
     # localize is a known work-around
     start_idx = timezone.localize(datetime.datetime.combine(dt,
                                                             datetime.time.min))
+    if drop_first:
+        start_idx += datetime.timedelta(minutes=1)
+
     end_idx = timezone.localize(datetime.datetime.combine(dt,
                                                           datetime.time.max))
     return full_ts.loc[str(start_idx) : str(end_idx)]

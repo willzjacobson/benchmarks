@@ -11,6 +11,7 @@ import sys
 
 import pandas as pd
 import pymongo
+
 import pytz
 
 import larkin.shared.utils
@@ -195,7 +196,8 @@ def find_lowest_auc_day(date_scores, obs_ts, n, timezone, debug):
     return min_usage
 
 
-def find_lowest_usage_day(date_scores, obs_ts, n, timezone, debug):
+def find_lowest_usage_day(date_scores, obs_ts, n, timezone, debug,
+                          drop_first=False):
     """
     Finds the day with the lowest total obs usage from among the n most
     similar occupancy days
@@ -232,7 +234,8 @@ def find_lowest_usage_day(date_scores, obs_ts, n, timezone, debug):
         score = sim_scores[i]
         if score:
             day_obs_ts = larkin.shared.utils.get_dt_tseries(dt, obs_ts,
-                                                            timezone)
+                                                            timezone,
+                                                            drop_first)
 
             # compute total and incremental AUC
             day_obs_data = day_obs_ts.values.flatten()

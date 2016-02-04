@@ -85,7 +85,7 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, obs_ts, gran, timezone,
 
     # find the date with the lowest water usage
     return larkin.benchmarks.utils.find_lowest_usage_day(occ_scores, obs_ts, 5,
-                                                         timezone, debug)
+                                                         timezone, debug, True)
 
 
 def process_building(building, host, port, db_name, username, password,
