@@ -315,28 +315,19 @@ def save_benchmark(bench_dt, base_dt, bench_ts, bench_auc, bench_incr_auc,
         collection.insert(doc)
 
 
-def _align_tstamp(tstamp):
-    tstamp -= datetime.timedelta(seconds=tstamp.second,
-                                 microseconds=tstamp.microsecond)
-    return tstamp
-
-
 def align_index(obs_ts, granularity):
-    # tstamp -= datetime.timedelta(seconds=tstamp.second,
-    #                              microseconds=tstamp.microsecond)
-    print("ai obs inpt: %s" % obs_ts)
+    """
+    align pandas Series index based on granularity and drop second and
+    microsecond data
+
+    :param obs_ts: pandas Series
+    :param granularity: int
+    :return: pandas Series with re-aligned index
+    """
     tmp_ts = obs_ts.reset_index()
-    # print(tmp_ts['index'][0])
-    # print(obs_ts.index.date)
     tmp_ts['minute'] = obs_ts.index.minute
-    tmp_ts['py_tstamp'] = obs_ts.index.to_pydatetime()
-    idx = tmp_ts.loc[:, 'minute'] % granularity == 0
-    tmp_ts['aligned_index'] = (tmp_ts['index']).apply(_align_tstamp)
-    print("ai tmp_ts: %s" % tmp_ts)
-    print("ai tmp_ts subset: %s" % tmp_ts.loc[idx, :])
-
-    # obs_ts = obs_ts.reset_index()[df['index'].time()]
-    # drop higher resolution data
-
-    # TODO: covert back to Series
-    return obs_ts
+    tmp_ts['new_index'] = tmp_ts['index'].apply(
+        lambda t: t - datetime.timedelta(seconds=t.second,
+                                         microseconds=t.microsecond))
+    return tmp_ts[tmp_ts['minute'] % granularity == 0].set_index('new_index'
+                                                    )[0].tz_localize(pytz.utc)

@@ -161,7 +161,6 @@ def process_building(building, host, port, db_name, username, password,
                                                            building,
                                                            'Occupancy',
                                                            'Occupancy')
-    # occ_ts = larkin.ts_proc.munge.gap_resamp(occ_ts, 5, 2, '1min', granularity)
     # convert to local time
     occ_ts = occ_ts.tz_convert(target_tzone)
     larkin.shared.utils.debug_msg(debug, "occupancy: %s" % occ_ts)
@@ -171,8 +170,6 @@ def process_building(building, host, port, db_name, username, password,
                                                  password, source,
                                                  collection_name, building,
                                                  meter_count)
-    # water_ts = larkin.ts_proc.munge.gap_resamp(water_ts, 5, 2, '1min',
-    #                                            granularity)
     water_ts = larkin.benchmarks.utils.align_index(water_ts, gran_int)
     water_ts = water_ts.tz_convert(target_tzone)
     larkin.shared.utils.debug_msg(debug, "water: %s" % water_ts)
