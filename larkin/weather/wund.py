@@ -134,33 +134,34 @@ def history_munge(df, gran):
     """
     # drop what we don't need anymore, and set df index
     # dropping anything with metric system
+    df_new = df.copy()
     dates = ['date', 'utcdate']
     misc = ['icon', 'metar']
     metric = ['dewptm', 'heatindexm', 'precipm', 'pressurem', 'tempm',
               'vism', 'wgustm',
               'windchillm', 'wspdm']
-    df = df.drop(dates + misc + metric, axis=1)
+    df_new = df_new.drop(dates + misc + metric, axis=1)
     column_trans_dict = {'heatindexi': 'heatindex', 'precipi': 'precip',
                          'pressurei': 'pressure', 'tempi': 'temp',
                          'wgusti': 'wgust',
                          'windchilli': 'windchill', 'wspdi': 'wspd',
                          'visi': 'vis', 'dewpti': 'dewpt'}
-    df = df.rename(columns=column_trans_dict)
-    df = _dtype_conv(df)
+    df_new = df_new.rename(columns=column_trans_dict)
+    df_new = _dtype_conv(df_new)
 
     # resampling portion
-    df = df.resample(gran, how="last")
-    df = df.fillna(method="bfill")
+    df_new = df_new.resample(gran, how="last")
+    df_new = df_new.fillna(method="bfill")
 
     # add wetbulb temperature
-    df['wetbulb'] = df.apply(
+    df_new['wetbulb'] = df_new.apply(
             lambda x: larkin.weather.wet_bulb.compute_bulb(
                     temp=x['temp'],
                     dewpt=x['dewpt'],
                     pressure=x['pressure']),
             axis=1)
 
-    return df
+    return df_new
 
 
 def forecast_pull(city, state, wund_url):
@@ -218,18 +219,19 @@ def forecast_munge(df, gran):
     :return: dataframe
     """
     # toss out metric system in favor of english system
+    df_new = df.copy()
     for column in ['windchill', 'wspd', 'temp', 'qpf', 'snow', 'mslp',
                    'heatindex', 'dewpoint', 'feelslike']:
-        df[column] = df[column].apply(
+        df_new[column] = df_new[column].apply(
                 lambda x: x['english']
         )
 
         # add columns from forecast data to match weather underground past
         # data pull
 
-        df['wdird'] = df['wdir'].apply(
+        df_new['wdird'] = df_new['wdir'].apply(
                 lambda x: x['degrees'])
-        df['wdire'] = df['wdir'].apply(
+        df_new['wdire'] = df_new['wdir'].apply(
                 lambda x: x['dir'])
 
     # rename to have name mappings of identical entries in historical and
@@ -237,24 +239,24 @@ def forecast_munge(df, gran):
     column_trans_dict = {'condition': 'conds', 'humidity': 'hum',
                          'mslp': 'pressure', 'pop': 'rain',
                          'dewpoint': 'dewpt'}
-    df = df.rename(columns=column_trans_dict)
+    df_new = df_new.rename(columns=column_trans_dict)
 
     # delete redundant columns
-    df['conds'] = df['wx']
-    df = df.drop(['wx', 'wdir', 'FCTTIME', 'icon', 'icon_url'], axis=1)
+    df_new['conds'] = df_new['wx']
+    df_new = df_new.drop(['wx', 'wdir', 'FCTTIME', 'icon', 'icon_url'], axis=1)
 
     # appropriate data type conversion for columns
-    df = _dtype_conv(df)
+    df_new = _dtype_conv(df_new)
 
     # resampling portion
 
-    df = df.resample(gran, how="last")
-    df = df.fillna(method="bfill")
+    df_new = df_new.resample(gran, how="last")
+    df_new = df_new.fillna(method="bfill")
 
     # add wetbulb temperature
-    df['wetbulb'] = df.apply(
+    df_new['wetbulb'] = df_new.apply(
             lambda x: larkin.weather.wet_bulb.compute_bulb(
                     temp=x['temp'],
                     dewpt=x['dewpt'],
                     pressure=x['pressure']), axis=1)
-    return df
+    return df_new
