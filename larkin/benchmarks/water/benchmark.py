@@ -13,7 +13,6 @@ import larkin.shared.utils
 import larkin.ts_proc.utils
 import larkin.benchmarks.utils
 import larkin.benchmarks.occupancy.utils
-import larkin.ts_proc.munge
 
 
 def _find_benchmark(base_dt, occ_ts, wetbulb_ts, obs_ts, gran, timezone,
@@ -162,7 +161,8 @@ def process_building(building, host, port, db_name, username, password,
                                                            'Occupancy',
                                                            'Occupancy')
     # convert to local time
-    occ_ts = occ_ts.tz_convert(target_tzone)
+    occ_ts = larkin.benchmarks.utils.align_idx(occ_ts, gran_int).tz_convert(
+        target_tzone)
     larkin.shared.utils.debug_msg(debug, "occupancy: %s" % occ_ts)
 
     # get water data
@@ -170,7 +170,7 @@ def process_building(building, host, port, db_name, username, password,
                                                  password, source,
                                                  collection_name, building,
                                                  meter_count)
-    water_ts = larkin.benchmarks.utils.align_index(water_ts, gran_int)
+    water_ts = larkin.benchmarks.utils.align_idx(water_ts, gran_int)
     water_ts = water_ts.tz_convert(target_tzone)
     larkin.shared.utils.debug_msg(debug, "water: %s" % water_ts)
 
@@ -181,9 +181,6 @@ def process_building(building, host, port, db_name, username, password,
     larkin.shared.utils.debug_msg(debug,
         "bench dt: %s, bench usage: %s, auc: %s" % (bench_dt, bench_usage,
                                                     bench_auc))
-
-    # TODO: delete display code
-    # todel.create_png(base_dt, bench_usage, water_ts, target_tzone)
 
     # save results
     if not debug:

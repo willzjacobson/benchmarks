@@ -54,5 +54,5 @@ building_dbs:
       db_name_out: benchmarks
       collection_name_out: electricity
   results_water_benchmark:
-        db_name_out: benchmarks
-        collection_name_out: water
+      db_name_out: benchmarks
+      collection_name_out: water
