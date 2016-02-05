@@ -44,23 +44,34 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, obs_ts, gran, timezone,
     # get data availability
     water_avlblty = larkin.benchmarks.utils.get_data_availability_dates(obs_ts,
                                                                         gran)
-    occ_avlblty = larkin.benchmarks.utils.get_data_availability_dates(occ_ts,
-                                                                      gran)
     wetbulb_avlblty = larkin.benchmarks.utils.get_data_availability_dates(
         wetbulb_ts, gran)
-    data_avlblty = occ_avlblty.intersection(water_avlblty, wetbulb_avlblty)
+    data_avlblty = wetbulb_avlblty.intersection(water_avlblty)
 
     # check if all required data is available for base dt
     if base_dt not in data_avlblty:
-        dtl = "<obs:%s>, <occ:%s>, <wetbulb:%s>" % (base_dt in water_avlblty,
-                                                    base_dt in occ_avlblty,
-                                                    base_dt in wetbulb_avlblty)
-        raise Exception("insufficient data available for %s: %s" % (base_dt,
-                                                                    dtl))
+
+        # obs_flag, occ_flag = base_dt in water_avlblty, base_dt in occ_avlblty
+        # obs_flag = base_dt in water_avlblty
+        # wetbulb_flag = base_dt in wetbulb_avlblty
+        dtl = "<obs:%s>, <wetbulb:%s>" % (base_dt in water_avlblty,
+                                          base_dt in wetbulb_avlblty)
+
+        # if occupancy is the only one missing, look for a similar occupancy day
+        # sim_occ_day = None
+        # if not occ_flag and obs_flag and wetbulb_flag:
+        #     sim_occ_day = find_similar_occ_day(base_dt, occ_ts, wetbulb_ts)
+
+        # if not sim_occ_day:
+        # if not wetbulb_flag or not obs_flag:
+        raise Exception("insufficient data available for %s: %s" %
+                            (base_dt, dtl))
+
 
     # get weather for base_dt
     base_dt_wetbulb = larkin.shared.utils.get_dt_tseries(base_dt, wetbulb_ts,
                                                          timezone)
+
 
     # find k closest weather days for which steam and occupancy data is
     # available
@@ -73,6 +84,16 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, obs_ts, gran, timezone,
         data_avlblty,
         timezone)
     larkin.shared.utils.debug_msg(debug, "sim days: %s" % str(sim_wetbulb_days))
+
+    # occupancy data availability
+    sim_occ_day = None
+    if base_dt not in larkin.benchmarks.utils.get_data_availability_dates(
+            occ_ts, gran):
+        sim_occ_day = larkin.benchmarks.utils.find_similar_occ_day(base_dt,
+                                                    occ_ts, sim_wetbulb_days)
+    if not sim_occ_day:
+        raise Exception("insufficient data available for %s: occupancy" %
+                        base_dt)
 
     # compute occupancy similarity score for the k most similar weather days
     occ_scores = larkin.benchmarks.occupancy.utils.score_occ_similarity(
