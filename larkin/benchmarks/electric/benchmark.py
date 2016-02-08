@@ -12,7 +12,6 @@ import larkin.benchmarks.utils
 import larkin.shared.utils
 import larkin.ts_proc.munge
 import larkin.ts_proc.utils
-import larkin.benchmarks.occupancy.utils
 
 
 def _find_benchmark(base_dt, occ_ts, wetbulb_ts, electric_ts, gran, timezone,

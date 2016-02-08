@@ -7,7 +7,6 @@ import re
 import pytz
 
 import larkin.benchmarks.utils
-import larkin.benchmarks.occupancy.utils
 import larkin.shared.utils
 import larkin.ts_proc.munge
 import larkin.ts_proc.utils
