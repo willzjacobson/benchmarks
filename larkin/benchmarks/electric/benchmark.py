@@ -170,7 +170,8 @@ def process_building(building, host, port, db_name, username, password,
                                                            building,
                                                            'Occupancy',
                                                            'Occupancy')
-    occ_ts = occ_ts.tz_convert(target_tzone)
+    occ_ts = larkin.benchmarks.utils.align_idx(occ_ts, gran_int).tz_convert(
+        target_tzone)
     larkin.shared.utils.debug_msg(debug, "occupancy: %s" % occ_ts)
 
     # query electric data

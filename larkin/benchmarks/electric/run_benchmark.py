@@ -15,6 +15,11 @@ from larkin.user_config import user_config
 
 
 def main():
+    """
+    driver function for electric benchmark lookup
+    :return:
+    """
+
     cfg = dict(user_config, **model_config)
 
     buildings = cfg['default']['buildings']
