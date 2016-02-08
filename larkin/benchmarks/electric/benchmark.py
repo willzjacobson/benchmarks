@@ -15,7 +15,7 @@ import larkin.ts_proc.utils
 
 
 def _find_benchmark(base_dt, occ_ts, wetbulb_ts, electric_ts, gran, timezone,
-                    debug):
+                    debug, holidays):
     """
         Find benchmark electric usage for the date base_dt. Benchmark
         electric usage is defined as the electric usage profile from a similar
@@ -35,6 +35,8 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, electric_ts, gran, timezone,
         expected frequency of observations and forecast in minutes
     :param debug: bool
         debug flag
+    :param holidays: list
+        list of holidays
 
     :return: tuple containing benchmark date and a pandas Series object with
         electric usage data from that date
@@ -47,11 +49,14 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, electric_ts, gran, timezone,
                                                                       gran)
     wetbulb_avlblty = larkin.benchmarks.utils.get_data_availability_dates(
                                                             wetbulb_ts, gran)
-    data_avlblty = occ_avlblty.intersection(elec_avlblty, wetbulb_avlblty)
+    data_avlblty = wetbulb_avlblty.intersection(elec_avlblty)
 
     # check if all required data is available for base dt
-    if base_dt not in data_avlblty:
-        raise Exception("insufficient data available for %s" % base_dt)
+    if base_dt not in wetbulb_avlblty:
+        raise Exception("insufficient data available for %s: <wetbulb:%s>" %
+                        (base_dt, base_dt in wetbulb_avlblty))
+    # if base_dt not in data_avlblty:
+    #     raise Exception("insufficient data available for %s" % base_dt)
 
     # get weather for base_dt
     base_dt_wetbulb = larkin.shared.utils.get_dt_tseries(base_dt, wetbulb_ts,
@@ -69,9 +74,20 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, electric_ts, gran, timezone,
                                                               timezone)
     larkin.shared.utils.debug_msg(debug, "sim days: %s" % str(sim_wetbulb_days))
 
+    # occupancy data availability and fall-back occupancy lookup
+    sim_occ_day = None
+    if base_dt not in occ_avlblty:
+        sim_occ_day = larkin.benchmarks.utils.find_similar_occ_day(base_dt,
+                                            occ_ts, sim_wetbulb_days, holidays)
+        larkin.shared.utils.debug_msg(debug, "sim occ day: %s" % sim_occ_day)
+
+    if not sim_occ_day and base_dt not in occ_avlblty:
+        raise Exception("insufficient data available for %s: occupancy" %
+                        base_dt)
+
     # compute occupancy similarity score for the k most similar weather days
     occ_scores = larkin.benchmarks.utils.score_occ_similarity(
-        base_dt,
+        base_dt if not sim_occ_day else sim_occ_day,
         sim_wetbulb_days,
         occ_ts,
         timezone)
@@ -165,9 +181,16 @@ def process_building(building, host, port, db_name, username, password,
     elec_ts = elec_ts.tz_convert(target_tzone)
     larkin.shared.utils.debug_msg(debug, "electric: %s" % elec_ts)
 
+    # find holidays
+    holidays = []
+    if wetbulb_ts.size:
+        holidays = larkin.benchmarks.utils.gen_holidays(
+            wetbulb_ts.index[0].date(), base_dt, building)
+    larkin.shared.utils.debug_msg(debug, "holidays: %s" % holidays)
+
     # find baseline
     bench_info = _find_benchmark(base_dt, occ_ts, wetbulb_ts, elec_ts, gran_int,
-                                 target_tzone, debug)
+                                 target_tzone, debug, holidays)
     bench_dt, bench_auc, bench_incr_auc, bench_usage = bench_info
     larkin.shared.utils.debug_msg(debug,
                                   "bench dt: %s, bench usage: %s, auc: %s" % (

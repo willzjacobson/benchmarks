@@ -11,6 +11,7 @@ import sys
 
 import pandas as pd
 import pymongo
+
 import pytz
 
 import pandas.tseries.holiday
@@ -348,7 +349,7 @@ def gen_holidays(start_dt, end_dt, building):
     :param building: string
     :return: list of holidays
     """
-    # TODO: when building specific list of holidays is available, use that
+    # TODO: if building specific list of holidays is available, use that instead
     print("generating holidays for %s" % building)
     return pandas.tseries.holiday.USFederalHolidayCalendar().holidays(
         start=start_dt, end=end_dt).to_pydatetime()
@@ -378,31 +379,25 @@ def find_similar_occ_day(base_dt, occ_availability, sim_wetbulb_days, holidays):
     """
 
     base_dow = base_dt.isoweekday()
-    print(holidays)
+    # print(holidays)
     base_is_holiday = is_holiday(base_dt, holidays)
 
     sim_occ_day = None
     for sim_wblb_dt_t in sim_wetbulb_days:
-        print("sim dt t: %s" % sim_wblb_dt_t)
-
-        print("dow %s - %s" % (base_dow, sim_wblb_dt_t.isoweekday()))
-        # day of week must match
-        if sim_wblb_dt_t.isoweekday() != base_dow:
-            continue
-
+        # print("sim dt t: %s" % sim_wblb_dt_t)
 
         # holidays
         dt_t_is_holiday = is_holiday(sim_wblb_dt_t, holidays)
-        print("hol %s - %s" % (base_is_holiday, dt_t_is_holiday))
+        # print("hol %s - %s" % (base_is_holiday, dt_t_is_holiday))
         if base_is_holiday:
-            if not dt_t_is_holiday:
-                continue
-            else:
+            if dt_t_is_holiday:
                 if sim_wblb_dt_t in occ_availability:
                     sim_occ_day = sim_wblb_dt_t
                     break
-                else:
-                    print("no occ %s" % sim_wblb_dt_t)
+                # else:
+                    # print("no occ %s" % sim_wblb_dt_t)
+            else:
+                continue
 
         else:
             if dt_t_is_holiday:
@@ -411,8 +406,13 @@ def find_similar_occ_day(base_dt, occ_availability, sim_wetbulb_days, holidays):
                 if sim_wblb_dt_t in occ_availability:
                     sim_occ_day = sim_wblb_dt_t
                     break
-                else:
-                    print("no occ %s" % sim_wblb_dt_t)
+                # else:
+                #     print("no occ %s" % sim_wblb_dt_t)
+
+        # print("dow %s - %s" % (base_dow, sim_wblb_dt_t.isoweekday()))
+        # day of week must match
+        if sim_wblb_dt_t.isoweekday() != base_dow:
+            continue
 
     return sim_occ_day
 

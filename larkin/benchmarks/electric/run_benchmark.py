@@ -20,7 +20,7 @@ def main():
     buildings = cfg['default']['buildings']
 
     # determine benchmark date
-    bench_dt = datetime.date.today() - datetime.timedelta(days=1)
+    bench_dt = datetime.date.today()# - datetime.timedelta(days=1)
 
     arg_count = len(sys.argv)
     if arg_count not in [1, 4]:
@@ -55,12 +55,8 @@ def main():
         bldg_params = cfg['default'][building_id]
         larkin.benchmarks.electric.benchmark.process_building(
                 building_id,
-                timezone=
-                bldg_params[
-                    'timezone'],
-                meter_count=
-                bldg_params[
-                    'electric_meter_count'],
+                timezone=bldg_params['timezone'],
+                meter_count=bldg_params['electric_meter_count'],
                 **kw_args)
 
 
