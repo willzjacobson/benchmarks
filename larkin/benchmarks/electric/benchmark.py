@@ -71,7 +71,7 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, electric_ts, gran, timezone,
     larkin.shared.utils.debug_msg(debug, "sim days: %s" % str(sim_wetbulb_days))
 
     # compute occupancy similarity score for the k most similar weather days
-    occ_scores = larkin.benchmarks.occupancy.utils.score_occ_similarity(
+    occ_scores = larkin.benchmarks.utils.score_occ_similarity(
         base_dt,
         sim_wetbulb_days,
         occ_ts,

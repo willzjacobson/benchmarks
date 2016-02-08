@@ -13,6 +13,8 @@ import pandas as pd
 import pymongo
 import pytz
 
+import pandas.tseries.holiday
+
 import larkin.shared.utils
 import larkin.weather.mongo
 import larkin.weather.wund
@@ -335,3 +337,117 @@ def align_idx(obs_ts, granularity):
                                          microseconds=t.microsecond))
     return tmp_ts[tmp_ts['minute'] % granularity == 0].set_index('new_index'
                                             )[obs_ts.name].tz_localize(pytz.utc)
+
+
+def gen_holidays(start_dt, end_dt, building):
+    """
+    generate building-specific list of holidays between start and end dates
+
+    :param start_dt: datetime.date
+    :param end_dt: datetime.date
+    :param building: string
+    :return: list of holidays
+    """
+    # TODO: when building specific list of holidays is available, use that
+    print("generating holidays for %s" % building)
+    return pandas.tseries.holiday.USFederalHolidayCalendar().holidays(
+        start=start_dt, end=end_dt).to_pydatetime()
+
+
+def is_holiday(dt, holidays):
+    """
+    check if date is a holiday
+
+    :param dt: datetime.date
+    :param holidays: list of holidays
+    :return: bool
+    """
+    return datetime.datetime.combine(dt, datetime.time.min) in holidays
+
+
+def find_similar_occ_day(base_dt, occ_availability, sim_wetbulb_days, holidays):
+    """
+    pick a day from the list of similar weather days the observed occupancy on
+    which is expected to be most similar to baseline date
+
+    :param base_dt: datetime.date
+    :param occ_availability: list of dates with available actual occupancy data
+    :param sim_wetbulb_days: list of similar weather days
+    :param holidays: list of building-specific holidays
+    :return: datetime.date or None
+    """
+
+    base_dow = base_dt.isoweekday()
+    print(holidays)
+    base_is_holiday = is_holiday(base_dt, holidays)
+
+    sim_occ_day = None
+    for sim_wblb_dt_t in sim_wetbulb_days:
+        print("sim dt t: %s" % sim_wblb_dt_t)
+
+        print("dow %s - %s" % (base_dow, sim_wblb_dt_t.isoweekday()))
+        # day of week must match
+        if sim_wblb_dt_t.isoweekday() != base_dow:
+            continue
+
+
+        # holidays
+        dt_t_is_holiday = is_holiday(sim_wblb_dt_t, holidays)
+        print("hol %s - %s" % (base_is_holiday, dt_t_is_holiday))
+        if base_is_holiday:
+            if not dt_t_is_holiday:
+                continue
+            else:
+                if sim_wblb_dt_t in occ_availability:
+                    sim_occ_day = sim_wblb_dt_t
+                    break
+                else:
+                    print("no occ %s" % sim_wblb_dt_t)
+
+        else:
+            if dt_t_is_holiday:
+                continue
+            else:
+                if sim_wblb_dt_t in occ_availability:
+                    sim_occ_day = sim_wblb_dt_t
+                    break
+                else:
+                    print("no occ %s" % sim_wblb_dt_t)
+
+    return sim_occ_day
+
+
+def score_occ_similarity(base_dt, date_shortlist, occ_ts, timezone):
+    """
+    Score occupancy profile similarity between occupancy predicted for base date
+    and that observed on the the short list of dates provided
+
+    :param base_dt: datetime.date
+        base date or as of date
+    :param date_shortlist: list
+        short-list of dates to choose from
+    :param occ_ts: pandas Series
+        occupancy data
+    :param timezone: pytz.timezone
+        target timezone or building timezone
+    :return: list of tuples sorted by score
+        each tuple is of the form (<date>, <similarity_score>)
+    """
+
+    # occupancy, use actual only
+    base_ts = larkin.shared.utils.get_dt_tseries(base_dt, occ_ts, timezone)
+    base_ts_nodatetz = larkin.shared.utils.drop_series_ix_date(base_ts)
+
+    scores = []
+    for dt_t in date_shortlist:
+
+        score = larkin.shared.utils.compute_profile_similarity_score(
+                    base_ts_nodatetz,
+                    larkin.shared.utils.drop_series_ix_date(
+                        larkin.shared.utils.get_dt_tseries(dt_t, occ_ts,
+                                                           timezone)))
+
+        scores.append((dt_t, score))
+
+    scores.sort(key=lambda x: x[1] if x[1] else sys.maxsize)
+    return scores
