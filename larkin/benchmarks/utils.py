@@ -11,9 +11,7 @@ import sys
 
 import pandas as pd
 import pymongo
-
 import pytz
-
 import pandas.tseries.holiday
 
 import larkin.shared.utils
@@ -366,53 +364,49 @@ def is_holiday(dt, holidays):
     return datetime.datetime.combine(dt, datetime.time.min) in holidays
 
 
-def find_similar_occ_day(base_dt, occ_availability, sim_wetbulb_days, holidays):
+def find_similar_occ_day(base_dt, occ_availability, holidays):
     """
-    pick a day from the list of similar weather days the observed occupancy on
-    which is expected to be most similar to baseline date
+    look back from the base date for a day which is likely to have similar
+    occupancy
 
     :param base_dt: datetime.date
     :param occ_availability: list of dates with available actual occupancy data
-    :param sim_wetbulb_days: list of similar weather days
     :param holidays: list of building-specific holidays
+
     :return: datetime.date or None
     """
-
-    base_dow = base_dt.isoweekday()
-    # print(holidays)
+    base_dow_typ = larkin.shared.utils.dow_type(base_dt)
     base_is_holiday = is_holiday(base_dt, holidays)
+    # print("base dow_typ: %s, hol: %s" % (base_dow_typ, base_is_holiday))
 
     sim_occ_day = None
-    for sim_wblb_dt_t in sim_wetbulb_days:
-        # print("sim dt t: %s" % sim_wblb_dt_t)
+    one_day = datetime.timedelta(days=1)
 
-        # holidays
-        dt_t_is_holiday = is_holiday(sim_wblb_dt_t, holidays)
-        # print("hol %s - %s" % (base_is_holiday, dt_t_is_holiday))
-        if base_is_holiday:
-            if dt_t_is_holiday:
-                if sim_wblb_dt_t in occ_availability:
-                    sim_occ_day = sim_wblb_dt_t
-                    break
-                # else:
-                    # print("no occ %s" % sim_wblb_dt_t)
-            else:
+    if not base_is_holiday: # non-holiday case
+
+        for i in range(1, 31):
+
+            tmp_dt = base_dt - i * one_day
+            if is_holiday(tmp_dt, holidays):
                 continue
 
-        else:
-            if dt_t_is_holiday:
-                continue
-            else:
-                if sim_wblb_dt_t in occ_availability:
-                    sim_occ_day = sim_wblb_dt_t
+            if larkin.shared.utils.dow_type(tmp_dt) == base_dow_typ:
+                if tmp_dt in occ_availability:
+                    sim_occ_day = tmp_dt
                     break
-                # else:
-                #     print("no occ %s" % sim_wblb_dt_t)
 
-        # print("dow %s - %s" % (base_dow, sim_wblb_dt_t.isoweekday()))
-        # day of week must match
-        if sim_wblb_dt_t.isoweekday() != base_dow:
-            continue
+    else: # holiday case
+
+        for i in range(374, 1, -1):
+            tmp_dt = base_dt - i * one_day
+            # print(tmp_dt)
+            if not is_holiday(tmp_dt, holidays):
+                continue
+
+            # print(tmp_dt)
+            if tmp_dt in occ_availability:
+                sim_occ_day = tmp_dt
+                break
 
     return sim_occ_day
 

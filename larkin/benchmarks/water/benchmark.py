@@ -12,7 +12,6 @@ import pytz
 import larkin.shared.utils
 import larkin.ts_proc.utils
 import larkin.benchmarks.utils
-import larkin.benchmarks.occupancy.utils
 
 
 def _find_benchmark(base_dt, occ_ts, wetbulb_ts, obs_ts, gran, timezone,
@@ -77,7 +76,7 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, obs_ts, gran, timezone,
                                                                       gran)
     if base_dt not in occ_avlblty:
         sim_occ_day = larkin.benchmarks.utils.find_similar_occ_day(base_dt,
-                                            occ_ts, sim_wetbulb_days, holidays)
+                                                            occ_ts, holidays)
         larkin.shared.utils.debug_msg(debug, "sim occ day: %s" % sim_occ_day)
 
     if not sim_occ_day and base_dt not in occ_avlblty:

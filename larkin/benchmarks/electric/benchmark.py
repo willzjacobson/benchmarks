@@ -55,8 +55,6 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, electric_ts, gran, timezone,
     if base_dt not in wetbulb_avlblty:
         raise Exception("insufficient data available for %s: <wetbulb:%s>" %
                         (base_dt, base_dt in wetbulb_avlblty))
-    # if base_dt not in data_avlblty:
-    #     raise Exception("insufficient data available for %s" % base_dt)
 
     # get weather for base_dt
     base_dt_wetbulb = larkin.shared.utils.get_dt_tseries(base_dt, wetbulb_ts,
@@ -78,7 +76,7 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, electric_ts, gran, timezone,
     sim_occ_day = None
     if base_dt not in occ_avlblty:
         sim_occ_day = larkin.benchmarks.utils.find_similar_occ_day(base_dt,
-                                            occ_ts, sim_wetbulb_days, holidays)
+                                                            occ_ts, holidays)
         larkin.shared.utils.debug_msg(debug, "sim occ day: %s" % sim_occ_day)
 
     if not sim_occ_day and base_dt not in occ_avlblty:
@@ -87,11 +85,12 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, electric_ts, gran, timezone,
 
     # compute occupancy similarity score for the k most similar weather days
     occ_scores = larkin.benchmarks.utils.score_occ_similarity(
-        base_dt if not sim_occ_day else sim_occ_day,
+        base_dt,# base_dt if not sim_occ_day else sim_occ_day,
         sim_wetbulb_days,
         occ_ts,
         timezone)
     larkin.shared.utils.debug_msg(debug, occ_scores)
+
     # find the date with the lowest electric usage
     return larkin.benchmarks.utils.find_lowest_auc_day(occ_scores, electric_ts,
                                                        5, timezone, debug)
@@ -179,7 +178,8 @@ def process_building(building, host, port, db_name, username, password,
                                                    username, password, source,
                                                    collection_name, building,
                                                    meter_count)
-    elec_ts = elec_ts.tz_convert(target_tzone)
+    elec_ts = larkin.benchmarks.utils.align_idx(elec_ts, gran_int).tz_convert(
+        target_tzone)
     larkin.shared.utils.debug_msg(debug, "electric: %s" % elec_ts)
 
     # find holidays
