@@ -35,7 +35,7 @@ def _dow_type(dt):
 
 
 def _find_benchmark(base_dt, occ_ts, wetbulb_ts, obs_ts, gran, timezone,
-                    debug):
+                    debug, holidays):
     """
         Find benchmark steam usage for the date base_dt. Benchmark
         steam usage is defined as the steam usage profile from a similar
@@ -55,23 +55,26 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, obs_ts, gran, timezone,
         expected frequency of observations and forecast in minutes
     :param debug: bool
         debug flag
+    :param holidays: list
+        list of holidays
 
     :return: tuple containing benchmark date and a pandas Series object with
         steam usage data from that date
     """
 
     # get data availability
-    elec_avlblty = larkin.benchmarks.utils.get_data_availability_dates(obs_ts,
+    steam_avlblty = larkin.benchmarks.utils.get_data_availability_dates(obs_ts,
                                                                        gran)
     occ_avlblty = larkin.benchmarks.utils.get_data_availability_dates(occ_ts,
                                                                       gran)
     wetbulb_avlblty = larkin.benchmarks.utils.get_data_availability_dates(
         wetbulb_ts, gran)
-    data_avlblty = occ_avlblty.intersection(elec_avlblty, wetbulb_avlblty)
+    data_avlblty = wetbulb_avlblty.intersection(steam_avlblty)
 
-    # check if all required data is available for base dt
-    if base_dt not in data_avlblty:
-        raise Exception("insufficient data available for %s" % base_dt)
+    # check required data availability
+    if base_dt not in wetbulb_avlblty:
+        raise Exception("insufficient data available for %s: <wetbulb:%s>" %
+                        (base_dt, base_dt in wetbulb_avlblty))
 
     # get weather for base_dt
     base_dt_wetbulb = larkin.shared.utils.get_dt_tseries(base_dt, wetbulb_ts,
@@ -90,13 +93,25 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, obs_ts, gran, timezone,
                                                         dow_type_fn=_dow_type)
     larkin.shared.utils.debug_msg(debug, "sim days: %s" % str(sim_wetbulb_days))
 
+    # occupancy data availability and fall-back occupancy lookup
+    sim_occ_day = None
+    if base_dt not in occ_avlblty:
+        sim_occ_day = larkin.benchmarks.utils.find_similar_occ_day(base_dt,
+                                                                   occ_ts, holidays)
+        larkin.shared.utils.debug_msg(debug, "sim occ day: %s" % sim_occ_day)
+
+    if not sim_occ_day and base_dt not in occ_avlblty:
+        raise Exception("insufficient data available for %s: occupancy" %
+                        base_dt)
+
     # compute occupancy similarity score for the k most similar weather days
     occ_scores = larkin.benchmarks.utils.score_occ_similarity(
-            base_dt,
+            base_dt if not sim_occ_day else sim_occ_day,
             sim_wetbulb_days,
             occ_ts,
             timezone)
     larkin.shared.utils.debug_msg(debug, occ_scores)
+
     # find the date with the lowest steam usage
     return larkin.benchmarks.utils.find_lowest_auc_day(occ_scores, obs_ts, 2,
                                                        timezone, debug)
@@ -185,12 +200,20 @@ def process_building(building, host, port, db_name, username, password,
                                                              collection_name,
                                                              building,
                                                              'TotalInstant')
-    steam_ts = steam_ts.tz_convert(target_tzone)
+    steam_ts = larkin.benchmarks.utils.align_idx(steam_ts, gran_int).tz_convert(
+        target_tzone)
     larkin.shared.utils.debug_msg(debug, "steam: %s" % steam_ts)
+
+    # find holidays
+    holidays = []
+    if wetbulb_ts.size:
+        holidays = larkin.benchmarks.utils.gen_holidays(
+            wetbulb_ts.index[0].date(), base_dt, building)
+    larkin.shared.utils.debug_msg(debug, "holidays: %s" % holidays)
 
     # find baseline
     bench_info = _find_benchmark(base_dt, occ_ts, wetbulb_ts, steam_ts,
-                                 gran_int, target_tzone, debug)
+                                 gran_int, target_tzone, debug, holidays)
     bench_dt, bench_auc, bench_incr_auc, bench_usage = bench_info
     larkin.shared.utils.debug_msg(debug,
             "bench dt: %s, bench usage: %s, auc: %s" % (bench_dt, bench_usage,

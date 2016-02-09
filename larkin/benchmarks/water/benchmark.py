@@ -70,10 +70,11 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, obs_ts, gran, timezone,
         timezone)
     larkin.shared.utils.debug_msg(debug, "sim days: %s" % str(sim_wetbulb_days))
 
-    # occupancy data availability and fall-back occupancy lookup
+    # occupancy data availability
     sim_occ_day = None
     occ_avlblty = larkin.benchmarks.utils.get_data_availability_dates(occ_ts,
                                                                       gran)
+    # fall-back occupancy lookup
     if base_dt not in occ_avlblty:
         sim_occ_day = larkin.benchmarks.utils.find_similar_occ_day(base_dt,
                                                             occ_ts, holidays)
