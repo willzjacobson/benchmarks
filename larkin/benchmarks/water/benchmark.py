@@ -2,11 +2,11 @@
 """
 water benchmark support module
 """
-import utils
 
 __author__ = 'ashishgagneja'
 
 import re
+
 import pytz
 
 import larkin.shared.utils
@@ -85,7 +85,7 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, obs_ts, gran, timezone,
                         base_dt)
 
     # compute occupancy similarity score for the k most similar weather days
-    occ_scores = utils.score_occ_similarity(
+    occ_scores = larkin.benchmarks.utils.score_occ_similarity(
         base_dt if not sim_occ_day else sim_occ_day,
         sim_wetbulb_days,
         occ_ts,
@@ -198,6 +198,10 @@ def process_building(building, host, port, db_name, username, password,
     larkin.shared.utils.debug_msg(debug,
         "bench dt: %s, bench usage: %s, auc: %s" % (bench_dt, bench_usage,
                                                     bench_auc))
+
+    # TODO: delete
+    import stash.todel as todel
+    todel.create_png(base_dt, bench_usage, water_ts, target_tzone)
 
     # save results
     if not debug:

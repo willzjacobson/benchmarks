@@ -74,27 +74,27 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, electric_ts, gran, timezone,
 
     # occupancy data availability and fall-back occupancy lookup
     sim_occ_day = None
-    # if base_dt not in occ_avlblty:
-    #     sim_occ_day = larkin.benchmarks.utils.find_similar_occ_day(base_dt,
-    #                                                         occ_ts, holidays)
-    #     larkin.shared.utils.debug_msg(debug, "sim occ day: %s" % sim_occ_day)
-
-    # if not sim_occ_day and base_dt not in occ_avlblty:
-    #     raise Exception("insufficient data available for %s: occupancy" %
-    #                     base_dt)
-
-    # TODO: test code: delete
-    # use fall-back when occupancy data is available and compare results with/without fall back
-    if base_dt in occ_avlblty:
+    if base_dt not in occ_avlblty:
         sim_occ_day = larkin.benchmarks.utils.find_similar_occ_day(base_dt,
                                                             occ_ts, holidays)
         larkin.shared.utils.debug_msg(debug, "sim occ day: %s" % sim_occ_day)
-        if not sim_occ_day:
-            raise Exception("failed to lookup similar occupancy day")
+
+    if not sim_occ_day and base_dt not in occ_avlblty:
+        raise Exception("insufficient data available for %s: occupancy" %
+                        base_dt)
+
+    # TODO: test code: delete
+    # use fall-back when occupancy data is available and compare results with/without fall back
+    # if base_dt in occ_avlblty:
+    #     sim_occ_day = larkin.benchmarks.utils.find_similar_occ_day(base_dt,
+    #                                                         occ_ts, holidays)
+    #     larkin.shared.utils.debug_msg(debug, "sim occ day: %s" % sim_occ_day)
+    #     if not sim_occ_day:
+    #         raise Exception("failed to lookup similar occupancy day")
 
     # compute occupancy similarity score for the k most similar weather days
     occ_scores = larkin.benchmarks.utils.score_occ_similarity(
-        sim_occ_day, #base_dt if not sim_occ_day else sim_occ_day,
+        base_dt if not sim_occ_day else sim_occ_day, #sim_occ_day, #base_dt if not sim_occ_day else sim_occ_day,
         sim_wetbulb_days,
         occ_ts,
         timezone)
