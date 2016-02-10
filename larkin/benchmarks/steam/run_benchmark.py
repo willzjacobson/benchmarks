@@ -17,7 +17,7 @@ cfg = dict(user_config, **model_config)
 
 def main():
     # determine base date
-    bench_dt = datetime.date.today() - datetime.timedelta(days=1)
+    bench_dt = datetime.date.today() # - datetime.timedelta(days=1)
 
     arg_count = len(sys.argv)
     if arg_count not in [1, 4]:

@@ -219,6 +219,10 @@ def process_building(building, host, port, db_name, username, password,
             "bench dt: %s, bench usage: %s, auc: %s" % (bench_dt, bench_usage,
                                                         bench_auc))
 
+    # TODO: delete
+    import stash.todel as todel
+    todel.create_png(base_dt, bench_usage, steam_ts, target_tzone)
+
     # save results
     if not debug:
         larkin.benchmarks.utils.save_benchmark(bench_dt, base_dt, bench_usage,
