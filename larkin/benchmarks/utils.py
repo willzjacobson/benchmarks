@@ -12,7 +12,6 @@ import sys
 import pandas as pd
 import pymongo
 import pytz
-
 import pandas.tseries.holiday
 
 import larkin.shared.utils
@@ -387,9 +386,11 @@ def find_similar_occ_day(base_dt, occ_availability, holidays):
         for i in range(1, 31):
 
             tmp_dt = base_dt - i * one_day
+            print("before tmp: %s" % tmp_dt)
             if is_holiday(tmp_dt, holidays):
                 continue
 
+            print("tmp: %s" % tmp_dt)
             if larkin.shared.utils.dow_type(tmp_dt) == base_dow_typ:
                 if tmp_dt in occ_availability:
                     sim_occ_day = tmp_dt
