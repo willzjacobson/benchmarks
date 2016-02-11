@@ -78,9 +78,8 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, electric_ts, gran, timezone,
         sim_occ_day = larkin.benchmarks.utils.find_similar_occ_day(base_dt,
                                                             occ_ts, holidays)
         larkin.shared.utils.debug_msg(debug, "sim occ day: %s" % sim_occ_day)
-
-    if not sim_occ_day and base_dt not in occ_avlblty:
-        raise Exception("insufficient data available for %s: occupancy" %
+        if not sim_occ_day:
+            raise Exception("insufficient data available for %s: occupancy" %
                         base_dt)
 
     # compute occupancy similarity score for the k most similar weather days
