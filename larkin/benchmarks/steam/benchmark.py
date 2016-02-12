@@ -97,27 +97,18 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, obs_ts, gran, timezone,
 
     # occupancy data availability and fall-back occupancy lookup
     sim_occ_day = None
-    # if base_dt not in occ_avlblty:
-    #     sim_occ_day = larkin.benchmarks.utils.find_similar_occ_day(base_dt,
-    #                                                                occ_ts, holidays)
-    #     larkin.shared.utils.debug_msg(debug, "sim occ day: %s" % sim_occ_day)
-
-    # if not sim_occ_day and base_dt not in occ_avlblty:
-    #     raise Exception("insufficient data available for %s: occupancy" %
-    #                     base_dt)
-
-    # TODO: test code: delete
-    # use fall-back when occupancy data is available and compare results with/without fall back
-    # if base_dt in occ_avlblty:
-    sim_occ_day = larkin.benchmarks.utils.find_similar_occ_day(base_dt, occ_ts,
-                                                               holidays)
-    larkin.shared.utils.debug_msg(debug, "sim occ day: %s" % sim_occ_day)
-    # if not sim_occ_day:
-    #     raise Exception("failed to lookup similar occupancy day")
+    if base_dt not in occ_avlblty:
+        sim_occ_day = larkin.benchmarks.utils.find_similar_occ_day(base_dt,
+                                                                   occ_ts,
+                                                                   holidays)
+        larkin.shared.utils.debug_msg(debug, "sim occ day: %s" % sim_occ_day)
+        if not sim_occ_day:
+            raise Exception("insufficient data available for %s: occupancy" %
+                            base_dt)
 
     # compute occupancy similarity score for the k most similar weather days
     occ_scores = larkin.benchmarks.utils.score_occ_similarity(
-            base_dt, #sim_occ_day, #base_dt if not sim_occ_day else sim_occ_day,
+            base_dt if not sim_occ_day else sim_occ_day,
             sim_wetbulb_days,
             occ_ts,
             timezone)
@@ -229,10 +220,6 @@ def process_building(building, host, port, db_name, username, password,
     larkin.shared.utils.debug_msg(debug,
             "bench dt: %s, bench usage: %s, auc: %s" % (bench_dt, bench_usage,
                                                         bench_auc))
-
-    # TODO: delete
-    import stash.todel as todel
-    todel.create_png(base_dt, bench_usage, steam_ts, target_tzone)
 
     # save results
     if not debug:

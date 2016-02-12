@@ -345,6 +345,7 @@ def gen_holidays(start_dt, end_dt, building):
     :param start_dt: datetime.date
     :param end_dt: datetime.date
     :param building: string
+
     :return: list of holidays
     """
     # TODO: if building specific list of holidays is available, use that instead
@@ -370,7 +371,7 @@ def find_similar_occ_day(base_dt, occ_availability, holidays):
     occupancy
 
     :param base_dt: datetime.date
-    :param occ_availability: list of dates with available actual occupancy data
+    :param occ_availability: list of dates with available occupancy data
     :param holidays: list of building-specific holidays
 
     :return: datetime.date or None
@@ -384,13 +385,10 @@ def find_similar_occ_day(base_dt, occ_availability, holidays):
     if not base_is_holiday: # non-holiday case
 
         for i in range(1, 31):
-
             tmp_dt = base_dt - i * one_day
-            print("before tmp: %s" % tmp_dt)
             if is_holiday(tmp_dt, holidays):
                 continue
 
-            print("tmp: %s" % tmp_dt)
             if larkin.shared.utils.dow_type(tmp_dt) == base_dow_typ:
                 if tmp_dt in occ_availability:
                     sim_occ_day = tmp_dt
