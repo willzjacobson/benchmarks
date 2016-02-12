@@ -16,7 +16,7 @@ def dow_type(dt):
     Type 4: weekend has it own type
 
     :param dt: datetime.date
-    :return: int in [1, 2, 3, 4]
+    :return: int in [1, 2, 3, 4, 5]
     """
 
     dow = dt.isoweekday()
@@ -27,8 +27,10 @@ def dow_type(dt):
         return 2
     elif dow in [5]: # Friday
         return 3
-    else: # weekend
+    elif dow == 6: # weekend
         return 4
+    else:
+        return 5
 
 
 def drop_series_ix_date(tseries):

@@ -1,5 +1,5 @@
 # coding=utf-8
-""" electric benchmark suppurting functions
+""" electric benchmark supporting functions
 """
 
 __author__ = 'ashishgagneja'
