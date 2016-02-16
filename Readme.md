@@ -15,7 +15,6 @@ Intended to provide:
 The project is organized as a serious of subpackages, each
 corresponding to one directory. Directory names indicate the purpose of the
 modules in that directory.
- 
 * benchmarks: entry points for benchmarks and utility-specific benchmark code
 * bin: deployment-related module(s)
 * shared: common code useful for both benchmarks, forecasting and
@@ -23,6 +22,10 @@ recommendations
 * tests: unit testing related modules
 * ts_proc: time series pulling and processing related modules
 * weather: weather pulling, updating and processing related code
+
+To run benchmark for steam, for example, perform the following steps:
+* cd to benchamarks/steam
+* >python run_benchmark.py [YYYY MM DD]
 
 
 # Motivation
