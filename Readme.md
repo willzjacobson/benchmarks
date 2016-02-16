@@ -1,40 +1,32 @@
 # Synopsis
 
-Analytics code base for Project Nonantum. Provides a recommendation, forecast, 
-and benchmarking engine to help building managers and operators in 
-decision making.
+Analytics code base for Project Nonantum. Provides benchmarks to help building
+managers and operators in decision making.
 
 Intended to provide:
-* Floor start-up recommendation
-* Floor ramp-down recommendation
-* Building steam consumption forecast
-* Building electric usage forecast
-* Building occupancy forecast
-* Space temperature forecasts for selected floor-quadrants
-* Building electric benchmark
+
+* Building water consumption benchmark
+* Building steam usage benchmark
+* Building electric consumption benchmark
+
 
 # Code Example
 
 The project is organized as a serious of subpackages, each
-corresponding to one directory. Directory names indicate either the analytics
-model implemented in its modules, or the type of data its modules
-manipulate and forecast. For example, the steam directory 
-will have modules related to steam forecasting, the svm directory modules
-related to building a Support Vector Machines model, and so on.
+corresponding to one directory. Directory names indicate the purpose of the
+modules in that directory.
+ 
+* benchmarks: entry points for benchmarks and utility-specific benchmark code
+* bin: deployment-related module(s)
+* shared: common code useful for both benchmarks, forecasting and
+recommendations
+* tests: unit testing related modules
+* ts_proc: time series pulling and processing related modules
+* weather: weather pulling, updating and processing related code
 
-The directories dealing with model building and execution (svm and arima)
-have: 
-* run.py : entry point for the modules in the directory
-* model.py : model-related code
-
-The remaining directories house utility scripts related to data pulling,
-parsing, migration, and munging, and are dependencies of the model 
-building modules.
 
 # Motivation
 
-* To help building managers and operators make optimal decisions regarding
-BMS start-up times
 * To provide benchmarks for building operation.
 
 # Installation
