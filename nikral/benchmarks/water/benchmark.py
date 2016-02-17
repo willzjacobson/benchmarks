@@ -51,6 +51,10 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, obs_ts, gran, timezone,
 
     # check if all required data is available for base dt
     if base_dt not in wetbulb_avlblty:
+        dt_wbuld_ts = nikral.shared.utils.get_dt_tseries(base_dt, wetbulb_ts,
+                                                         timezone)
+        nikral.shared.utils.debug_msg(debug, "day wetbulb ts: %s\nsize: %s" % (
+            dt_wbuld_ts.to_string(), dt_wbuld_ts.size))
         raise Exception("insufficient data available for %s: <wetbulb:%s>" %
                             (base_dt, base_dt in wetbulb_avlblty))
 
