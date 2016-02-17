@@ -4,11 +4,13 @@
 import logging as log
 import sys
 
-import larkin.jobs
+import nikral.jobs
+
+
 
 # logging
 
 log.basicConfig(stream=sys.stdout, level=log.DEBUG)
 
 # run suite (with cronjob setup)
-larkin.jobs.main()
+nikral.jobs.main()

@@ -8,10 +8,10 @@ import re
 
 import pytz
 
-import larkin.benchmarks.utils
-import larkin.shared.utils
-import larkin.ts_proc.munge
-import larkin.ts_proc.utils
+import nikral.benchmarks.utils
+import nikral.shared.utils
+import nikral.ts_proc.munge
+import nikral.ts_proc.utils
 
 
 def _find_benchmark(base_dt, occ_ts, wetbulb_ts, electric_ts, gran, timezone,
@@ -43,11 +43,11 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, electric_ts, gran, timezone,
     """
 
     # get data availability
-    elec_avlblty = larkin.benchmarks.utils.get_data_availability_dates(
+    elec_avlblty = nikral.benchmarks.utils.get_data_availability_dates(
                                                             electric_ts, gran)
-    occ_avlblty = larkin.benchmarks.utils.get_data_availability_dates(occ_ts,
+    occ_avlblty = nikral.benchmarks.utils.get_data_availability_dates(occ_ts,
                                                                       gran)
-    wetbulb_avlblty = larkin.benchmarks.utils.get_data_availability_dates(
+    wetbulb_avlblty = nikral.benchmarks.utils.get_data_availability_dates(
                                                             wetbulb_ts, gran)
     data_avlblty = wetbulb_avlblty.intersection(elec_avlblty)
 
@@ -57,41 +57,41 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, electric_ts, gran, timezone,
                         (base_dt, base_dt in wetbulb_avlblty))
 
     # get weather for base_dt
-    base_dt_wetbulb = larkin.shared.utils.get_dt_tseries(base_dt, wetbulb_ts,
+    base_dt_wetbulb = nikral.shared.utils.get_dt_tseries(base_dt, wetbulb_ts,
                                                          timezone)
 
     # find k closest weather days for which electric and occupancy data is
     # available
-    dow_type = larkin.shared.utils.dow_type(base_dt)
-    sim_wetbulb_days = larkin.shared.utils.find_similar_profile_days(
+    dow_type = nikral.shared.utils.dow_type(base_dt)
+    sim_wetbulb_days = nikral.shared.utils.find_similar_profile_days(
                                                               base_dt_wetbulb,
                                                               dow_type,
                                                               wetbulb_ts,
                                                               20,
                                                               data_avlblty,
                                                               timezone)
-    larkin.shared.utils.debug_msg(debug, "sim days: %s" % str(sim_wetbulb_days))
+    nikral.shared.utils.debug_msg(debug, "sim days: %s" % str(sim_wetbulb_days))
 
     # occupancy data availability and fall-back occupancy lookup
     sim_occ_day = None
     if base_dt not in occ_avlblty:
-        sim_occ_day = larkin.benchmarks.utils.find_similar_occ_day(base_dt,
+        sim_occ_day = nikral.benchmarks.utils.find_similar_occ_day(base_dt,
                                                             occ_ts, holidays)
-        larkin.shared.utils.debug_msg(debug, "sim occ day: %s" % sim_occ_day)
+        nikral.shared.utils.debug_msg(debug, "sim occ day: %s" % sim_occ_day)
         if not sim_occ_day:
             raise Exception("insufficient data available for %s: occupancy" %
                         base_dt)
 
     # compute occupancy similarity score for the k most similar weather days
-    occ_scores = larkin.benchmarks.utils.score_occ_similarity(
+    occ_scores = nikral.benchmarks.utils.score_occ_similarity(
         base_dt if not sim_occ_day else sim_occ_day,
         sim_wetbulb_days,
         occ_ts,
         timezone)
-    larkin.shared.utils.debug_msg(debug, occ_scores)
+    nikral.shared.utils.debug_msg(debug, occ_scores)
 
     # find the date with the lowest electric usage
-    return larkin.benchmarks.utils.find_lowest_auc_day(occ_scores, electric_ts,
+    return nikral.benchmarks.utils.find_lowest_auc_day(occ_scores, electric_ts,
                                                        5, timezone, debug)
 
 
@@ -149,7 +149,7 @@ def process_building(building, host, port, db_name, username, password,
 
     # get weather
     gran_int = int(re.findall('\d+', granularity)[0])
-    wetbulb_ts = larkin.benchmarks.utils.get_weather(host, port, username,
+    wetbulb_ts = nikral.benchmarks.utils.get_weather(host, port, username,
                                                      password,
                                                      source,
                                                      weather_hist_db,
@@ -158,47 +158,47 @@ def process_building(building, host, port, db_name, username, password,
                                                      weather_fcst_collection,
                                                      granularity)
     wetbulb_ts = wetbulb_ts.tz_convert(target_tzone)
-    larkin.shared.utils.debug_msg(debug, "wetbulb: %s" % wetbulb_ts)
+    nikral.shared.utils.debug_msg(debug, "wetbulb: %s" % wetbulb_ts)
 
     # get occupancy data
-    occ_ts = larkin.ts_proc.utils.get_parsed_ts_new_schema(host, port, db_name,
+    occ_ts = nikral.ts_proc.utils.get_parsed_ts_new_schema(host, port, db_name,
                                                            username, password,
                                                            source,
                                                            collection_name,
                                                            building,
                                                            'Occupancy',
                                                            'Occupancy')
-    occ_ts = larkin.benchmarks.utils.align_idx(occ_ts, gran_int).tz_convert(
+    occ_ts = nikral.benchmarks.utils.align_idx(occ_ts, gran_int).tz_convert(
         target_tzone)
-    larkin.shared.utils.debug_msg(debug, "occupancy: %s" % occ_ts)
+    nikral.shared.utils.debug_msg(debug, "occupancy: %s" % occ_ts)
 
     # query electric data
-    elec_ts = larkin.ts_proc.utils.get_electric_ts(host, port, db_name,
+    elec_ts = nikral.ts_proc.utils.get_electric_ts(host, port, db_name,
                                                    username, password, source,
                                                    collection_name, building,
                                                    meter_count)
-    elec_ts = larkin.benchmarks.utils.align_idx(elec_ts, gran_int).tz_convert(
+    elec_ts = nikral.benchmarks.utils.align_idx(elec_ts, gran_int).tz_convert(
         target_tzone)
-    larkin.shared.utils.debug_msg(debug, "electric: %s" % elec_ts)
+    nikral.shared.utils.debug_msg(debug, "electric: %s" % elec_ts)
 
     # find holidays
     holidays = []
     if wetbulb_ts.size:
-        holidays = larkin.benchmarks.utils.gen_holidays(
+        holidays = nikral.benchmarks.utils.gen_holidays(
             wetbulb_ts.index[0].date(), base_dt, building)
-    larkin.shared.utils.debug_msg(debug, "holidays: %s" % holidays)
+    nikral.shared.utils.debug_msg(debug, "holidays: %s" % holidays)
 
     # find baseline
     bench_info = _find_benchmark(base_dt, occ_ts, wetbulb_ts, elec_ts, gran_int,
                                  target_tzone, debug, holidays)
     bench_dt, bench_auc, bench_incr_auc, bench_usage = bench_info
-    larkin.shared.utils.debug_msg(debug,
+    nikral.shared.utils.debug_msg(debug,
                                   "bench dt: %s, bench usage: %s, auc: %s" % (
                                              bench_dt, bench_usage, bench_auc))
 
     # save results
     if not debug:
-        larkin.benchmarks.utils.save_benchmark(bench_dt, base_dt, bench_usage,
+        nikral.benchmarks.utils.save_benchmark(bench_dt, base_dt, bench_usage,
                                                bench_auc, bench_incr_auc, host,
                                                port, db_name_out, username,
                                                password, source,

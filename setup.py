@@ -17,19 +17,18 @@ pkgs = find_packages(exclude=["*.tests"])
 # magic function for including subpackages in repo
 # can list packages with subpackages explicitly later
 setup(
-        name='larkin',
-        version='0.2',
+        name='nikral',
+        version='0.1',
         packages=pkgs,
-        data_files=[('./etc/larkin', ['larkin/user_config.yaml'])],
-        url='https://github.com/PrescriptiveData/datascience',
+        data_files=[('./etc/nikral', ['nikral/user_config.yaml'])],
+        url='https://github.com/PrescriptiveData/an_benchmarks',
         license='Proprietary',
         author='PrescriptiveData',
-        author_email='dkarapetyan@prescriptivedata.io',
+        author_email='agagneja@prescriptivedata.io',
         description=(
-            'An analytics and prediction engine'
-            'for energy and electricity usage in'
+            'Benchmarking tool for utility consumption in'
             'commercial and non-commercial buildings.'
         ),
-        scripts=['larkin/bin/run_analytics'],
+        scripts=['nikral/bin/run_benchmarks'],
         install_requires=reqs
 )

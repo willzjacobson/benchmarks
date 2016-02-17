@@ -12,11 +12,12 @@ import sys
 import pandas as pd
 import pymongo
 import pytz
+
 import pandas.tseries.holiday
 
-import larkin.shared.utils
-import larkin.weather.mongo
-import larkin.weather.wund
+import nikral.shared.utils
+import nikral.weather.mongo
+import nikral.weather.wund
 
 
 def get_weather(host, port, username, password, source_db, history_db,
@@ -48,15 +49,15 @@ def get_weather(host, port, username, password, source_db, history_db,
     """
 
     # TODO: this should be done before munging for efficiency
-    hist = larkin.weather.mongo.get_history(
+    hist = nikral.weather.mongo.get_history(
             host, port, source_db, history_db,
             username, password, history_collection)
-    hist_munged = (larkin.weather.wund.history_munge(hist, gran))['wetbulb']
+    hist_munged = (nikral.weather.wund.history_munge(hist, gran))['wetbulb']
 
-    fcst = larkin.weather.mongo.get_forecast(host, port, source_db, forecast_db,
+    fcst = nikral.weather.mongo.get_forecast(host, port, source_db, forecast_db,
                                              username, password,
                                              forecast_collection)
-    fcst_munged = (larkin.weather.wund.forecast_munge(fcst, gran))['wetbulb']
+    fcst_munged = (nikral.weather.wund.forecast_munge(fcst, gran))['wetbulb']
 
     # concatenate history and forecast into one series; prefer history over
     # forecast, if overlapping
@@ -178,7 +179,7 @@ def find_lowest_auc_day(date_scores, obs_ts, n, timezone, debug):
         if score:
 
             # compute day electric usage by integrating the curve
-            day_obs_ts = larkin.shared.utils.get_dt_tseries(dt, obs_ts,
+            day_obs_ts = nikral.shared.utils.get_dt_tseries(dt, obs_ts,
                                                             timezone)
 
             # compute total and incremental AUC
@@ -186,11 +187,11 @@ def find_lowest_auc_day(date_scores, obs_ts, n, timezone, debug):
             x = list(map(lambda y: (y - datum).total_seconds() / 3600.0,
                          day_obs_ts.index))
             incr_auc, auc = incremental_trapz(day_obs_ts.values.flatten(), x)
-            larkin.shared.utils.debug_msg(debug, "%s, %s" % (dt, auc))
+            nikral.shared.utils.debug_msg(debug, "%s, %s" % (dt, auc))
 
             if 0 < auc < min_usage[1]:
                 min_usage = [dt, auc, incr_auc,
-                             larkin.shared.utils.drop_series_ix_date(
+                             nikral.shared.utils.drop_series_ix_date(
                                  day_obs_ts)]
 
     return min_usage
@@ -235,18 +236,18 @@ def find_lowest_usage_day(date_scores, obs_ts, n, timezone, debug,
 
         score = sim_scores[i]
         if score:
-            day_obs_ts = larkin.shared.utils.get_dt_tseries(dt, obs_ts,
+            day_obs_ts = nikral.shared.utils.get_dt_tseries(dt, obs_ts,
                                                             timezone,
                                                             drop_first)
 
             # compute total and incremental AUC
             day_obs_data = day_obs_ts.values.flatten()
             incr_auc, auc = day_obs_data, day_obs_data[-1]
-            larkin.shared.utils.debug_msg(debug, "%s, %s" % (dt, auc))
+            nikral.shared.utils.debug_msg(debug, "%s, %s" % (dt, auc))
 
             if 0 < auc < min_usage[1]:
                 min_usage = [dt, auc, incr_auc,
-                             larkin.shared.utils.drop_series_ix_date(
+                             nikral.shared.utils.drop_series_ix_date(
                                  day_obs_ts)]
 
     return min_usage
@@ -376,7 +377,7 @@ def find_similar_occ_day(base_dt, occ_availability, holidays):
 
     :return: datetime.date or None
     """
-    base_dow_typ = larkin.shared.utils.dow_type(base_dt)
+    base_dow_typ = nikral.shared.utils.dow_type(base_dt)
     base_is_holiday = is_holiday(base_dt, holidays)
 
     sim_occ_day = None
@@ -389,7 +390,7 @@ def find_similar_occ_day(base_dt, occ_availability, holidays):
             if is_holiday(tmp_dt, holidays):
                 continue
 
-            if larkin.shared.utils.dow_type(tmp_dt) == base_dow_typ:
+            if nikral.shared.utils.dow_type(tmp_dt) == base_dow_typ:
                 if tmp_dt in occ_availability:
                     sim_occ_day = tmp_dt
                     break
@@ -426,16 +427,16 @@ def score_occ_similarity(base_dt, date_shortlist, occ_ts, timezone):
     """
 
     # occupancy, use actual only
-    base_ts = larkin.shared.utils.get_dt_tseries(base_dt, occ_ts, timezone)
-    base_ts_nodatetz = larkin.shared.utils.drop_series_ix_date(base_ts)
+    base_ts = nikral.shared.utils.get_dt_tseries(base_dt, occ_ts, timezone)
+    base_ts_nodatetz = nikral.shared.utils.drop_series_ix_date(base_ts)
 
     scores = []
     for dt_t in date_shortlist:
 
-        score = larkin.shared.utils.compute_profile_similarity_score(
+        score = nikral.shared.utils.compute_profile_similarity_score(
                     base_ts_nodatetz,
-                    larkin.shared.utils.drop_series_ix_date(
-                        larkin.shared.utils.get_dt_tseries(dt_t, occ_ts,
+                    nikral.shared.utils.drop_series_ix_date(
+                        nikral.shared.utils.get_dt_tseries(dt_t, occ_ts,
                                                            timezone)))
 
         scores.append((dt_t, score))

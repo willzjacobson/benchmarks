@@ -7,8 +7,8 @@ import numpy as np
 import pandas as pd
 import pytz  # for specifying utc and avoiding ambiguity near daylight savings
 
-import larkin.weather.wet_bulb
-from larkin.model_config import model_config
+import nikral.weather.wet_bulb
+from nikral.model_config import model_config
 
 __author__ = "David Karapetyan"
 
@@ -155,7 +155,7 @@ def history_munge(df, gran):
 
     # add wetbulb temperature
     df_new['wetbulb'] = df_new.apply(
-            lambda x: larkin.weather.wet_bulb.compute_bulb(
+            lambda x: nikral.weather.wet_bulb.compute_bulb(
                     temp=x['temp'],
                     dewpt=x['dewpt'],
                     pressure=x['pressure']),
@@ -255,7 +255,7 @@ def forecast_munge(df, gran):
 
     # add wetbulb temperature
     df_new['wetbulb'] = df_new.apply(
-            lambda x: larkin.weather.wet_bulb.compute_bulb(
+            lambda x: nikral.weather.wet_bulb.compute_bulb(
                     temp=x['temp'],
                     dewpt=x['dewpt'],
                     pressure=x['pressure']), axis=1)

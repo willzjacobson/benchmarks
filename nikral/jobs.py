@@ -3,9 +3,10 @@ import time
 
 import schedule
 
-import larkin.benchmarks.electric.run_benchmark as erb
-import larkin.benchmarks.steam.run_benchmark as srb
-import larkin.weather.run as wr
+import nikral.benchmarks.electric.run_benchmark as erb
+import nikral.benchmarks.steam.run_benchmark as srb
+import nikral.benchmarks.water.run_benchmark
+import nikral.weather.run as wr
 
 
 def weather_update_job():
@@ -15,10 +16,16 @@ def weather_update_job():
 
 
 def benchmark_run_job():
+
     print("Running electricity benchmark")
     erb.main()
+
     print("Now running steam benchmark")
     srb.main()
+
+    print("running water benchmark")
+    nikral.benchmarks.water.run_benchmark.main()
+
     print("Done")
     print("Going to sleep now for an hour")
 

@@ -4,7 +4,7 @@ import pymongo
 from dateutil.relativedelta import relativedelta
 from joblib import Parallel, delayed
 
-import larkin.weather.wund
+import nikral.weather.wund
 
 
 def _forecast_push(df, host, port, source, username, password,
@@ -72,7 +72,7 @@ def _mongo_history_push(df, host, port, source, db_name, username, password,
 
 def forecast_update(city, state, wund_url, host, port, source, username,
                     password, db_name, collection_name):
-    data = larkin.weather.wund.forecast_pull(city=city, state=state,
+    data = nikral.weather.wund.forecast_pull(city=city, state=state,
                                              wund_url=wund_url)
     _forecast_push(data, host=host, port=port, source=source,
                    username=username, password=password, db_name=db_name,
@@ -135,13 +135,13 @@ def history_update(city, state, wund_url, parallel, host, port, source,
 
     if parallel:
         frames = Parallel(n_jobs=-1)(
-                delayed(larkin.weather.wund.history_pull)(
+                delayed(nikral.weather.wund.history_pull)(
                         city=city, state=state,
                         wund_url=wund_url,
                         date=date)
                 for date in interval[:cap])
     else:
-        frames = [larkin.weather.wund.history_pull(
+        frames = [nikral.weather.wund.history_pull(
                 city=city, state=state,
                 wund_url=wund_url, date=date)
                   for date in interval[:cap]]

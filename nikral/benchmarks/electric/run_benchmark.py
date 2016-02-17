@@ -2,22 +2,30 @@
 __author__ = 'ashishgagneja'
 
 """
-driver for finding benchmark steam usage
+driver for obtaining baseline electric demand based on occupancy and weather
+co-variates
 """
 
 import datetime
 import sys
 
-import larkin.benchmarks.steam.benchmark
-from larkin.model_config import model_config
-from larkin.user_config import user_config
-
-cfg = dict(user_config, **model_config)
+import nikral.benchmarks.electric.benchmark
+from nikral.model_config import model_config
+from nikral.user_config import user_config
 
 
 def main():
-    # determine base date
-    bench_dt = datetime.date.today() # - datetime.timedelta(days=1)
+    """
+    driver function for electric benchmark lookup
+    :return:
+    """
+
+    cfg = dict(user_config, **model_config)
+
+    buildings = cfg['default']['buildings']
+
+    # determine benchmark date
+    bench_dt = datetime.date.today()
 
     arg_count = len(sys.argv)
     if arg_count not in [1, 4]:
@@ -33,7 +41,7 @@ def main():
     # fill keyword argument dict
     kw_args = dict(dict(cfg['building_dbs']['mongo_cred'],
                         **cfg['building_dbs']['building_ts_loc']),
-                   **cfg['building_dbs']['results_steam_benchmark'])
+                   **cfg['building_dbs']['results_electric_benchmark'])
 
     weather_hist = cfg['building_dbs']['weather_history_loc']
     weather_fcst = cfg['building_dbs']['weather_forecast_loc']
@@ -48,12 +56,12 @@ def main():
     kw_args['debug'] = cfg['default']['debug']
 
     # iterate over all buildings
-    for building_id in cfg['default']['buildings']:
+    for building_id in buildings:
         bldg_params = cfg['default'][building_id]
-        larkin.benchmarks.steam.benchmark.process_building(
+        nikral.benchmarks.electric.benchmark.process_building(
                 building_id,
-                timezone=bldg_params[
-                    'timezone'],
+                timezone=bldg_params['timezone'],
+                meter_count=bldg_params['electric_meter_count'],
                 **kw_args)
 
 

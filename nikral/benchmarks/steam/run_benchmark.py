@@ -1,26 +1,21 @@
 # coding=utf-8
-"""
-driver for looking up benchmark water usage
-"""
-
 __author__ = 'ashishgagneja'
+
+"""
+driver for finding benchmark steam usage
+"""
 
 import datetime
 import sys
 
-import larkin.benchmarks.water.benchmark
-import larkin.user_config
-import larkin.model_config
+import nikral.benchmarks.steam.benchmark
+from nikral.model_config import model_config
+from nikral.user_config import user_config
+
+cfg = dict(user_config, **model_config)
 
 
 def main():
-    """
-    driver function for water benchmark
-    """
-
-    cfg = dict(larkin.user_config.user_config,
-               **larkin.model_config.model_config)
-
     # determine base date
     bench_dt = datetime.date.today() # - datetime.timedelta(days=1)
 
@@ -38,7 +33,7 @@ def main():
     # fill keyword argument dict
     kw_args = dict(dict(cfg['building_dbs']['mongo_cred'],
                         **cfg['building_dbs']['building_ts_loc']),
-                   **cfg['building_dbs']['results_water_benchmark'])
+                   **cfg['building_dbs']['results_steam_benchmark'])
 
     weather_hist = cfg['building_dbs']['weather_history_loc']
     weather_fcst = cfg['building_dbs']['weather_forecast_loc']
@@ -55,10 +50,11 @@ def main():
     # iterate over all buildings
     for building_id in cfg['default']['buildings']:
         bldg_params = cfg['default'][building_id]
-        larkin.benchmarks.water.benchmark.process_building(building_id,
-                                timezone=bldg_params['timezone'],
-                                meter_count=bldg_params['water_meter_count'],
-                                **kw_args)
+        nikral.benchmarks.steam.benchmark.process_building(
+                building_id,
+                timezone=bldg_params[
+                    'timezone'],
+                **kw_args)
 
 
 if __name__ == '__main__':

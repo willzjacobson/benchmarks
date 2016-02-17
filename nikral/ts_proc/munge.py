@@ -7,7 +7,7 @@ import datetime
 
 import pandas as pd
 
-from larkin.model_config import model_config
+from nikral.model_config import model_config
 
 
 def is_discrete(df, nary_thresh):
