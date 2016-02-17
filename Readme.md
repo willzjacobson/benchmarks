@@ -24,8 +24,10 @@ recommendations
 * weather: weather pulling, updating and processing related code
 
 To run benchmark for steam, for example, perform the following steps:
+
 * cd to benchamarks/steam
-* >python run_benchmark.py [YYYY MM DD]
+* > python run_benchmark.py [YYYY MM DD]
+
 
 
 # Motivation
@@ -41,12 +43,12 @@ Anaconda 2.4.1 (64-bit)](https://www.continuum.io/downloads)
 PrescriptiveData/
 datascience/releases](https://github.com/PrescriptiveData/datascience/releases)
 to your local hard drive
-* From a bash shell, run `pip install <location_of_larkin>`
+* From a bash shell, run `pip install <location_of_nikral>`
 
 
 # Execution
 
-Once installation is successful, execute `run_analytics` from a bash shell.
+Once installation is successful, execute `run_benchmarks` from a bash shell.
 
 # Tests
 
