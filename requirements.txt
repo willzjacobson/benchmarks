@@ -7,4 +7,3 @@ pyyaml
 python-crontab
 schedule
 matplotlib
-

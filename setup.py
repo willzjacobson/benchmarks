@@ -26,9 +26,10 @@ setup(
         author='PrescriptiveData',
         author_email='agagneja@prescriptivedata.io',
         description=(
-            'Benchmarking tool for utility consumption in'
-            'commercial and non-commercial buildings.'
+            'Benchmarking tools for utility (steam, electric, water etc.) '
+            'consumption in commercial and non-commercial buildings.'
         ),
         scripts=['nikral/bin/run_benchmarks'],
-        install_requires=reqs
+        install_requires=reqs,
+        test_suite="nikral.tests",
 )
