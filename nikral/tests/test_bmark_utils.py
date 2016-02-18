@@ -13,17 +13,12 @@ import nikral.benchmarks.utils as utils
 
 class TestBmarkUtils(unittest.TestCase):
 
-    holidays = []
-
-    def setUp(self):
-        if not len(self.holidays):
-            self.gen_holidays()
-
-    def gen_holidays(self):
-        return utils.gen_holidays(datetime.date(2012, 1, 1),
-                                  datetime.date(datetime.date.today().year,
-                                                12, 31),
-                                  '345_Park')
+    @classmethod
+    def setUpClass(cls):
+        cls.holidays = utils.gen_holidays(datetime.date(2012, 1, 1),
+                                          datetime.date(datetime.date.today().year,
+                                                        12, 31),
+                                          '345_Park')
 
 
     def test_gen_holidays(self):
@@ -61,6 +56,11 @@ class TestBmarkUtils(unittest.TestCase):
         ideal_series = pd.Series([75, 86, 89], index=ideal_idx,
                                  name='test').tz_localize(pytz.utc)
         self.assertTrue(utils.align_idx(test_series, 15).equals(ideal_series))
+
+
+    def test_incremental_trapz(self):
+        pass
+
 
 
 if __name__ == '__main__':
