@@ -12,7 +12,6 @@ import sys
 import pandas as pd
 import pymongo
 import pytz
-
 import pandas.tseries.holiday
 
 import nikral.shared.utils
@@ -321,13 +320,15 @@ def save_benchmark(bench_dt, base_dt, bench_ts, bench_auc, bench_incr_auc,
         collection.insert(doc)
 
 
-def align_idx(obs_ts, granularity):
+def align_idx(obs_ts, granularity, timezone=pytz.utc):
     """
     align pandas Series index based on granularity and drop second and
     microsecond data
 
     :param obs_ts: pandas Series
     :param granularity: int
+    :param timezone: pytz timezone to set the updated Series to
+
     :return: pandas Series with re-aligned index
     """
     tmp_ts = obs_ts.reset_index()
@@ -336,7 +337,7 @@ def align_idx(obs_ts, granularity):
         lambda t: t - datetime.timedelta(seconds=t.second,
                                          microseconds=t.microsecond))
     return tmp_ts[tmp_ts['minute'] % granularity == 0].set_index('new_index'
-                                            )[obs_ts.name].tz_localize(pytz.utc)
+                                            )[obs_ts.name].tz_localize(timezone)
 
 
 def gen_holidays(start_dt, end_dt, building):
