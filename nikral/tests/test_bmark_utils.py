@@ -59,7 +59,9 @@ class TestBmarkUtils(unittest.TestCase):
 
 
     def test_incremental_trapz(self):
-        pass
+        y, x = [5, 4, 9], [0, 1 ,3]
+        self.assertTrue(([0.0, 4.5, 17.5], 17.5) == utils.incremental_trapz(y,
+                                                                            x))
 
 
 
