@@ -158,7 +158,6 @@ def get_dt_tseries(dt, full_ts, timezone, drop_first=False):
     return full_ts.loc[str(start_idx) : str(end_idx)]
 
 
-
 def debug_msg(debug, msg):
     """
     print debug message to log or stdout if debug is True
@@ -170,16 +169,3 @@ def debug_msg(debug, msg):
     if debug:
         print(msg)
 
-
-
-def gen_readings_list(tseries):
-    """
-    generate list of readings with each item being a dictionary of the form:
-    {"time": <datetime/date/time>, "value": <value>}
-
-    :param tseries: pandas Series
-        time series snippet to
-    :return: list
-    """
-
-    return [{'time': str(ix), 'value': val} for ix, val in tseries.iteritems()]
