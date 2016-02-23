@@ -15,9 +15,11 @@ import nikral.shared.utils as utils
 class TestSharedUtils(unittest.TestCase):
 
 
-    def _gen_ts(self, begin, end, gran):
+    def _gen_ts(self, begin, end, gran, data=None):
         test_idx = pd.DatetimeIndex(start=begin, end=end, freq="%dmin" % gran)
-        return pd.Series(data=np.random.rand(test_idx.size), index=test_idx)
+        return pd.Series(data=data if data else np.random.choice(range(34, 92),
+                                               size=test_idx.size),
+                         index=test_idx)
 
 
     def test_series_ix_date(self):
@@ -57,9 +59,25 @@ class TestSharedUtils(unittest.TestCase):
         dow_typ_dict = {}
         while tmp_dt < datetime.date(2015, 4, 1):
             tmp_dow = tmp_dt.isoweekday()
-
             if tmp_dow not in dow_typ_dict:
                 dow_typ_dict[tmp_dow] = utils.dow_type(tmp_dt)
             else:
                 self.assertTrue(dow_typ_dict[tmp_dow] == utils.dow_type(tmp_dt))
             tmp_dt += tm_delta
+
+
+    def test_compute_profile_similarity_score(self):
+        tzone = pytz.timezone('US/Eastern')
+        test_ts = self._gen_ts(datetime.datetime(2015, 5, 11, 4),
+                               datetime.datetime(2015, 5, 12, 3, 30),
+                               180, [58, 43, 35, 43, 64, 87, 86, 63]
+                               ).tz_localize(pytz.utc).tz_convert(tzone)
+        test_ts_2 = self._gen_ts(datetime.datetime(2016, 2, 23, 5),
+                                 datetime.datetime(2016, 2, 24, 4, 45),
+                                 180, [42, 48, 40, 39, 57, 92, 95, 59]
+                                 ).tz_localize(pytz.utc).tz_convert(tzone)
+
+        test_ts_nodatetz = utils.drop_series_ix_date(test_ts)
+        test_ts_2_nodatetz = utils.drop_series_ix_date(test_ts_2)
+        self.assertTrue(utils.compute_profile_similarity_score(test_ts_nodatetz,
+                                                     test_ts_2_nodatetz) < 2.8)
