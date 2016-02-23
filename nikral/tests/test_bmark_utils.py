@@ -6,6 +6,7 @@ import unittest
 import datetime
 
 import pytz
+
 import pandas as pd
 
 import numpy as np
@@ -67,9 +68,11 @@ class TestBmarkUtils(unittest.TestCase):
                                                                             x))
 
 
-    def _gen_ts(self, begin, end, gran):
+    def _gen_ts(self, begin, end, gran, data=None):
         test_idx = pd.DatetimeIndex(start=begin, end=end, freq="%dmin" % gran)
-        return pd.Series(data=np.random.rand(test_idx.size), index=test_idx)
+        return pd.Series(data=data if data else np.random.choice(range(1, 9),
+                                                            size=test_idx.size),
+                         index=test_idx)
 
 
     def test_gen_data_availability_dates(self):
@@ -137,6 +140,34 @@ class TestBmarkUtils(unittest.TestCase):
                                 == shr_utils.dow_type(tmp_sim_occ_dt))
 
             tmp_dt += one_day
+
+
+    def test_find_lowest_auc_day(self):
+        tzone = pytz.timezone('US/Central')
+        dt1, dt2 = datetime.date(2015, 12, 20), datetime.date(2014, 12, 12)
+        dt_scores = [(dt2, 19.762), (dt1, 22.43)]
+        one_day = datetime.timedelta(days=1)
+
+        test_ts1 = self._gen_ts(datetime.datetime.combine(dt1,
+                                                          datetime.time(6)),
+                                datetime.datetime.combine(dt1 + one_day,
+                                                          datetime.time(6)),
+                                180, [58, 43, 35, 43, 64, 87, 86, 63, 69]
+                                ).tz_localize(pytz.utc).tz_convert(tzone)
+        test_ts2 = self._gen_ts(datetime.datetime.combine(dt2,
+                                                          datetime.time(6)),
+                                datetime.datetime.combine(dt2 + one_day,
+                                                          datetime.time(6)),
+                                180, [72, 40, 39, 47, 69, 88, 77, 70, 77]
+                                ).tz_localize(pytz.utc).tz_convert(tzone)
+        test_ts = pd.concat([test_ts2, test_ts1])
+        result = utils.find_lowest_auc_day(dt_scores, test_ts, 2, tzone, False)
+        self.assertTrue(result[0] == dt1)
+        self.assertTrue(1255 < result[1] < 1256)
+        self.assertTrue(isinstance(result[2], list))
+        self.assertTrue(1255 < result[2][-1] < 1256)
+        self.assertTrue(len(result[2]) == 8)
+        self.assertTrue(isinstance(result[3], pd.Series))
 
 
 

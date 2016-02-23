@@ -27,7 +27,7 @@ class TestSharedUtils(unittest.TestCase):
                                     end  =datetime.datetime(2015, 1, 1, 22, 45),
                                     freq ="15min")
 
-        data = np.random.rand(test_idx.size)
+        data = np.random.choice(range(7, 17), size=test_idx.size)
         test_ts = pd.Series(data=data, index=test_idx)
         ret_ts = utils.drop_series_ix_date(test_ts)
         for key in ret_ts.index:
@@ -83,3 +83,6 @@ class TestSharedUtils(unittest.TestCase):
                                                      test_ts_2_nodatetz) < 2.8)
 
 
+
+if __name__ == '__main__':
+    unittest.main()

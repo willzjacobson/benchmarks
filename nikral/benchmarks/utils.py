@@ -208,7 +208,7 @@ def find_lowest_usage_day(date_scores, obs_ts, n, timezone, debug,
         Each tuple is datetime.date followed by its L2 norm score compared to
         the occupancy forecast for the base date
     :param obs_ts: pandas Series
-        Total electric demand time series
+        Total utility demand time series
     :param n: int
         number of most similar occupancy days to consider
     :param timezone: pytz.timezone
