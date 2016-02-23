@@ -7,9 +7,11 @@ import datetime
 
 import pytz
 import pandas as pd
+
 import numpy as np
 
 import nikral.benchmarks.utils as utils
+import nikral.shared.utils as shr_utils
 
 
 class TestBmarkUtils(unittest.TestCase):
@@ -104,6 +106,37 @@ class TestBmarkUtils(unittest.TestCase):
             idx = data.index(test_ts.loc[tm_central.time()])
             self.assertTrue(data[idx] == val)
             self.assertTrue(auc[idx] == daily)
+
+
+    def test_find_similar_occ_day(self):
+
+        start_dt, end_dt = datetime.date(2014, 2, 1), datetime.date(2015, 10, 2)
+
+        occ_availability = [end_dt - datetime.timedelta(days=x)
+                            for x in range(0, 600)]
+
+        # holidays = utils.gen_holidays(start_dt, end_dt, '345_Park')
+
+        tmp_dt = start_dt + datetime.timedelta(days=365)
+        one_day = datetime.timedelta(days=1)
+        while tmp_dt < end_dt:
+
+            tmp_sim_occ_dt = utils.find_similar_occ_day(tmp_dt,
+                                                        occ_availability,
+                                                        self.holidays)
+            self.assertTrue(tmp_sim_occ_dt is not None)
+
+            tmp_sim_occ_dt_is_hol = utils.is_holiday(tmp_sim_occ_dt,
+                                                     self.holidays)
+
+            self.assertTrue(tmp_sim_occ_dt < tmp_dt)
+            self.assertTrue(utils.is_holiday(tmp_dt, self.holidays)
+                            == tmp_sim_occ_dt_is_hol)
+            if not tmp_sim_occ_dt_is_hol:
+                self.assertTrue(shr_utils.dow_type(tmp_dt)
+                                == shr_utils.dow_type(tmp_sim_occ_dt))
+
+            tmp_dt += one_day
 
 
 

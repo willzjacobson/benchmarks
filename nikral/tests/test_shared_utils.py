@@ -81,3 +81,5 @@ class TestSharedUtils(unittest.TestCase):
         test_ts_2_nodatetz = utils.drop_series_ix_date(test_ts_2)
         self.assertTrue(utils.compute_profile_similarity_score(test_ts_nodatetz,
                                                      test_ts_2_nodatetz) < 2.8)
+
+
