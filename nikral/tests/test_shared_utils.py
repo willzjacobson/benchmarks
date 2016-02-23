@@ -47,3 +47,19 @@ class TestSharedUtils(unittest.TestCase):
         for tmp_ts in [ret_ts, ret_ts_short]:
             for idx in tmp_ts.index:
                 self.assertTrue(idx.date() == test_dt)
+
+
+    def test_dow_type(self):
+
+        tmp_dt = datetime.date(2015, 1, 1)
+        tm_delta = datetime.timedelta(days=1)
+
+        dow_typ_dict = {}
+        while tmp_dt < datetime.date(2015, 4, 1):
+            tmp_dow = tmp_dt.isoweekday()
+
+            if tmp_dow not in dow_typ_dict:
+                dow_typ_dict[tmp_dow] = utils.dow_type(tmp_dt)
+            else:
+                self.assertTrue(dow_typ_dict[tmp_dow] == utils.dow_type(tmp_dt))
+            tmp_dt += tm_delta
