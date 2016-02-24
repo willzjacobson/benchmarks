@@ -83,6 +83,26 @@ class TestSharedUtils(unittest.TestCase):
                                                      test_ts_2_nodatetz) < 2.8)
 
 
+    def test_find_similar_profile_days(self):
+        tzone = pytz.timezone('US/Central')
+        np.random.seed(1001)
+        test_ts = self._gen_ts(datetime.datetime(2015, 1, 11, 6),
+                               datetime.datetime(2015, 7, 12, 3, 30),
+                               180).tz_localize(pytz.utc).tz_convert(tzone)
+        gold_ts = self._gen_ts(datetime.datetime(2015, 7, 4, 5),
+                               datetime.datetime(2015, 7, 5, 4, 45),
+                               180, [58, 35, 40, 53, 90, 66, 89, 52]
+                               ).tz_localize(pytz.utc).tz_convert(tzone)
+
+        obs_availability = [datetime.date(2015, 7, 4) -
+                            datetime.timedelta(days=x) for x in range(0, 180)]
+        result = (datetime.date(2015, 2, 7), datetime.date(2015, 2, 14))
+        self.assertTrue(result == utils.find_similar_profile_days(gold_ts,
+                                    utils.dow_type(datetime.date(2015, 4, 4)),
+                                    test_ts, 2, obs_availability, tzone))
+
+
+
 
 if __name__ == '__main__':
     unittest.main()

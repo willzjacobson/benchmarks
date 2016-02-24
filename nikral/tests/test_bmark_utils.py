@@ -6,9 +6,7 @@ import unittest
 import datetime
 
 import pytz
-
 import pandas as pd
-
 import numpy as np
 
 import nikral.benchmarks.utils as utils
@@ -117,8 +115,6 @@ class TestBmarkUtils(unittest.TestCase):
 
         occ_availability = [end_dt - datetime.timedelta(days=x)
                             for x in range(0, 600)]
-
-        # holidays = utils.gen_holidays(start_dt, end_dt, '345_Park')
 
         tmp_dt = start_dt + datetime.timedelta(days=365)
         one_day = datetime.timedelta(days=1)
