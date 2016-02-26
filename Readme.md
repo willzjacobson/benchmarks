@@ -1,7 +1,7 @@
 # Synopsis
 
-Analytics code base for Project Nonantum. Provides benchmarks to help building
-managers and operators in decision making.
+Benchmark code base. Provides benchmarks to help building managers and operators
+ in decision making.
 
 Intended to provide:
 
@@ -24,7 +24,6 @@ recommendations
 * weather: weather pulling, updating and processing related code
 
 To run benchmark for steam, for example, perform the following steps:
-
 * cd to benchamarks/steam
 * > python run_benchmark.py [YYYY MM DD]
 
@@ -50,7 +49,7 @@ Once installation is successful, execute `run_benchmarks` from a bash shell.
 
 # Tests
 
-Unit test cases are located in nikral/tests
+Unit test cases are located in nikral/tests. 
 To run test cases:
 * change directory to one level up from nikral directory
 * >python -m unittest discover
