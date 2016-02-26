@@ -52,8 +52,8 @@ Once installation is successful, execute `run_benchmarks` from a bash shell.
 
 Unit test cases are located in nikral/tests
 To run test cases:
-*change directory to one level up from nikral directory
-*>python -m unittest discover
+* change directory to one level up from nikral directory
+* >python -m unittest discover
 
 # Contributors
 
