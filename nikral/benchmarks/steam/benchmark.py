@@ -71,7 +71,8 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, obs_ts, gran, timezone,
                                                                       gran)
     wetbulb_avlblty = nikral.benchmarks.utils.get_data_availability_dates(
         wetbulb_ts, gran)
-    data_avlblty = wetbulb_avlblty.intersection(steam_avlblty)
+    data_avlblty = wetbulb_avlblty.intersection(steam_avlblty).intersection(
+        occ_avlblty)
 
     # check required data availability
     if base_dt not in wetbulb_avlblty:
