@@ -38,10 +38,8 @@ To run benchmark for steam, for example, perform the following steps:
 
 * [Install the Python 2.7 version of 
 Anaconda 2.4.1 (64-bit)](https://www.continuum.io/downloads)
-* Download the desired release of Larkin from 
-[https://github.com/
-PrescriptiveData/
-datascience/releases](https://github.com/PrescriptiveData/datascience/releases)
+* Download the archive of Nikral from 
+[https://github.com/PrescriptiveData/an_benchmarks](https://github.com/PrescriptiveData/an_benchmarks)
 to your local hard drive
 * From a bash shell, run `pip install <location_of_nikral>`
 
@@ -52,7 +50,10 @@ Once installation is successful, execute `run_benchmarks` from a bash shell.
 
 # Tests
 
-TODO
+Unit test cases are located in nikral/tests
+To run test cases:
+*change directory to one level up from nikral directory
+*>python -m unittest discover
 
 # Contributors
 

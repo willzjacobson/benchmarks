@@ -1,7 +1,7 @@
 # coding=utf-8
-import time
+# import time
 
-import schedule
+# import schedule
 
 import nikral.benchmarks.electric.run_benchmark as erb
 import nikral.benchmarks.steam.run_benchmark as srb
@@ -34,13 +34,13 @@ def main():
     # for debugging. Delete later
     # weather_update_job()
     benchmark_run_job()
-    print("Scheduling the new jobs")
+    # print("Scheduling the new jobs")
     # schedule.every().hour.do(weather_update_job)
-    schedule.every().hour.do(benchmark_run_job)
+    # schedule.every().hour.do(benchmark_run_job)
     #
-    while True:
-        schedule.run_pending()
-        time.sleep(1)
+    # while True:
+    #     schedule.run_pending()
+    #     time.sleep(1)
 
 
 if __name__ == 'main':
