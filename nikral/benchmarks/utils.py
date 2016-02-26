@@ -12,6 +12,7 @@ import sys
 import pandas as pd
 import pymongo
 import pytz
+
 import pandas.tseries.holiday
 
 import nikral.shared.utils
@@ -234,7 +235,7 @@ def find_lowest_usage_day(date_scores, obs_ts, n, timezone, debug,
             break
 
         score = sim_scores[i]
-        if score:
+        if score is not None:
             day_obs_ts = nikral.shared.utils.get_dt_tseries(dt, obs_ts,
                                                             timezone,
                                                             drop_first)
