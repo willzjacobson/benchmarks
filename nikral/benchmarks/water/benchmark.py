@@ -47,7 +47,10 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, obs_ts, gran, timezone,
                                                                         gran)
     wetbulb_avlblty = nikral.benchmarks.utils.get_data_availability_dates(
                                                             wetbulb_ts, gran)
-    data_avlblty = wetbulb_avlblty.intersection(water_avlblty)
+    occ_avlblty = nikral.benchmarks.utils.get_data_availability_dates(occ_ts,
+                                                                      gran)
+    data_avlblty = wetbulb_avlblty.intersection(water_avlblty).intersection(
+        occ_avlblty)
 
     # check if all required data is available for base dt
     if base_dt not in wetbulb_avlblty:
@@ -76,8 +79,7 @@ def _find_benchmark(base_dt, occ_ts, wetbulb_ts, obs_ts, gran, timezone,
 
     # occupancy data availability
     sim_occ_day = None
-    occ_avlblty = nikral.benchmarks.utils.get_data_availability_dates(occ_ts,
-                                                                      gran)
+
     # fall-back occupancy lookup
     if base_dt not in occ_avlblty:
         sim_occ_day = nikral.benchmarks.utils.find_similar_occ_day(base_dt,
