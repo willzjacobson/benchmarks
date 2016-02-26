@@ -195,5 +195,24 @@ class TestBmarkUtils(unittest.TestCase):
         self.assertTrue(result[3].size > 0)
 
 
+    def test_score_occ_similarity(self):
+        tzone = pytz.timezone('US/Eastern')
+        test_ts = self._gen_ts(datetime.datetime(2015, 1, 11, 5),
+                               datetime.datetime(2015, 7, 12, 6, 30),
+                               60).tz_localize(pytz.utc).tz_convert(tzone)
+
+        dt_list = [datetime.date(2015, 2, 5), datetime.date(2015, 2, 11),
+                   datetime.date(2015, 3, 3), datetime.date(2015, 3, 7)]
+
+        results = utils.score_occ_similarity(datetime.date(2015, 7, 4), dt_list,
+                                             test_ts, tzone)
+        self.assertTrue(len(results) == len(dt_list))
+        for t in results:
+            self.assertTrue(isinstance(t, tuple))
+            self.assertTrue(len(t) == 2)
+            self.assertTrue(isinstance(t[1], float) or t[1] is None)
+
+
+
 if __name__ == '__main__':
     unittest.main()
