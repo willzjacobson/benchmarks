@@ -32,7 +32,7 @@ To run benchmark for steam, for example, perform the following steps:
 
 # Motivation
 
-* To provide benchmarks for building operation.
+* To provide benchmarks for building utilities comsumption.
 
 # Installation
 
