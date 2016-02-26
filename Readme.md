@@ -24,7 +24,7 @@ recommendations
 * weather: weather pulling, updating and processing related code
 
 To run benchmark for steam, for example, perform the following steps:
-* cd to benchamarks/steam
+* cd to benchmarks/steam
 * > python run_benchmark.py [YYYY MM DD]
 
 
