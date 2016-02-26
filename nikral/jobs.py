@@ -27,7 +27,7 @@ def benchmark_run_job():
     nikral.benchmarks.water.run_benchmark.main()
 
     print("Done")
-    print("Going to sleep now for an hour")
+    # print("Going to sleep now for an hour")
 
 
 def main():
