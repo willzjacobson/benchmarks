@@ -25,7 +25,7 @@ recommendations
 
 To run benchmark for steam, for example, perform the following steps:
 * cd to benchmarks/steam
-* > python run_benchmark.py [YYYY MM DD]
+* `python run_benchmark.py [YYYY MM DD]`
 
 
 
@@ -52,7 +52,7 @@ Once installation is successful, execute `run_benchmarks` from a bash shell.
 Unit test cases are located in nikral/tests. 
 To run test cases:
 * change directory to one level up from nikral directory
-* >python -m unittest discover
+* `python -m unittest discover`
 
 # Contributors
 
