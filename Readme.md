@@ -37,7 +37,7 @@ To run benchmark for steam, for example, perform the following steps:
 
 * [Install the Python 2.7 version of 
 Anaconda 2.4.1 (64-bit)](https://www.continuum.io/downloads)
-* Download the archive of Nikral from 
+* Download the latest archive of Nikral from branch `master`
 [https://github.com/PrescriptiveData/an_benchmarks](https://github.com/PrescriptiveData/an_benchmarks)
 to your local hard drive
 * From a bash shell, run `pip install <location_of_nikral>`
