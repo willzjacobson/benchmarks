@@ -17,7 +17,7 @@ corresponding to one directory. Directory names indicate the purpose of the
 modules in that directory.
 * benchmarks: entry points for benchmarks and utility-specific benchmark code
 * bin: deployment-related module(s)
-* shared: common code useful for both benchmarks, forecasting and
+* shared: common code useful for benchmarks, forecasting and
 recommendations
 * tests: unit testing related modules
 * ts_proc: time series pulling and processing related modules
