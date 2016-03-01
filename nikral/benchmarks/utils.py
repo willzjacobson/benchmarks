@@ -470,9 +470,18 @@ def get_score_dt(cmd_args):
 
 
 def get_bench_ts(host, port, database, username, password, source,
-                 collection_name, bench_dt):
+                 collection_name, building, system, bench_dt, bmark_type):
+
+
+    doc_id = {"building": building,
+              "type"    : bmark_type,
+              "system"  : system,
+              "date"    : datetime.datetime.combine(bench_dt,
+                                                    datetime.time.min)}
 
     with nikral.shared.utils.connect_db(host, port, database, username,
-                                        password, source, collection_name
-                                        ) as coll:
-        pass
+                                        password, source) as conn:
+
+        collection = conn[database][collection_name]
+        for doc in collection.find(doc_id):
+            print(doc)

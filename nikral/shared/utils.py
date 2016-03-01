@@ -171,8 +171,7 @@ def debug_msg(debug, msg):
         print(msg)
 
 
-def connect_db(host, port, database, username, password, source,
-               collection_name):
+def connect_db(host, port, database, username, password, source):
     """
     connect to database
 
@@ -188,13 +187,11 @@ def connect_db(host, port, database, username, password, source,
         database password
     :param source: string
         source database for authentication
-    :param collection_name: string
-        database collection name
 
-    :return: collection object
+    :return: connected pymongo connection object
     """
 
     conn = pymongo.MongoClient(host, port)
     conn[database].authenticate(username, password, source=source)
-    return conn[database][collection_name]
+    return conn
 
