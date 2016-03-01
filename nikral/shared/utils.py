@@ -5,6 +5,7 @@ import datetime
 import math
 
 import pandas as pd
+import pymongo
 
 
 def dow_type(dt):
@@ -168,4 +169,32 @@ def debug_msg(debug, msg):
     """
     if debug:
         print(msg)
+
+
+def connect_db(host, port, database, username, password, source,
+               collection_name):
+    """
+    connect to database
+
+    :param host: string
+        database server name or IP-address
+    :param port: int
+        database port number
+    :param database: string
+        name of the database on server
+    :param username: string
+        database username
+    :param password: string
+        database password
+    :param source: string
+        source database for authentication
+    :param collection_name: string
+        database collection name
+
+    :return: collection object
+    """
+
+    conn = pymongo.MongoClient(host, port)
+    conn[database].authenticate(username, password, source=source)
+    return conn[database][collection_name]
 

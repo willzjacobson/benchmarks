@@ -10,6 +10,7 @@ import itertools
 import sys
 
 import pandas as pd
+
 import pymongo
 
 import pytz
@@ -466,3 +467,12 @@ def get_score_dt(cmd_args):
         default_dt = datetime.date(int_args[0], int_args[1], int_args[2])
 
     return default_dt
+
+
+def get_bench_ts(host, port, database, username, password, source,
+                 collection_name, bench_dt):
+
+    with nikral.shared.utils.connect_db(host, port, database, username,
+                                        password, source, collection_name
+                                        ) as coll:
+        pass
