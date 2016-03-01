@@ -18,8 +18,8 @@ def main():
     score_dt = butils.get_score_dt(sys.argv)
     print("scoring steam benchmark for %s" % score_dt)
 
-
     # get benchmark result
+    get_bench_ts(score_dt)
     # get actual
     # score
     # save score

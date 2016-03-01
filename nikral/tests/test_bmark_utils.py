@@ -6,7 +6,9 @@ import unittest
 import datetime
 
 import pytz
+
 import pandas as pd
+
 import numpy as np
 
 import nikral.benchmarks.utils as utils
@@ -239,6 +241,9 @@ class TestBmarkUtils(unittest.TestCase):
 
         self.assertRaises(ValueError, utils.get_score_dt,
                           ['test.py', -10, 8, 2])
+
+        self.assertRaises(ValueError, utils.get_score_dt,
+                          ['test.py', 2015, 8, 32])
 
 
 
