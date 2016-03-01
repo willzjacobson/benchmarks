@@ -213,6 +213,34 @@ class TestBmarkUtils(unittest.TestCase):
             self.assertTrue(isinstance(t[1], float) or t[1] is None)
 
 
+    def test_get_score_dt(self):
+        today = datetime.date.today()
+
+        self.assertTrue(utils.get_score_dt(['test.py']) ==
+                        today - datetime.timedelta(days=1))
+
+        self.assertTrue(utils.get_score_dt(['test.py', 2015, 7, 2]) ==
+                        datetime.date(2015, 7, 2))
+
+        self.assertRaises(Exception, utils.get_score_dt,
+                          ['test.py', 2015, 7])
+
+        self.assertRaises(Exception, utils.get_score_dt,
+                          ['test.py', 2015])
+
+        self.assertRaises(Exception, utils.get_score_dt,
+                          ['test.py', 2015, 7, 2, 12])
+
+        self.assertRaises(Exception, utils.get_score_dt,
+                          ['test.py', 2015, 7, 2, 12, 18])
+
+        self.assertRaises(ValueError, utils.get_score_dt,
+                          ['test.py', 2015, 19, 2])
+
+        self.assertRaises(ValueError, utils.get_score_dt,
+                          ['test.py', -10, 8, 2])
+
+
 
 if __name__ == '__main__':
     unittest.main()

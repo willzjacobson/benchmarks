@@ -11,6 +11,7 @@ import sys
 
 import pandas as pd
 import pymongo
+
 import pytz
 
 import pandas.tseries.holiday
@@ -449,17 +450,17 @@ def score_occ_similarity(base_dt, date_shortlist, occ_ts, timezone):
 
 def get_score_dt(cmd_args):
     """
-    get date to compute score for
+    get date to compute score for. also prints usage message if ar
     :param cmd_args: list of command line arguments
     :return: datetime.date
     """
     default_dt = datetime.date.today() - datetime.timedelta(days=1)
+    # print(cmd_args)
 
     arg_count = len(cmd_args)
     if arg_count not in [1, 4]:
         raise Exception("Usage: python %s [YYYY MM DD]"
                         % cmd_args[0])
-
     elif arg_count == 4:
         int_args = list(map(int, cmd_args[1:]))
         default_dt = datetime.date(int_args[0], int_args[1], int_args[2])
