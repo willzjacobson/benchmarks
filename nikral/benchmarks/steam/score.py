@@ -22,19 +22,26 @@ def main():
         bmark_cfg = user_config['building_dbs']['results_steam_benchmark']
 
         # get benchmark result
-        butils.get_bench_ts(bench_dt=score_dt,
-                            collection_name=bmark_cfg['collection_name_out'],
-                            database=bmark_cfg['db_name_out'],
-                            building=building,
-                            bmark_type='building',
-                            system='Steam_Usage',
-                            **user_config['building_dbs']['mongo_cred'])
+        bench_ts = butils.get_bench_ts(bench_dt=score_dt,
+                                       collection_name=bmark_cfg[
+                                           'collection_name_out'],
+                                       database=bmark_cfg['db_name_out'],
+                                       building=building,
+                                       bmark_type='building',
+                                       system='Steam_Usage',
+                                       **user_config['building_dbs'][
+                                           'mongo_cred'])
+
+        print(bench_ts)
+        # print(butils.readings_to_df(bench_ts))
 
         # get actual
+        # ts_utils.get_date_ts(score_dt)
 
         # score
 
         # save score
+
 
 
 

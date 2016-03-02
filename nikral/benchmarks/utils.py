@@ -10,9 +10,7 @@ import itertools
 import sys
 
 import pandas as pd
-
 import pymongo
-
 import pytz
 
 import pandas.tseries.holiday
@@ -471,6 +469,27 @@ def get_score_dt(cmd_args):
 
 def get_bench_ts(host, port, database, username, password, source,
                  collection_name, building, system, bench_dt, bmark_type):
+    """ get benchmark timeseries for the specified date
+
+    :param host: string
+        database server name or IP-address
+    :param port: int
+        database port number
+    :param database: string
+        name of the database on server
+    :param username: string
+        database username
+    :param password: string
+        database password
+    :param source: string
+        source database for authentication
+    :param collection_name:
+    :param building:
+    :param system:
+    :param bench_dt:
+    :param bmark_type:
+    :return:
+    """
 
 
     doc_id = {"building": building,
@@ -483,5 +502,9 @@ def get_bench_ts(host, port, database, username, password, source,
                                         password, source) as conn:
 
         collection = conn[database][collection_name]
-        for doc in collection.find(doc_id):
-            print(doc)
+        doc = collection.find_one(doc_id)
+        if doc:
+            return doc['readings']
+        return []
+
+

@@ -306,3 +306,5 @@ def get_device_ts_new_schema(host, port, database, username, password, source,
     return device_data
 
 
+def get_date_ts(dt):
+    pass
