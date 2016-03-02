@@ -46,10 +46,10 @@ def main():
                              # dt=score_dt,
                              # devices='TotalInstant',
                              # **kw_args)
-        actual_ts = ts_utils.get_parsed_ts_new_schema1(building=building,
-                                                       devices='TotalInstant',
-                                                       ts_date=score_dt,
-                                                       **kw_args)
+        actual_ts = ts_utils.get_parsed_ts_new_schema(building=building,
+                                                      devices='TotalInstant',
+                                                      ts_date=score_dt,
+                                                      **kw_args)
         print(actual_ts)
 
         # score

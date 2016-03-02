@@ -176,7 +176,7 @@ def get_devices_sum_ts(host, port, database, username, password, source,
 
 def get_parsed_ts_new_schema(host, port, db_name, username, password,
                              source, collection_name, building, devices,
-                             systems=None, floor=None, quad=None):
+                             systems=None, floor=None, quad=None, ts_date=None):
     """Fetch all available timeseries data from database
 
     :param host: string
@@ -211,140 +211,6 @@ def get_parsed_ts_new_schema(host, port, db_name, username, password,
     device_data = get_device_ts_new_schema(host, port, db_name, username,
                                            password, source, collection_name,
                                            building, devices, systems,
-                                           floor=floor, quad=quad)
-    if not hasattr(devices, '__iter__'):
-        devices = [devices]
-    ts_list, val_list = [], []
-    for device in devices:
-        ts_list .extend(device_data[device][0])
-        val_list.extend(device_data[device][1])
-
-    obs_df = pd.DataFrame({'obs': val_list}, index=ts_list).dropna()
-
-    # drop missing values, set timestamp as the new index and sort by index
-    # some duplicates seen in SIF steam data
-    return obs_df.reset_index().drop_duplicates(subset='index').set_index(
-        'index').sort_index().tz_localize(pytz.utc)['obs']
-
-
-def get_device_ts_new_schema(host, port, database, username, password, source,
-                               collection_name, building, devices, systems=None,
-                               floor=None, quad=None):
-    """
-    Get all observation data with the given building, devices and systems
-    combination from the database
-
-    :param host: string
-        database server name or IP-address
-    :param port: int
-        database port number
-    :param database: string
-        name of the database on server
-    :param username: string
-        database username
-    :param password: string
-        database password
-    :param source: string
-        source database for authentication
-    :param collection_name: string
-        database collection name
-    :param building: string
-        building identifier
-    :param devices: string or iterable
-        device name(s) for identifying time series
-    :param systems: string or iterable
-        system name(s) for identifying time series
-    :param floor: string
-        floor identifier
-    :param quad: string
-        quadrant identifier
-
-    :return: device-indexed dictionary with  a list of lists of timestamps
-    followed by a list of values
-    """
-
-    with pymongo.MongoClient(host, port) as conn:
-
-        conn[database].authenticate(username, password, source=source)
-        collection = conn[database][collection_name]
-
-        device_data = {}
-
-        query = {"building": building}
-        # there may be one or more devices to match
-        if hasattr(devices, '__iter__'):
-            query['device'] = {'$in': devices}
-            for device in devices:
-                device_data[device] = [[], []]
-        else:
-            query['device'] = devices
-            device_data[devices] = [[], []]
-
-        # handle optional arguments
-        # systems is optional, for example for steam data
-        for field, value in {'system': systems, 'floor': floor,
-                             'quadrant': quad}.iteritems():
-            if value:
-                # there may be one or more systems names to match
-                if hasattr(value, '__iter__'):
-                    query[field] = {'$in': value}
-                else:
-                    query[field] = value
-
-        for doc in collection.find(query):
-
-            device = doc['device']
-            readings = doc['readings']
-            zipped = [(x['time'], x['value']) for x in readings
-                      if x['time'] is not None and 'value' in x]
-
-            if len(zipped):
-                ts_list_t, val_list_t = zip(*zipped)
-                device_str = str(device)
-                device_data[device_str][0].extend(ts_list_t)
-                device_data[device_str][1].extend(val_list_t)
-
-    return device_data
-
-
-
-def get_parsed_ts_new_schema1(host, port, db_name, username, password,
-                             source, collection_name, building, devices,
-                             systems=None, floor=None, quad=None, ts_date=None):
-    """Fetch all available timeseries data from database
-
-    :param host: string
-        database server name or IP-address
-    :param port: int
-        database port number
-    :param db_name: string
-        name of the database on server
-    :param username: string
-        database username
-    :param password: string
-        database password
-    :param source: string
-        source database for authentication
-    :param collection_name: string
-        collection name to use
-    :param building: string
-        building identifier
-    :param devices: string or iterable
-        device name(s) for identifying time series
-    :param systems: string or iterable
-        system name(s) for identifying time series
-    :param floor: string
-        floor identifier
-    :param quad: string
-        quadrant identifier
-
-    :return: pandas DataFrame
-        occupancy time series data
-    """
-
-    device_data = get_device_ts_new_schema1(host, port, db_name, username,
-                                           password, source, collection_name,
-                                           building, devices, systems,
                                            floor=floor, quad=quad,
                                            ts_date=ts_date)
     if not hasattr(devices, '__iter__'):
@@ -362,7 +228,7 @@ def get_parsed_ts_new_schema1(host, port, db_name, username, password,
         'index').sort_index().tz_localize(pytz.utc)['obs']
 
 
-def get_device_ts_new_schema1(host, port, database, username, password, source,
+def get_device_ts_new_schema(host, port, database, username, password, source,
                              collection_name, building, devices, systems=None,
                              floor=None, quad=None, ts_date=None):
     """
@@ -394,7 +260,7 @@ def get_device_ts_new_schema1(host, port, database, username, password, source,
     :param quad: string
         quadrant identifier
 
-    :return: device-indexed dictionary with  a list of lists of timestamps
+    :return: device-indexed dictionary with a list of lists of timestamps
     followed by a list of values
     """
 
@@ -416,9 +282,9 @@ def get_device_ts_new_schema1(host, port, database, username, password, source,
             device_data[devices] = [[], []]
 
         # handle date
-        dates = []
+        dates = None
         if ts_date:
-            one_day = datetime.timedelta(days=1)
+            one_day, dates = datetime.timedelta(days=1), []
             for t_dt in [ts_date, ts_date - one_day, ts_date + one_day]:
                 dates.append(datetime.datetime.combine(t_dt, datetime.time.min))
 
@@ -447,6 +313,148 @@ def get_device_ts_new_schema1(host, port, database, username, password, source,
                 device_data[device_str][1].extend(val_list_t)
 
     return device_data
+
+
+
+# def get_parsed_ts_new_schema1(host, port, db_name, username, password,
+#                              source, collection_name, building, devices,
+#                              systems=None, floor=None, quad=None, ts_date=None):
+#     """Fetch all available timeseries data from database
+#
+#     :param host: string
+#         database server name or IP-address
+#     :param port: int
+#         database port number
+#     :param db_name: string
+#         name of the database on server
+#     :param username: string
+#         database username
+#     :param password: string
+#         database password
+#     :param source: string
+#         source database for authentication
+#     :param collection_name: string
+#         collection name to use
+#     :param building: string
+#         building identifier
+#     :param devices: string or iterable
+#         device name(s) for identifying time series
+#     :param systems: string or iterable
+#         system name(s) for identifying time series
+#     :param floor: string
+#         floor identifier
+#     :param quad: string
+#         quadrant identifier
+#
+#     :return: pandas DataFrame
+#         occupancy time series data
+#     """
+#
+#     device_data = get_device_ts_new_schema1(host, port, db_name, username,
+#                                            password, source, collection_name,
+#                                            building, devices, systems,
+#                                            floor=floor, quad=quad,
+#                                            ts_date=ts_date)
+#     if not hasattr(devices, '__iter__'):
+#         devices = [devices]
+#     ts_list, val_list = [], []
+#     for device in devices:
+#         ts_list .extend(device_data[device][0])
+#         val_list.extend(device_data[device][1])
+#
+#     obs_df = pd.DataFrame({'obs': val_list}, index=ts_list).dropna()
+#
+#     # drop missing values, set timestamp as the new index and sort by index
+#     # some duplicates seen in SIF steam data
+#     return obs_df.reset_index().drop_duplicates(subset='index').set_index(
+#         'index').sort_index().tz_localize(pytz.utc)['obs']
+
+
+# def get_device_ts_new_schema1(host, port, database, username, password, source,
+#                              collection_name, building, devices, systems=None,
+#                              floor=None, quad=None, ts_date=None):
+#     """
+#     Get all observation data with the given building, devices and systems
+#     combination from the database
+#
+#     :param host: string
+#         database server name or IP-address
+#     :param port: int
+#         database port number
+#     :param database: string
+#         name of the database on server
+#     :param username: string
+#         database username
+#     :param password: string
+#         database password
+#     :param source: string
+#         source database for authentication
+#     :param collection_name: string
+#         database collection name
+#     :param building: string
+#         building identifier
+#     :param devices: string or iterable
+#         device name(s) for identifying time series
+#     :param systems: string or iterable
+#         system name(s) for identifying time series
+#     :param floor: string
+#         floor identifier
+#     :param quad: string
+#         quadrant identifier
+#
+#     :return: device-indexed dictionary with  a list of lists of timestamps
+#     followed by a list of values
+#     """
+#
+#     with pymongo.MongoClient(host, port) as conn:
+#
+#         conn[database].authenticate(username, password, source=source)
+#         collection = conn[database][collection_name]
+#
+#         device_data = {}
+#
+#         query = {"building": building}
+#         # there may be one or more devices to match
+#         if hasattr(devices, '__iter__'):
+#             query['device'] = {'$in': devices}
+#             for device in devices:
+#                 device_data[device] = [[], []]
+#         else:
+#             query['device'] = devices
+#             device_data[devices] = [[], []]
+#
+#         # handle date
+#         dates = []
+#         if ts_date:
+#             one_day = datetime.timedelta(days=1)
+#             for t_dt in [ts_date, ts_date - one_day, ts_date + one_day]:
+#                 dates.append(datetime.datetime.combine(t_dt, datetime.time.min))
+#
+#         # handle optional arguments
+#         # systems is optional, for example for steam data
+#         for field, value in {'system': systems, 'floor': floor,
+#                              'quadrant': quad, 'date': dates}.iteritems():
+#             if value:
+#                 # there may be one or more systems names to match
+#                 if hasattr(value, '__iter__'):
+#                     query[field] = {'$in': value}
+#                 else:
+#                     query[field] = value
+#
+#         for doc in collection.find(query):
+#
+#             device = doc['device']
+#             readings = doc['readings']
+#             zipped = [(x['time'], x['value']) for x in readings
+#                       if x['time'] is not None and 'value' in x]
+#
+#             if len(zipped):
+#                 ts_list_t, val_list_t = zip(*zipped)
+#                 device_str = str(device)
+#                 device_data[device_str][0].extend(ts_list_t)
+#                 device_data[device_str][1].extend(val_list_t)
+#
+#     return device_data
 
 
 # def get_date_ts(host, port, db_name, username, password, source,
