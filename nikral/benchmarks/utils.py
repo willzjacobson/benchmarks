@@ -10,6 +10,7 @@ import itertools
 import sys
 
 import pandas as pd
+
 import pymongo
 
 import pytz
@@ -484,12 +485,18 @@ def get_bench_ts(host, port, database, username, password, source,
         database password
     :param source: string
         source database for authentication
-    :param collection_name:
-    :param building:
-    :param system:
-    :param bench_dt:
-    :param bmark_type:
-    :return:
+    :param collection_name: string
+        name of collection to use
+    :param building: string
+        building name/identifier
+    :param system: string
+        system name identifying timeseries in collection
+    :param bench_dt: datetime.date
+        benchmark date
+    :param bmark_type: string
+        benchmark type
+
+    :return: pandas Series
     """
 
 
@@ -511,9 +518,9 @@ def get_bench_ts(host, port, database, username, password, source,
 
 def readings_to_ts(readings):
     """
-
-    :param readings:
-    :return:
+    convert readings list/array from database back to a Series object
+    :param readings: list of readings
+    :return: pandas Series
     """
     data, idx = [], []
     for t in readings:
