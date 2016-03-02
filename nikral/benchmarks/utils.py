@@ -11,6 +11,7 @@ import sys
 
 import pandas as pd
 import pymongo
+
 import pytz
 
 import pandas.tseries.holiday
@@ -508,3 +509,15 @@ def get_bench_ts(host, port, database, username, password, source,
         return []
 
 
+def readings_to_ts(readings):
+    """
+
+    :param readings:
+    :return:
+    """
+    data, idx = [], []
+    for t in readings:
+        data.append(t[unicode('value')])
+        idx.append(t[unicode('time')])
+
+    return pd.Series(data=data, index=idx, name='readings').sort_index()

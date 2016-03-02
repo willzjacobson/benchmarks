@@ -33,7 +33,7 @@ def main():
                                            'mongo_cred'])
 
         print(bench_ts)
-        # print(butils.readings_to_df(bench_ts))
+        print(butils.readings_to_ts(bench_ts))
 
         # get actual
         # ts_utils.get_date_ts(score_dt)
