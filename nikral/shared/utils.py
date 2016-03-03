@@ -73,7 +73,7 @@ def compute_profile_similarity_score(gold_ts, other_ts):
     norm_ts = gold_ts.loc[common_tms] - other_ts.loc[common_tms]
     # L2 norm is normalized by number of overlapping keys to make sure days with
     # more overlapping data available are not at a disadvantage
-    return math.sqrt(sum(norm_ts**2))/len(common_tms)
+    return math.sqrt(sum(norm_ts**2)/len(common_tms))
 
 
 def find_similar_profile_days(gold_ts, gold_dow_type, all_ts, k, data_avlblty,

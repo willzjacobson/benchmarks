@@ -8,13 +8,11 @@ __author__ = 'ashishgagneja'
 import datetime
 import itertools
 import sys
+import math
 
 import pandas as pd
-
 import pymongo
-
 import pytz
-
 import pandas.tseries.holiday
 
 import nikral.shared.utils
@@ -527,4 +525,38 @@ def readings_to_ts(readings):
         data.append(t[unicode('value')])
         idx.append(t[unicode('time')])
 
-    return pd.Series(data=data, index=idx, name='readings').sort_index()
+    return pd.Series(data=data, index=idx, name='readings').sort_index(
+        ).tz_localize(pytz.utc)
+
+
+def get_rmse_score(actual_ts, other_ts, granularity):
+    """
+    compute rmse score for timeseries
+
+    :param actual_ts: pandas Series
+        actual observations
+    :param other_ts: pandas Series
+        timeseries to be scored
+    :param granularity: int
+        sampling frequency in minutes
+
+    :return: RMSE score or None
+    """
+
+    # find index overlap
+    print(type(actual_ts.index))
+    print(type(other_ts.index))
+    common_indices = set(actual_ts.index).intersection(set(other_ts.index))
+
+    # if other_ts is missing a lot of values or if index overlap is less than
+    # threshold, do not compute score
+    print("%s, %s" % (other_ts.size, 0.85 * 24 * 60 / granularity))
+    print("%s, %s" % (len(common_indices), 0.80 * other_ts.size))
+    if (other_ts.size < 0.85 * 24 * 60 / granularity
+        or len(common_indices) < 0.80 * other_ts.size):
+
+        return None
+
+    l1_norm = actual_ts.loc[common_indices] - other_ts.loc[common_indices]
+    return math.sqrt(sum(l1_norm ** 2) / len(common_indices))
+
