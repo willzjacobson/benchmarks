@@ -6,9 +6,7 @@ import unittest
 import datetime
 
 import pytz
-
 import pandas as pd
-
 import numpy as np
 
 import nikral.benchmarks.utils as utils
@@ -244,6 +242,28 @@ class TestBmarkUtils(unittest.TestCase):
 
         self.assertRaises(ValueError, utils.get_score_dt,
                           ['test.py', 2015, 8, 32])
+
+
+    def test_readings_to_ts(self):
+        sample = [
+            {u'value': 8, u'time': datetime.datetime(2015, 2, 2, 22)},
+            {u'value': 5, u'time': datetime.datetime(2015, 2, 2, 22, 15)},
+            {u'value': 7, u'time': datetime.datetime(2015, 2, 2, 22, 30)},
+            {u'value': 6, u'time': datetime.datetime(2015, 2, 2, 22, 45)}
+        ]
+
+        ts = utils.readings_to_ts(sample)
+        ts_idx = ts.index.to_datetime()
+
+        self.assertTrue(ts.size == 4)
+        prev_idx = None
+        for reading in sample:
+            idx = reading[unicode('time')]
+            self.assertTrue(idx in ts_idx)
+            self.assertTrue(ts.loc[idx]['readings'] == reading[unicode('value')])
+            if prev_idx:
+                self.assertTrue(idx > prev_idx)
+            prev_idx = idx
 
 
 
