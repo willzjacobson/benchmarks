@@ -258,9 +258,9 @@ class TestBmarkUtils(unittest.TestCase):
         self.assertTrue(ts.size == 4)
         prev_idx = None
         for reading in sample:
-            idx = reading[unicode('time')]
+            idx = reading[unicode('time')].replace(tzinfo=pytz.utc)
             self.assertTrue(idx in ts_idx)
-            self.assertTrue(ts.loc[idx]['readings'] == reading[unicode('value')])
+            self.assertTrue(ts.loc[idx] == reading[unicode('value')])
             if prev_idx:
                 self.assertTrue(idx > prev_idx)
             prev_idx = idx
