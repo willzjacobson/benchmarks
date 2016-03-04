@@ -46,12 +46,6 @@ def main():
         kw_args = dict(cfg['building_dbs']['building_ts_loc'],
                        **cfg['building_dbs']['mongo_cred'])
         # get actual
-        # ts_utils.get_date_ts(building=building,
-                             # database=bldg_ts_cfg['db_name'],
-                             # collection_name=bldg_ts_cfg['collection_name'],
-                             # dt=score_dt,
-                             # devices='TotalInstant',
-                             # **kw_args)
         actual_ts = ts_utils.get_parsed_ts_new_schema(building=building,
                                                       devices='TotalInstant',
                                                       ts_date=score_dt,
@@ -64,8 +58,6 @@ def main():
         print(rmse)
 
         # save score
-
-
 
 
 if __name__ == '__main__':

@@ -558,5 +558,5 @@ def get_rmse_score(actual_ts, other_ts, granularity):
         return None
 
     l1_norm = actual_ts.loc[common_indices] - other_ts.loc[common_indices]
-    return math.sqrt(sum(l1_norm ** 2) / len(common_indices))
+    return math.sqrt(sum(l1_norm ** 2)) / len(common_indices)
 
