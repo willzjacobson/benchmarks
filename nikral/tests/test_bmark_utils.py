@@ -7,6 +7,7 @@ import datetime
 
 import pytz
 import pandas as pd
+
 import numpy as np
 
 import nikral.benchmarks.utils as utils
@@ -264,7 +265,6 @@ class TestBmarkUtils(unittest.TestCase):
             if prev_idx:
                 self.assertTrue(idx > prev_idx)
             prev_idx = idx
-
 
 
 if __name__ == '__main__':
