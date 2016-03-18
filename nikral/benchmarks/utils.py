@@ -311,15 +311,33 @@ def save_benchmark(bench_dt, base_dt, bench_ts, bench_auc, bench_incr_auc,
         collection.remove(doc_id)
 
         # insert
+        dis = 
+           { 'electricity' : 'Electric Demand Benchmark',
+             'water'      : 'Water Consumption Benchmark',
+             'steam'      : 'Steam Demand Benchmark'}
+
+        gt = {
+           'electricity' : 'electric_demand',
+            'water'      : 'water_consumption',
+            'steam'      : 'steam_demand'}
+        units = {
+           'electricity' : 'kW',
+            'water'      : 'gallons',
+            'steam'      : 'Mlbs/hr'}
+
         doc = { "building": building,
-                "type"    : bmark_type,
-                "system"  : system,
-                "date"    : base_dt_t,
-                "comment" : datetime.datetime.combine(bench_dt,
-                                                      datetime.time()),
-                "readings": gen_bmark_readings_list(bench_ts, bench_incr_auc,
-                                                    base_dt, timezone),
-                "daily_total": bench_auc}
+               "type"    : bmark_type,
+               "system"  : system,
+               "date"    : base_dt_t,
+               "comment" : datetime.datetime.combine(bench_dt,
+                                                     datetime.time()),
+               "readings": gen_bmark_readings_list(bench_ts, bench_incr_auc,
+                                                   base_dt, timezone),
+               "daily_total": bench_auc,
+               "dis" : dis[collection_name],
+               "graph_tag" : gt[collection_name],
+               "units" : units[collection_name]}
+
         collection.insert(doc)
 
 
