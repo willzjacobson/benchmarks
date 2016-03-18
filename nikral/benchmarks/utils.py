@@ -255,7 +255,7 @@ def find_lowest_usage_day(date_scores, obs_ts, n, timezone, debug,
 
 def save_benchmark(bench_dt, base_dt, bench_ts, bench_auc, bench_incr_auc,
                    host, port, database, username, password, source_db,
-                   collection_name, building, bmark_type, system, timezone):
+                   collection_name, building, bmark_type, system, timezone, replicaset):
     """
     Save benchmark time series to database
 
@@ -292,11 +292,13 @@ def save_benchmark(bench_dt, base_dt, bench_ts, bench_auc, bench_incr_auc,
         field name for identifying time series
     :param timezone: pytz.timezone
         target timezone or building timezone
+    :param replicaset: string
+        database replicaset
 
     :return:
     """
 
-    with pymongo.MongoClient(host, port) as conn:
+    with pymongo.MongoClient(host, port, replicaset=replicaset) as conn:
         conn[database].authenticate(username, password, source=source_db)
         collection = conn[database][collection_name]
 

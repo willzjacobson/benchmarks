@@ -28,11 +28,12 @@ default:
 
 building_dbs:
   mongo_cred:
-      host: 52.21.246.131 #54.173.216.14 #R3.Xlarge
+      host: 10.0.11.134 #R3.Xlarge
       port: 27017
       source: admin
       username: Analytics
       password: L3x1^gt0n
+      replicaset: SamTheEagle
   wund_cred:
       wund_url: http://api.wunderground.com/api/bab4ba5bcbc2dbec/
     # wund_url: http://api.wunderground.com/api/08d25f404214f50b/

@@ -107,7 +107,7 @@ def process_building(building, host, port, db_name, username, password,
                      collection_name_out, weather_hist_db,
                      weather_hist_collection, weather_fcst_db,
                      weather_fcst_collection, granularity,
-                     base_dt, timezone, meter_count, debug):
+                     base_dt, timezone, meter_count, debug, replicaset):
     """ Find baseline steam usage for building
 
     :param building: string
@@ -148,6 +148,8 @@ def process_building(building, host, port, db_name, username, password,
         number of water meters
     :param debug: bool
         debug flag
+    :param replicaset: string
+        replicaset for database
 
     :return:
     """
@@ -212,4 +214,4 @@ def process_building(building, host, port, db_name, username, password,
                                                password, source,
                                                collection_name_out, building,
                                                'building', 'Water_Usage',
-                                               target_tzone)
+                                               target_tzone, replicaset)
