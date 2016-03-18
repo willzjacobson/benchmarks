@@ -126,10 +126,10 @@ def history_update(city, state, wund_url, parallel, host, port, source,
         start = weather_data.index[-1].date()
         end = pd.datetime.today().date()
 
-    if start == end:
-        print("Running weather update too often. No weather data gap between"
-              " last weather date pulled and current time")
-        return
+    # if start == end:
+    #     print("Running weather update too often. No weather data gap between"
+    #           " last weather date pulled and current time")
+    #     return
     interval = pd.date_range(start, end)
     wdata_days_comp = weather_data[:start]
 
