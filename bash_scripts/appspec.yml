@@ -1,0 +1,12 @@
+version: 0.0
+os: linux 
+
+files:
+  - source: /
+    destination: /var/analytics/an_benchmarks
+
+hooks:
+  BeforeInstall:
+    - location: /var/analytics/an_benchmarks/bash_scripts/before_install.sh
+  AfterInstall:
+    - location: /var/analytics/an_benchmarks/bash_scripts/after_install.sh

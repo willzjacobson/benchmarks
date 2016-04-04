@@ -236,4 +236,4 @@ def process_building(building, host, port, db_name, username, password,
                                                password, source,
                                                collection_name_out, building,
                                                'building', 'Steam_Usage',
-                                               target_tzone, replicaset)
+                                               target_tzone, replicaset, "Steam Demand Benchmark", "Mlbs/hr", "steam_demand")

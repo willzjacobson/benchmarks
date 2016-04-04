@@ -211,4 +211,4 @@ def process_building(building, host, port, db_name, username, password,
                                                password, source,
                                                collection_name_out, building,
                                                'building', 'Electric_Demand',
-                                               target_tzone, replicaset)
+                                               target_tzone, replicaset, "Electric Demand Benchmark", "kW", "electric_demand")

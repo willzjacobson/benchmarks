@@ -49,11 +49,11 @@ building_dbs:
       db_name: skynet
       collection_name: timeseries
   results_steam_benchmark:
-      db_name_out: benchmarks
-      collection_name_out: steam
+      db_name_out: skynet
+      collection_name_out: benchmarks
   results_electric_benchmark:
-      db_name_out: benchmarks
-      collection_name_out: electricity
+      db_name_out: skynet
+      collection_name_out: benchmarks
   results_water_benchmark:
-      db_name_out: benchmarks
-      collection_name_out: water
+      db_name_out: skynet
+      collection_name_out: benchmarks

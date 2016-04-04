@@ -255,7 +255,8 @@ def find_lowest_usage_day(date_scores, obs_ts, n, timezone, debug,
 
 def save_benchmark(bench_dt, base_dt, bench_ts, bench_auc, bench_incr_auc,
                    host, port, database, username, password, source_db,
-                   collection_name, building, bmark_type, system, timezone, replicaset):
+                   collection_name, building, bmark_type, system, timezone, replicaset,
+                   dis, units, graph_tag):
     """
     Save benchmark time series to database
 
@@ -297,35 +298,15 @@ def save_benchmark(bench_dt, base_dt, bench_ts, bench_auc, bench_incr_auc,
 
     :return:
     """
+    # DB AUTH IS HARDCODED IN 
 
     with pymongo.MongoClient(host, port, replicaset=replicaset) as conn:
         conn[database].authenticate(username, password, source=source_db)
         collection = conn[database][collection_name]
 
         base_dt_t = datetime.datetime.combine(base_dt, datetime.time())
-        # delete all existing matching documents
-        doc_id = {"building": building,
-                  "type"    : bmark_type,
-                  "system"  : system,
-                  "date"    : base_dt_t}
-        collection.remove(doc_id)
-
-        # insert
-        dis = 
-           { 'electricity' : 'Electric Demand Benchmark',
-             'water'      : 'Water Consumption Benchmark',
-             'steam'      : 'Steam Demand Benchmark'}
-
-        gt = {
-           'electricity' : 'electric_demand',
-            'water'      : 'water_consumption',
-            'steam'      : 'steam_demand'}
-        units = {
-           'electricity' : 'kW',
-            'water'      : 'gallons',
-            'steam'      : 'Mlbs/hr'}
-
-        doc = { "building": building,
+        
+        new_doc = { "building": building,
                "type"    : bmark_type,
                "system"  : system,
                "date"    : base_dt_t,
@@ -334,11 +315,17 @@ def save_benchmark(bench_dt, base_dt, bench_ts, bench_auc, bench_incr_auc,
                "readings": gen_bmark_readings_list(bench_ts, bench_incr_auc,
                                                    base_dt, timezone),
                "daily_total": bench_auc,
-               "dis" : dis[collection_name],
-               "graph_tag" : gt[collection_name],
-               "units" : units[collection_name]}
+               "dis" : dis,
+               "graph_tag" : graph_tag,
+               "units" : units}
 
-        collection.insert(doc)
+        doc_id = {"building": building,
+                  "type"    : bmark_type,
+                  "system"  : system,
+                  "date"    : base_dt_t}
+
+        # collection.update_one(doc_id, {"$set": new_doc}, upsert=True)
+        collection.insert(new_doc)
 
 
 def align_idx(obs_ts, granularity, timezone=pytz.utc):
