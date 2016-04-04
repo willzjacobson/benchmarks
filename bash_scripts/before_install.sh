@@ -1,4 +1,4 @@
 #!/bin/bash
-if [ -z ${nikral+x} ]; then 
-	pip uninstall nikral
+if [ "$nikral" ]; then 
+	pip uninstall -y nikral
 fi
