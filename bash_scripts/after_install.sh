@@ -1,5 +1,5 @@
 #!/bin/bash
 
-su ubuntu -c pip install /var/analytics/an_benchmarks
-su ubuntu -c pip uninstall -y nikral
-su ubuntu -c pip install /var/analytics/an_benchmarks
+su -c pip install /var/analytics/an_benchmarks ubuntu
+#su -c pip uninstall -y nikral ubuntu 
+#su -c pip install /var/analytics/an_benchmarks ubuntu
