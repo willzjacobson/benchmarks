@@ -1,2 +1,3 @@
 #!/bin/bash
-pip install /var/analytics/an_benchmarks
+cd /var/analytics
+pip install ./an_benchmarks
