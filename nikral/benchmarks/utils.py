@@ -301,7 +301,7 @@ def save_benchmark(bench_dt, base_dt, bench_ts, bench_auc, bench_incr_auc,
     # DB AUTH IS HARDCODED IN 
 
     with pymongo.MongoClient(host, port, replicaset=replicaset) as conn:
-        conn[database].authenticate(username, password, source=source_db)
+        conn[database].authenticate('SkynetReadWrite', 'zDyxbep7jxdmpcBc8pfjuLVY', source=source_db)
         collection = conn[database][collection_name]
 
         base_dt_t = datetime.datetime.combine(base_dt, datetime.time())
@@ -324,8 +324,8 @@ def save_benchmark(bench_dt, base_dt, bench_ts, bench_auc, bench_incr_auc,
                   "system"  : system,
                   "date"    : base_dt_t}
 
-        # collection.update_one(doc_id, {"$set": new_doc}, upsert=True)
-        collection.insert(new_doc)
+        collection.update_one(doc_id, {"$set": new_doc}, upsert=True)
+        #collection.insert(new_doc)
 
 
 def align_idx(obs_ts, granularity, timezone=pytz.utc):

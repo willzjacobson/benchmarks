@@ -52,6 +52,10 @@ Vagrant.configure(2) do |config|
   # end
   #
 
+    config.vm.provider :aws do |aws, override|
+
+    #aws.session_token = "SESSION TOKEN"
+    aws.keypair_name = "Analytics"
 
     aws.instance_type = "r3.large"
     aws.ami = "ami-d05e75b8"
